@@ -16,6 +16,7 @@ package ch.rgw.elexis.docmgr_lucinda.view;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Stream;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -26,10 +27,19 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableColumn;
 
+import ch.elexis.core.data.activator.CoreHub;
 import ch.elexis.core.ui.util.viewers.TableLabelProvider;
+import ch.rgw.elexis.docmgr_lucinda.Preferences;
+import ch.rgw.tools.StringTool;
 
+/**
+ * The Detail-Subview shows metadata of the document selected in the Master-Subview.
+ * @author gerry
+ *
+ */
 public class Detail extends Composite {
 	TableViewer tv;
+	private String[] exclusions;;
 	
 	public Detail(Composite parent){
 		super(parent, SWT.NONE);
@@ -48,8 +58,13 @@ public class Detail extends Composite {
 		tc2.setText("Value");
 		
 		tv.setContentProvider(new IStructuredContentProvider() {
+			/*
+			 * We'll recheck exclusions on every changed object, in case the user edited the list
+			 */
 			@Override
-			public void inputChanged(Viewer viewer, Object oldInput, Object newInput){}
+			public void inputChanged(Viewer viewer, Object oldInput, Object newInput){
+				exclusions = CoreHub.localCfg.get(Preferences.EXCLUDEMETA, "").split(",");
+			}
 			
 			@Override
 			public void dispose(){}
@@ -58,11 +73,14 @@ public class Detail extends Composite {
 			@Override
 			public Object[] getElements(Object inputElement){
 				Map<String, Object> el = (Map<String, Object>) inputElement;
-				return el.entrySet().toArray();
+				Stream<Entry<String, Object>> filtered =
+					el.entrySet().stream().filter(e -> isNotExcluded(e));
+				return filtered.toArray();
 			}
 		});
 		tv.setLabelProvider(new TableLabelProvider() {
 			
+			@SuppressWarnings("unchecked")
 			@Override
 			public String getColumnText(Object element, int columnIndex){
 				Entry<String, Object> en = (Entry<String, Object>) element;
@@ -79,5 +97,14 @@ public class Detail extends Composite {
 	
 	public void setInput(Object input){
 		tv.setInput(input);
+	}
+	
+	/* show only items not in the exclude-List*/
+	private boolean isNotExcluded(Entry<String, Object> e){
+		if (exclusions == null) {
+			return true;
+		}
+		return (StringTool.getIndex(exclusions, e.getKey()) == -1);
+		
 	}
 }

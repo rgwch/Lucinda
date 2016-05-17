@@ -187,6 +187,7 @@ public class Master extends Composite {
 				
 			}
 		});
+		
 		setConnected(false);
 		
 	}

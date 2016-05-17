@@ -35,7 +35,7 @@ import ch.rgw.tools.TimeTool;
 public class GlobalView extends ViewPart {
 
 	private Controller controller;
-	private Action doubleClickAction, filterCurrentPatAction;
+	private Action doubleClickAction, filterCurrentPatAction, showInboxAction, showConsAction, showOmnivoreAction;
 	private RestrictedAction indexOmnivoreAction, indexKonsAction;
 
 	private final ElexisUiEventListenerImpl eeli_pat = new ElexisUiEventListenerImpl(Patient.class,
@@ -77,11 +77,15 @@ public class GlobalView extends ViewPart {
 
 	private void fillLocalToolBar(IToolBarManager manager){
 		manager.add(filterCurrentPatAction);
+		manager.add(showInboxAction);
+		manager.add(showConsAction);
+		manager.add(showOmnivoreAction);
 	}
 	private void fillLocalPullDown(IMenuManager manager) {
 		manager.add(indexOmnivoreAction);
 		manager.add(indexKonsAction);
 		manager.add(filterCurrentPatAction);
+		
 	}
 
 	private void makeActions() {
@@ -128,6 +132,21 @@ public class GlobalView extends ViewPart {
 			@Override
 			public void run() {
 				controller.restrictToCurrentPatient(isChecked());
+			}
+		};
+		showConsAction=new Action("Kons",Action.AS_CHECK_BOX){
+			{
+				setToolTipText("Konsultationstexte einbeziehen");
+			}
+		};
+		showOmnivoreAction=new Action("Omni",Action.AS_CHECK_BOX){
+			{
+				setToolTipText("Omnivore Dokumente einbeziehen");
+			}
+		};
+		showInboxAction=new Action("Inbox",Action.AS_CHECK_BOX){
+			{
+				setToolTipText("Inbox Dokumente einbeziehen");
 			}
 		};
 	}
