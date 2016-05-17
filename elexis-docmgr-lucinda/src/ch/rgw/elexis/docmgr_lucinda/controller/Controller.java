@@ -55,6 +55,7 @@ public class Controller implements Handler, IProgressController {
 	long actMax;
 	int div;
 	int actValue;
+	private DocumentFilter docFilter=new DocumentFilter();
 	
 	public Controller(){
 		lucinda = Activator.getDefault().getLucinda();
@@ -94,6 +95,7 @@ public class Controller implements Handler, IProgressController {
 	
 	public IStructuredContentProvider getContentProvider(TableViewer tv){
 		viewer = tv;
+		tv.addFilter(docFilter);
 		return cnt;
 		
 	}
@@ -133,6 +135,8 @@ public class Controller implements Handler, IProgressController {
 					
 				});
 				
+			}else{
+				Activator.getDefault().addMessage(new Document(result));
 			}
 		});
 		
@@ -214,5 +218,13 @@ public class Controller implements Handler, IProgressController {
 		
 	}
 		
+	public void toggleDoctypeFilter(boolean bOn, String doctype){
+		if(bOn){
+			docFilter.add(doctype);
+		}else{
+			docFilter.remove(doctype);
+		}
+		viewer.refresh();
+	}
 	
 }

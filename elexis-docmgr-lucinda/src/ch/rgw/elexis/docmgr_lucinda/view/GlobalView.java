@@ -138,16 +138,30 @@ public class GlobalView extends ViewPart {
 			{
 				setToolTipText("Konsultationstexte einbeziehen");
 			}
+			@Override
+			public void run(){
+				controller.toggleDoctypeFilter(isChecked(), "Konsultation");
+			}
 		};
 		showOmnivoreAction=new Action("Omni",Action.AS_CHECK_BOX){
 			{
 				setToolTipText("Omnivore Dokumente einbeziehen");
 			}
+			@Override
+			public void run(){
+				controller.toggleDoctypeFilter(isChecked(), "omnivore");
+			}
+	
 		};
 		showInboxAction=new Action("Inbox",Action.AS_CHECK_BOX){
 			{
 				setToolTipText("Inbox Dokumente einbeziehen");
 			}
+			@Override
+			public void run(){
+				controller.toggleDoctypeFilter(isChecked(), "inbox");
+			}
+	
 		};
 	}
 
