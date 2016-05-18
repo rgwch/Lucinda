@@ -46,7 +46,7 @@ val indexdir: File by lazy {
 }
 
 val baseaddr: String get() = config.get("msg_prefix", "ch.rgw.lucinda")
-var ip:String=""
+var ip: String = ""
 
 fun main(args: Array<String>) {
     var verticleID: String = ""
@@ -71,10 +71,13 @@ fun main(args: Array<String>) {
 
     val hazel = Config()
     val vertxOptions = VertxOptions().setClustered(true)
+            .setMaxEventLoopExecuteTime(5000000000L)
+            .setBlockedThreadCheckInterval(2000L)
+
     if (ip.isNotEmpty()) {
         val network = hazel.networkConfig
         network.interfaces.setEnabled(true).addInterface(ip)
-        network.publicAddress=ip
+        network.publicAddress = ip
         vertxOptions.setClusterHost(ip)
     }
     val mgr = HazelcastClusterManager(hazel)
@@ -106,7 +109,7 @@ fun main(args: Array<String>) {
     })
 
 
-    if(cmdline.parsed.containsKey("rescan")){
+    if (cmdline.parsed.containsKey("rescan")) {
         vertx?.eventBus()?.send(baseaddr + Autoscanner.ADDR_RESCAN, "rescan")
     }
     if (!cmdline.parsed.containsKey("daemon")) {
@@ -126,19 +129,19 @@ fun main(args: Array<String>) {
                             if (po.getString("status") == "ok") {
                                 val metadata = po.getJsonArray("result")
                                 metadata.forEach {
-                                    val url=(it as JsonObject).getString("url")
-                                    val title=it.getString("title")
-                                    val id=it.getString("_id")
-                                    println(if(url.isNullOrBlank()){
-                                      if(title.isNullOrBlank()){
-                                          id
-                                      }else{
-                                          title
-                                      }
-                                    }else {
+                                    val url = (it as JsonObject).getString("url")
+                                    val title = it.getString("title")
+                                    val id = it.getString("_id")
+                                    println(if (url.isNullOrBlank()) {
+                                        if (title.isNullOrBlank()) {
+                                            id
+                                        } else {
+                                            title
+                                        }
+                                    } else {
                                         url
                                     })
-                                    if(rootLog.level==Level.FINEST) {
+                                    if (rootLog.level == Level.FINEST) {
                                         println("id: ${it.getString("_id")}, uuid: ${it.getString("uuid")}")
                                     }
                                     if (it.getString("deleted") == "true") {
@@ -162,7 +165,7 @@ fun main(args: Array<String>) {
 
 
 class Launcher(val cfg: Configuration) : AbstractVerticle() {
-    val log=Logger.getLogger("lucinda.launcher")
+    val log = Logger.getLogger("lucinda.launcher")
     var communicatorID: String = ""
     var autoscannerID: String = ""
 

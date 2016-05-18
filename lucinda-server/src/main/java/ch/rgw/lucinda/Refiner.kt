@@ -41,7 +41,7 @@ class DefaultRefiner : Refiner {
             metadata.put("payload",contents["contents"])
             metadata.put("uuid",contents["checksumString"])
             metadata.put("title",FileTool.getNakedFilename(url))
-            metadata.put("lucinda_doctype","inbox")
+            metadata.put("lucinda_doctype","Inbox")
             val pathname=file.parentFile.name
             val parts=pathname.split("_".toRegex())
             if(parts.size==3){
