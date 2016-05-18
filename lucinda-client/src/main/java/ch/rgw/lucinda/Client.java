@@ -38,7 +38,7 @@ public class Client {
             this.prefix = "ch.rgw.lucinda";
         }
         this.messageHandler = handler;
-        VertxOptions vertxOptions = new VertxOptions().setClustered(true);
+        VertxOptions vertxOptions = new VertxOptions().setClustered(true).setMaxEventLoopExecuteTime(5000000000L).setBlockedThreadCheckInterval(3000);
         String ip = Util.matchIP(netmask);
         log.info("trying IP " + ip);
         if (!ip.isEmpty()) {
