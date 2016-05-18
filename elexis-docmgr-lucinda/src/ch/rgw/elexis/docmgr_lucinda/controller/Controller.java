@@ -196,6 +196,14 @@ public class Controller implements Handler, IProgressController {
 		}
 	}
 	
+	/**
+	 * Display a progress bar at the bottom of the lucinda view, or add a new process
+	 * to an existing process bar. If more than one process wants to dosplay, the values for
+	 * all processes are added and the sum ist the upper border of the progress bar.
+	 * @param maximum the value to reach
+	 * @return a Handle to use for later addProgrss Calls
+	 * @see addProgress
+	 */
 	public Long initProgress(int maximum){
 		Long proc=System.currentTimeMillis()+new Random().nextLong();
 		visibleProcesses.put(proc, maximum);
@@ -212,6 +220,13 @@ public class Controller implements Handler, IProgressController {
 		return proc;
 	}
 	
+	/**
+	 * show progress. 
+	 * @param the Handle as received from initProgress
+	 * @param amount the amount of work done since the last call. I the accumulated amount of all calls to addProgress is higher than the 
+	 * maximum value, the progress bar is hidden.
+	 * 
+	 */
 	public void addProgress(Long handle, int amount){
 		Integer val=visibleProcesses.get(handle);
 		val-=amount;
@@ -229,6 +244,11 @@ public class Controller implements Handler, IProgressController {
 		
 	}
 		
+	/**
+	 * Doctype filter
+	 * @param bOn whether the doctype should be filtered or not
+	 * @param doctype the doctype to filter (lucinda_doctype)
+	 */
 	public void toggleDoctypeFilter(boolean bOn, String doctype){
 		if(bOn){
 			docFilter.add(doctype);
