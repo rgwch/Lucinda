@@ -5,5 +5,5 @@
 A program to index, store and retrieve files in many formats.
 Uses Apache Tika and Apache Lucene for indexing and retrieving files.
 
-This repository consists of the lucinda-server, a generic client library, and an Eclipse Plugin using this library.
+This repository consists of the lucinda-server, a generic client library, and an [Elexis](http://github.com/elexis) Plugin using this library.
 
