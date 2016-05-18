@@ -24,11 +24,13 @@ public class LucindaLabelProvider extends TableLabelProvider {
 	public String getColumnText(Object element, int columnIndex) {
 		Document e = new Document(element);
 		switch (columnIndex) {
-		case 0:
-			return e.get("lastname");
+		case 0: 
+			return e.get("lucinda_doctype");
 		case 1:
-			return e.getDate().toString(TimeTool.DATE_MYSQL);
+			return e.get("lastname");
 		case 2:
+			return e.getDate().toString(TimeTool.DATE_MYSQL);
+		case 3:
 			return e.get("title");
 		default:
 			return "?";

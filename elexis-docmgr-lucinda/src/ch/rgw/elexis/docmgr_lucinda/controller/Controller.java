@@ -42,9 +42,13 @@ import ch.rgw.io.FileTool;
 import ch.rgw.lucinda.Client;
 import ch.rgw.lucinda.Handler;
 import ch.rgw.tools.ExHandler;
-import ch.rgw.tools.StringTool;
 import ch.rgw.tools.TimeTool;
 
+/**
+ * Controlle for the Lucinda View
+ * @author gerry
+ *
+ */
 public class Controller implements Handler, IProgressController {
 	Client lucinda;
 	GlobalViewPane view;
@@ -113,13 +117,20 @@ public class Controller implements Handler, IProgressController {
 		runQuery(view.getText());
 	}
 	
+	/**
+	 * Send a query to the lucinda server.
+	 * @param input Query String
+	 */
 	public void runQuery(String input){
-		StringBuilder query=new StringBuilder(input);
+		StringBuilder query=new StringBuilder();
 		if(bRestrictCurrentPatient){
 			Patient pat=ElexisEventDispatcher.getSelectedPatient();
 			query.append(" +lastname:").append(pat.getName())
 			.append(" +firstname:").append(pat.getVorname())
-			.append(" +birthdate:").append(new TimeTool(pat.getGeburtsdatum()).toString(TimeTool.DATE_COMPACT));
+			.append(" +birthdate:").append(new TimeTool(pat.getGeburtsdatum()).toString(TimeTool.DATE_COMPACT))
+			.append(" +").append(input);
+		}else{
+			query.append(input);
 		}
 		lucinda.query(query.toString(), result -> {
 			if (result.get("status").equals("ok")) {

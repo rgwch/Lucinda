@@ -106,7 +106,7 @@ public class OmnivoreIndexer implements Customer {
 			meta.put("payload", dh.getContents());
 			meta.put("concern", concern.toString());
 			meta.put("title", dh.getTitle());
-			meta.put("type", "omnivore");
+			meta.put("type", "Omnivore");
 			pc.addProgress(progressHandle, 1);
 			return meta;
 		} else {

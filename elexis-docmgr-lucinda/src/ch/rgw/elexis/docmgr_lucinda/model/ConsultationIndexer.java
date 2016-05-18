@@ -60,7 +60,7 @@ public class ConsultationIndexer implements Customer {
 		qbe.orderBy(false, Konsultation.DATE);
 		List<? extends PersistentObject> konsen = qbe.execute();
 		progressHandle=pc.initProgress(konsen.size());
-		Sender sender = new Sender(this, konsen);
+		new Sender(this, konsen);
 	}
 
 	/**
@@ -97,7 +97,7 @@ public class ConsultationIndexer implements Customer {
 			String birthdate = new TimeTool(bdRaw).toString(TimeTool.DATE_COMPACT);
 			String konsdate = new TimeTool(kons.getDatum()).toString(TimeTool.DATE_COMPACT);
 			StringBuilder concern = new StringBuilder().append(lastname).append("_").append(firstname).append("_")
-					.append(birthdate);
+					.append(birthdate.substring(6)).append(".").append(birthdate.substring(4,6)).append(".").append(birthdate.substring(0,4));
 			try {
 				VersionedResource vr = kons.getEintrag();
 				String text = "<empty>";

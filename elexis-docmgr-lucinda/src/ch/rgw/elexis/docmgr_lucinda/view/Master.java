@@ -43,13 +43,7 @@ import ch.rgw.elexis.docmgr_lucinda.controller.DocumentSorter;
 public class Master extends Composite {
 	private Text text;
 	private Table table;
-	private TableColumn tblclmnPatient;
 	private TableViewer tableViewer;
-	private TableViewerColumn tvc;
-	private TableColumn tblclmnDatum;
-	private TableViewerColumn tvc2;
-	private TableColumn tblclmnDokument;
-	private TableViewerColumn tvc3;
 	private Label lblConnection;
 	private Button btnGo;
 	
@@ -143,24 +137,7 @@ public class Master extends Composite {
 		table.setLayoutData(fd_table);
 		tableViewer.setContentProvider(gvp.controller.getContentProvider(tableViewer));
 		
-		tvc = new TableViewerColumn(tableViewer, SWT.NONE);
-		tblclmnPatient = tvc.getColumn();
-		tblclmnPatient.setWidth(100);
-		tblclmnPatient.setText("Patient");	
-		
-		tvc2 = new TableViewerColumn(tableViewer, SWT.NONE);
-		tblclmnDatum = tvc2.getColumn();
-		tblclmnDatum.setWidth(100);
-		tblclmnDatum.setText("Datum");
-		
-		tvc3 = new TableViewerColumn(tableViewer, SWT.NONE);
-		tblclmnDokument = tvc3.getColumn();
-		tblclmnDokument.setWidth(100);
-		tblclmnDokument.setText("Dokument");
-		
-		addHeaderListener(tvc.getColumn(), 0);
-		addHeaderListener(tvc2.getColumn(), 1);
-		addHeaderListener(tvc3.getColumn(), 2);
+		createColumns();
 		
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
@@ -190,6 +167,35 @@ public class Master extends Composite {
 		
 		setConnected(false);
 		
+	}
+
+	private void createColumns(){
+		TableViewerColumn tvc0= new TableViewerColumn(tableViewer,SWT.NONE);
+		TableColumn tc0=tvc0.getColumn();
+		tc0.setText("Typ");
+		tc0.setWidth(50);
+		
+		TableViewerColumn tvc1 = new TableViewerColumn(tableViewer, SWT.NONE);
+		TableColumn tc1 = tvc1.getColumn();
+		
+		tc1.setWidth(100);
+		tc1.setText("Patient");	
+		
+		TableViewerColumn tvc2 = new TableViewerColumn(tableViewer, SWT.NONE);
+		TableColumn tc2 = tvc2.getColumn();
+		tc2.setWidth(100);
+		tc2.setText("Datum");
+		
+		TableViewerColumn tvc3 = new TableViewerColumn(tableViewer, SWT.NONE);
+		TableColumn tc3 = tvc3.getColumn();
+		tc3.setWidth(100);
+		tc3.setText("Dokument");
+		
+		
+		addHeaderListener(tvc0.getColumn(), 0);
+		addHeaderListener(tvc1.getColumn(), 1);
+		addHeaderListener(tvc2.getColumn(), 2);
+		addHeaderListener(tvc3.getColumn(), 3);
 	}
 	
 	private void addHeaderListener(final TableColumn tc, int index){

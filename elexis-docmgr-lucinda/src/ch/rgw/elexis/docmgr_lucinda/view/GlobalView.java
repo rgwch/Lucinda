@@ -136,7 +136,7 @@ public class GlobalView extends ViewPart {
 		};
 		showConsAction=new Action("Kons",Action.AS_CHECK_BOX){
 			{
-				setToolTipText("Konsultationstexte einbeziehen");
+				setToolTipText("Konsultationstexte weglassen");
 			}
 			@Override
 			public void run(){
@@ -145,21 +145,21 @@ public class GlobalView extends ViewPart {
 		};
 		showOmnivoreAction=new Action("Omni",Action.AS_CHECK_BOX){
 			{
-				setToolTipText("Omnivore Dokumente einbeziehen");
+				setToolTipText("Omnivore Dokumente weglassen");
 			}
 			@Override
 			public void run(){
-				controller.toggleDoctypeFilter(isChecked(), "omnivore");
+				controller.toggleDoctypeFilter(isChecked(), "Omnivore");
 			}
 	
 		};
 		showInboxAction=new Action("Inbox",Action.AS_CHECK_BOX){
 			{
-				setToolTipText("Inbox Dokumente einbeziehen");
+				setToolTipText("Inbox Dokumente weglassen");
 			}
 			@Override
 			public void run(){
-				controller.toggleDoctypeFilter(isChecked(), "inbox");
+				controller.toggleDoctypeFilter(isChecked(), "Inbox");
 			}
 	
 		};
