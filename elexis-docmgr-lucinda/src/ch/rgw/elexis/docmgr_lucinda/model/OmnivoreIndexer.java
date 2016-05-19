@@ -53,7 +53,7 @@ public class OmnivoreIndexer implements Customer {
 		this.pc=pc;
 		String lastCheck = Preferences.get(Preferences.LASTSCAN_OMNI, "20010101");
 		Query<DocHandle> qbe = new Query<DocHandle>(DocHandle.class);
-		qbe.add(DocHandle.FLD_DATE, Query.GREATER, lastCheck);
+		qbe.add(DocHandle.FLD_DATE, Query.GREATER_OR_EQUAL, lastCheck);
 		qbe.orderBy(false, DocHandle.FLD_DATE);
 		List<? extends PersistentObject> docs = qbe.execute();
 		progressHandle=pc.initProgress(docs.size());
