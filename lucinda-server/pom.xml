@@ -6,7 +6,7 @@
 
     <groupId>ch.rgw</groupId>
     <artifactId>lucinda-server</artifactId>
-    <version>1.0.8</version>
+    <version>1.0.8-SNAPSHOT</version>
     <properties>
         <kotlin.version>1.0.2</kotlin.version>
         <lucene-version>6.0.0</lucene-version>

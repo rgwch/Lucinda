@@ -21,6 +21,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.apache.lucene.index.IndexWriter;
 import org.jetbrains.annotations.NotNull;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -42,17 +43,25 @@ public class VertxTest {
     static Dispatcher dis;
     static IndexManager indexManager;
 
-    @BeforeClass
-    public static void cleanup() {
+
+    @Before
+    public void setUp(){
         cfg = new Configuration("default.cfg", "user.cfg");
         FileTool.deltree(cfg.get("fs_basedir", "target/base"));
         indexManager=LauncherKt.getIndexManager();
+        IndexWriter writer=indexManager.getWriter();
         vertx = Vertx.vertx();
         dis = new Dispatcher(cfg, vertx);
 
     }
 
 
+    @After
+    public void tearDown(){
+        indexManager.shutDown();
+        vertx.close();
+        FileTool.deltree(cfg.get("fs_basedir", "target/base"));
+    }
     @Test
     public void testFilenameResolution() {
         assertEquals("target/store", cfg.get("fs_basedir", ""));
