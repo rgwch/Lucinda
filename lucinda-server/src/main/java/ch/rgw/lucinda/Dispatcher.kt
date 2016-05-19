@@ -24,6 +24,8 @@ import io.vertx.core.Vertx
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import org.apache.lucene.document.Document
+import org.apache.lucene.document.Field
+import org.apache.lucene.document.TextField
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileNotFoundException
@@ -122,6 +124,20 @@ class Dispatcher(val cfg: Configuration, val vertx: Vertx) {
             }
         }
         return null;
+    }
+
+    fun update(o: JsonObject){
+        val doc: Document? = indexManager.getDocument(o.getString("_id"))
+        if(doc!=null){
+            o.map.forEach {
+                val f=doc.getField(it.key)
+                if(f!=null){
+                    doc.removeField(it.key)
+                    doc.add(TextField(it.key,it.value.toString(), Field.Store.YES))
+                }
+            }
+            indexManager.updateDocument(doc)
+        }
     }
 }
 

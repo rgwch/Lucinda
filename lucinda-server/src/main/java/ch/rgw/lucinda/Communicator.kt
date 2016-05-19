@@ -61,7 +61,7 @@ class Communicator(val cfg: Configuration) : AbstractVerticle() {
                             message.reply(JsonObject().put("status", "ok").put("_id", j.getString("_id")))
                         } else {
                             log.warning("failed to import ${j.getString("url")}; ${result.cause().message}")
-                            message.reply(JsonObject().put("status","fail").put("_id",j.getString("_id")).put("message",result.cause().message))
+                            message.reply(JsonObject().put("status", "fail").put("_id", j.getString("_id")).put("message", result.cause().message))
                         }
                     }
 
@@ -83,14 +83,14 @@ class Communicator(val cfg: Configuration) : AbstractVerticle() {
             log.info("got message ADDR_INDEX " + Json.encodePrettily(j))
 
             try {
-                dispatcher.addToIndex(j,object : Handler<AsyncResult<Int>> {
+                dispatcher.addToIndex(j, object : Handler<AsyncResult<Int>> {
                     override fun handle(result: AsyncResult<Int>) {
                         if (result.succeeded()) {
                             log.info("indexed ${j.getString("title")}")
                             msg.reply(JsonObject().put("status", "ok").put("_id", j.getString("_id")))
                         } else {
                             log.warning("failed to import ${j.getString("url")}; ${result.cause().message}")
-                            msg.reply(JsonObject().put("status","fail").put("_id",j.getString("_id")).put("message",result.cause().message))
+                            msg.reply(JsonObject().put("status", "fail").put("_id", j.getString("_id")).put("message", result.cause().message))
                         }
                     }
 
@@ -131,6 +131,18 @@ class Communicator(val cfg: Configuration) : AbstractVerticle() {
                 fail("", e)
             }
         }
+        eb.consumer<Message<JsonObject>>(baseaddr+ADDR_UPDATE) { msg ->
+            val j=msg.body() as JsonObject
+            log.info("got message ADDR_FINDFILES " + Json.encodePrettily(j))
+
+            try {
+                val result = dispatcher.update(j)
+                msg.reply(JsonObject().put("status", "ok").put("result", result))
+            } catch(e: Exception) {
+
+                fail("", e)
+            }
+        }
 
     }
 
@@ -158,10 +170,12 @@ class Communicator(val cfg: Configuration) : AbstractVerticle() {
         const val ADDR_IMPORT = ".import"
         /** Index a file in-place (don't add it to the storage) */
         const val ADDR_INDEX = ".index"
-        /** Retrieve a file */
+        /** Retrieve a file by _id*/
         const val ADDR_GETFILE = ".get"
-        /** Get Metadata of files matching tu a search query */
+        /** Get Metadata of files matching a search query */
         const val ADDR_FINDFILES = ".find"
+        /** Update Metadata of a file by _id*/
+        const val ADDR_UPDATE = ".update"
         /** Connection check */
         const val ADDR_PING = ".ping"
 
