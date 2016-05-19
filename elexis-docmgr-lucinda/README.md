@@ -1,7 +1,7 @@
 # docmgr-lucinda
 An [Elexis](http://www.elexis.info) document Manager based on [Lucinda](https://github.com/rgwch/ch.rgw.lucinda)
 
-Status: Beta. Works, but most UI-candy is still missing.
+Status: Beta
 
 ## What it is
 
@@ -17,20 +17,8 @@ systems, such as Mass-Document-Scanner software, E-Mail receiving software and o
 
 ## How it works
  
-Docmgr-lucinda is in fact only a GUI for [Lucinda](https://github.com/rgwch/ch.rgw.lucinda). If a Lucinda-Server is running somewhere in the network, it will connect.
+Docmgr-lucinda is a GUI for [Lucinda](https://github.com/rgwch/Lucinda). If a Lucinda-Server is running somewhere in the network, it will connect.
 
-## Build the plugin
-
-Since _Lucinda_ and _docmgr-lucinda_ are developed independently, the lucinda-client library is not preinstalled in the plugin at this time.
- 
- * `git clone https://github.com/rgwch/lucinda-client` to a suitable place
- * `cd lucinda-client && mvn clean package`
- * import https://github.com/rgwch/docmgr-lucinda into an eclipse workspace with elexis-core.
- * copy lucinda-client/target/lucinda-client-x.y.z.jar into the "lib" directory of docmgr-lucinda
- * add lucinda-client-x.y.z.jar to the build path
- * right-click on the docmgr-lucinda plugin and chose "Plugin Tools -> Update Classpath"
- * now, _docmgr-lucinda_ should compile without errors.
- 
 
 ## Installation and configuration
 
