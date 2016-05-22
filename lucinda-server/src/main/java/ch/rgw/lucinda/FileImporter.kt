@@ -153,7 +153,6 @@ class FileImporter(val file: Path, val fileMetadata: JsonObject) : Handler<Futur
             log.severe("fatal error reading ${filename}")
             return ("read error ${ex.message}")
         }
-        return "unknown error"
     }
 
     /**

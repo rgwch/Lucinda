@@ -15,21 +15,22 @@ class Restpoint(val cfg: Configuration): AbstractVerticle(){
     override fun start(future: Future<Void>){
         val router=Router.router(vertx)
 
-        router.get("api/ping").handler { ctx ->
-            ctx.response().end("We've got a Ping!")
+        router.get("/api/1.0/ping").handler { ctx ->
+            ctx.response().end("pong")
+            log.info("we've got a ping!")
         }
-        router.post("api/query").handler { ctx ->
+        router.post("/api/query").handler { ctx ->
             val cmd=ctx.getBodyAsString("utf-8")
 
         }
 
-        router.get("api/query/:id").handler {
+        router.get("/api/query/:id").handler {
 
         }
 
         vertx.createHttpServer()
         .requestHandler{ request -> router.accept(request)}
-        .listen(cfg.get("rest_port","8080") as Int){
+        .listen(cfg.get("rest_port","8080").toInt()){
             result ->
             if(result.succeeded()){
                 future.complete()

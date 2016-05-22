@@ -120,7 +120,7 @@ class Dispatcher(val cfg: Configuration, val vertx: Vertx) {
             if (file.exists() && file.canRead()) {
                 return FileTool.readFile(file)
             } else {
-                throw FileNotFoundException(file?.absolutePath)
+                throw FileNotFoundException(file.absolutePath)
             }
         }
         return null;
