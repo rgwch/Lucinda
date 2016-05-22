@@ -5,10 +5,7 @@ import com.hazelcast.config.NetworkConfig;
 import io.netty.handler.codec.http.HttpRequest;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import io.vertx.core.http.HttpClient;
-import io.vertx.core.http.HttpClientOptions;
-import io.vertx.core.http.HttpClientRequest;
-import io.vertx.core.http.HttpMethod;
+import io.vertx.core.http.*;
 import io.vertx.core.json.JsonObject;
 import io.vertx.spi.cluster.hazelcast.HazelcastClusterManager;
 
@@ -28,6 +25,7 @@ public class Client {
     private Vertx vertx;
     private String prefix;
     private boolean connected = false;
+    private boolean preferREST = false;
     private Handler messageHandler;
     private Logger log = Logger.getLogger("Lucinda Client");
     private HttpClient http;
@@ -74,13 +72,15 @@ public class Client {
                             if(api_version!=null) {
                                 api="/api/"+api_version+"/";
                                 HttpClientOptions hop = new HttpClientOptions().setDefaultHost(server_ip)
-                                        .setDefaultPort(Integer.parseInt(pong.getString("port")));
+                                        .setDefaultPort(Integer.parseInt(pong.getString("port"))).setTryUseCompression(true)
+                                        .setKeepAlive(true).setIdleTimeout(60);
                                 http=vertx.createHttpClient(hop);
                                 HttpClientRequest htr=http.request(HttpMethod.GET,api+"ping", response ->{
                                     response.bodyHandler(buffer -> {
                                         if(buffer.toString().equals("pong")){
                                             messageHandler.signal(make("status:REST ok"));
                                             log.info("Rest API ok");
+                                            preferREST=true;
                                         }
                                     });
                                 }).setTimeout(2000L).exceptionHandler(exception -> {
@@ -119,14 +119,27 @@ public class Client {
         if (!connected) {
             handler.signal(make("status:error", "message:no connection"));
         } else {
-            vertx.eventBus().send(prefix + ".find", new JsonObject().put("query", queryPhrase), result -> {
-                if (result.succeeded()) {
-                    JsonObject found = (JsonObject) result.result().body();
-                    handler.signal(found.getMap());
-                } else {
-                    handler.signal(make("status:error", "message:" + result.cause().getMessage()));
-                }
-            });
+            if(preferREST){
+                http.post(api+"query", response -> {
+                    if(response.statusCode()==200) {
+                        response.bodyHandler(buffer -> {
+                            JsonObject result = buffer.toJsonObject();
+                            handler.signal(result.getMap());
+                        });
+                    }else{
+                        handler.signal(make("status:error","message:"+response.statusMessage()));
+                    }
+                }).write(queryPhrase).end();
+            }else {
+                vertx.eventBus().send(prefix + ".find", new JsonObject().put("query", queryPhrase), result -> {
+                    if (result.succeeded()) {
+                        JsonObject found = (JsonObject) result.result().body();
+                        handler.signal(found.getMap());
+                    } else {
+                        handler.signal(make("status:error", "message:" + result.cause().getMessage()));
+                    }
+                });
+            }
         }
     }
 
@@ -140,14 +153,29 @@ public class Client {
         if (!connected) {
             handler.signal(make("status:error", "message:no connection"));
         } else {
-            vertx.eventBus().send(prefix + ".get", new JsonObject().put("_id", id), result -> {
-                if (result.succeeded()) {
-                    JsonObject found = (JsonObject) result.result().body();
-                    handler.signal(add(make("status:ok"), "result", found.getBinary("result")));
-                } else {
-                    handler.signal(make("status:error", "message:" + result.cause().getMessage()));
-                }
-            });
+            if(preferREST){
+                   http.getNow(api+"get/"+id, response -> {
+                       if(response.statusCode()==200){
+                        response.bodyHandler( buffer -> {
+                            byte[] file=buffer.getBytes();
+                            handler.signal(add(make("status:ok"), "result", file));
+                        });
+                       }else if(response.statusCode()==404){
+                           handler.signal(make("status:not found"));
+                       }else{
+                           handler.signal(make("status:error","message:"+response.statusMessage()));
+                       }
+                   });
+            }else {
+                vertx.eventBus().send(prefix + ".get", new JsonObject().put("_id", id), result -> {
+                    if (result.succeeded()) {
+                        JsonObject found = (JsonObject) result.result().body();
+                        handler.signal(add(make("status:ok"), "result", found.getBinary("result")));
+                    } else {
+                        handler.signal(make("status:error", "message:" + result.cause().getMessage()));
+                    }
+                });
+            }
         }
     }
 
@@ -172,13 +200,24 @@ public class Client {
         } else {
             try {
                 JsonObject envelope = prepare(id, title, doctype, metadata, contents);
-                vertx.eventBus().send(prefix + ".index", envelope, result -> {
-                    if (result.succeeded()) {
-                        handler.signal(make("status:ok"));
-                    } else {
-                        handler.signal(make("status:error", "message:" + result.cause().getMessage()));
-                    }
-                });
+                if(preferREST){
+                    http.post(api+"index", response -> {
+                        if(response.statusCode()==200){
+                            handler.signal(make("status:ok"));
+                        }else{
+                            handler.signal(make("status:error","message:"+response.statusMessage()));
+                        }
+                    });
+                }else {
+
+                    vertx.eventBus().send(prefix + ".index", envelope, result -> {
+                        if (result.succeeded()) {
+                            handler.signal(make("status:ok"));
+                        } else {
+                            handler.signal(make("status:error", "message:" + result.cause().getMessage()));
+                        }
+                    });
+                }
 
             } catch (IOException ex) {
                 ex.printStackTrace();
@@ -209,13 +248,24 @@ public class Client {
                 if(concern!=null) {
                     envelope.put("concern", concern);
                 }
-                vertx.eventBus().send(prefix + ".import", envelope, result -> {
-                    if (result.succeeded()) {
-                        handler.signal(make("status:ok"));
-                    } else {
-                        handler.signal(make("status:error", "message:" + result.cause().getMessage()));
-                    }
-                });
+                if(preferREST){
+                    http.post(api+"index", response -> {
+                        if(response.statusCode()==201){
+                            handler.signal(make("status:ok"));
+                        }else{
+                            handler.signal(make("status:error","message:"+response.statusMessage()));
+                        }
+                    });
+
+                }else {
+                    vertx.eventBus().send(prefix + ".import", envelope, result -> {
+                        if (result.succeeded()) {
+                            handler.signal(make("status:ok"));
+                        } else {
+                            handler.signal(make("status:error", "message:" + result.cause().getMessage()));
+                        }
+                    });
+                }
 
             }catch(IOException ex){
                 ex.printStackTrace();
