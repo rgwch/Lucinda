@@ -133,7 +133,7 @@ class Communicator(val cfg: Configuration) : AbstractVerticle() {
         }
         eb.consumer<Message<JsonObject>>(baseaddr+ADDR_UPDATE) { msg ->
             val j=msg.body() as JsonObject
-            log.info("got message ADDR_FINDFILES " + Json.encodePrettily(j))
+            log.info("got message ADDR_UPDATE " + Json.encodePrettily(j))
 
             try {
                 val result = dispatcher.update(j)
