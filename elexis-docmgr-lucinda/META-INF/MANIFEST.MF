@@ -5,7 +5,7 @@ Bundle-SymbolicName: ch.rgw.elexis.docmgr_lucinda;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: ch.rgw.elexis.docmgr_lucinda.Activator
 Bundle-Vendor: G. Weirich
-Require-Bundle: org.eclipse.core.runtime,
+Require-Bundle: org.eclipse.core.runtime;bundle-version="3.8.0",
  ch.elexis.core;bundle-version="3.2.0",
  ch.rgw.utility;bundle-version="3.2.0",
  ch.elexis.core.data;bundle-version="3.2.0",
@@ -15,5 +15,6 @@ Require-Bundle: org.eclipse.core.runtime,
  ch.elexis.omnivore;bundle-version="3.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
- lib/lucinda-client-0.3.1.jar
+ lib/lucinda-client-0.3.2.jar
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: ch.rgw.lucinda
