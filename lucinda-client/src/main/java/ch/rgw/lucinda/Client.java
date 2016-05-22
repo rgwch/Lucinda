@@ -2,10 +2,13 @@ package ch.rgw.lucinda;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.config.NetworkConfig;
+import io.netty.handler.codec.http.HttpRequest;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
+import io.vertx.core.http.HttpClientRequest;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.spi.cluster.hazelcast.HazelcastClusterManager;
 
@@ -73,13 +76,19 @@ public class Client {
                                 HttpClientOptions hop = new HttpClientOptions().setDefaultHost(server_ip)
                                         .setDefaultPort(Integer.parseInt(pong.getString("port")));
                                 http=vertx.createHttpClient(hop);
-                                http.getNow(api+"ping", response ->{
+                                HttpClientRequest htr=http.request(HttpMethod.GET,api+"ping", response ->{
                                     response.bodyHandler(buffer -> {
-                                       if(buffer.toString().equals("pong")){
-                                           messageHandler.signal(make("status:REST ok"));
-                                       }
+                                        if(buffer.toString().equals("pong")){
+                                            messageHandler.signal(make("status:REST ok"));
+                                            log.info("Rest API ok");
+                                        }
                                     });
+                                }).setTimeout(2000L).exceptionHandler(exception -> {
+                                    log.severe("REST failure "+exception.getMessage());
+                                    exception.printStackTrace();
+                                    handler.signal(make("status:failure","message:"+exception.getMessage()));
                                 });
+                                htr.end();
                             }
                             messageHandler.signal(make("status:connected"));
                         } else {
