@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: io.crate:crate-client:0.49.5">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/io/crate/crate-client/0.49.5/crate-client-0.49.5.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/io/crate/crate-client/0.49.5/crate-client-0.49.5-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/io/crate/crate-client/0.49.5/crate-client-0.49.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

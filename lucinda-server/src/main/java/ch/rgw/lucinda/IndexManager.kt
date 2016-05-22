@@ -76,10 +76,15 @@ class IndexManager(directory: String) {
 
 
     fun shutDown() {
-        if (writer.isOpen) {
-            writer.commit()
-            writer.deleteUnusedFiles()
-            writer.close()
+        try {
+            if (writer.isOpen) {
+                writer.commit()
+                writer.deleteUnusedFiles()
+                writer.close()
+            }
+        }catch(ex: Exception){
+            ex.printStackTrace()
+            log.severe("could not shut down index writer properly "+ex.message)
         }
     }
 

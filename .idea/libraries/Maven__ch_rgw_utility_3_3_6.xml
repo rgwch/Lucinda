@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: ch.rgw:utility:3.3.6">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/ch/rgw/utility/3.3.6/utility-3.3.6.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/ch/rgw/utility/3.3.6/utility-3.3.6-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/ch/rgw/utility/3.3.6/utility-3.3.6-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

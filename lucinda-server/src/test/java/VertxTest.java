@@ -47,7 +47,10 @@ public class VertxTest {
     @Before
     public void setUp(){
         cfg = new Configuration("default.cfg", "user.cfg");
-        FileTool.deltree(cfg.get("fs_basedir", "target/base"));
+        if(new File(cfg.get("fs_basedir","")).exists()) {
+            FileTool.deltree(cfg.get("fs_basedir", "target/base"));
+        }
+
         indexManager=LauncherKt.getIndexManager();
         IndexWriter writer=indexManager.getWriter();
         vertx = Vertx.vertx();
@@ -57,13 +60,19 @@ public class VertxTest {
 
 
     @After
-    public void tearDown(){
-        indexManager.shutDown();
-        vertx.close();
-        FileTool.deltree(cfg.get("fs_basedir", "target/base"));
+    public void tearDown() throws Exception{
+        if(indexManager!=null) {
+            indexManager.shutDown();
+            indexManager = null;
+        }
+        if(vertx!=null) {
+            vertx.close();
+            vertx = null;
+        }
     }
     @Test
     public void testFilenameResolution() {
+        System.out.println(cfg.get("fs_basedir","base"));
         assertEquals("target/store", cfg.get("fs_basedir", ""));
         assertEquals("target/store/index", cfg.get("fs_indexdir", ""));
         assertEquals("target/store/inbox", cfg.get("fs_import", ""));
