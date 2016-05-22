@@ -4,6 +4,8 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.NetworkConfig;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.http.HttpClient;
+import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.json.JsonObject;
 import io.vertx.spi.cluster.hazelcast.HazelcastClusterManager;
 
@@ -19,11 +21,13 @@ import java.util.logging.Logger;
  * Created by gerry on 10.05.16.
  */
 public class Client {
+    private String api="/api/1.0/";
     private Vertx vertx;
     private String prefix;
     private boolean connected = false;
     private Handler messageHandler;
     private Logger log = Logger.getLogger("Lucinda Client");
+    private HttpClient http;
 
     /**
      * Connect to a lucinda server
@@ -61,12 +65,29 @@ public class Client {
                                 messageHandler.signal(errmsg.getMap());
                             });
                             connected = true;
+                            JsonObject pong=(JsonObject)msg.result().body();
+                            String server_ip=pong.getString("pong");
+                            String api_version=pong.getString("rest");
+                            if(api_version!=null) {
+                                api="/api/"+api_version+"/";
+                                HttpClientOptions hop = new HttpClientOptions().setDefaultHost(server_ip)
+                                        .setDefaultPort(Integer.parseInt(pong.getString("port")));
+                                http=vertx.createHttpClient(hop);
+                                http.getNow(api+"ping", response ->{
+                                    response.bodyHandler(buffer -> {
+                                       if(buffer.toString().equals("pong")){
+                                           messageHandler.signal(make("status:REST ok"));
+                                       }
+                                    });
+                                });
+                            }
                             messageHandler.signal(make("status:connected"));
                         } else {
                             log.warning("ping failed");
                             messageHandler.signal(make("status:failure", "message:" + "ping fail " + msg.cause().getMessage()));
                         }
                     });
+
 
                 } else {
                     log.warning("connect failed ");

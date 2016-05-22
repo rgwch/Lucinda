@@ -279,27 +279,9 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="Maven: p2.eclipse-plugin:ch.rgw.elexis.docmgr_lucinda:1.0.0.a20160522-0932">
+      <library name="Maven: ch.rgw:ch.rgw.elexis.docmgr_lucinda:lib/lucinda-client-0.3.2.jar:1.0.0.qualifier">
         <CLASSES>
-          <root url="jar://$MAVEN_REPOSITORY$/ch/rgw/ch.rgw.elexis.docmgr_lucinda/1.0.0-SNAPSHOT/ch.rgw.elexis.docmgr_lucinda-1.0.0-SNAPSHOT.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="Maven: p2.eclipse-plugin:ch.rgw.elexis.docmgr_lucinda:lib/lucinda-client-0.3.2.jar:1.0.0.a20160522-0932">
-        <CLASSES>
-          <root url="jar://$MAVEN_REPOSITORY$/.cache/tycho/ch.rgw.elexis.docmgr_lucinda-1.0.0-SNAPSHOT.jar/lib/lucinda-client-0.3.2.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="Maven: p2.eclipse-feature:ch.rgw.elexis.docmgr-lucinda.feature:1.0.0.a20160522-0932">
-        <CLASSES>
-          <root url="jar://$MAVEN_REPOSITORY$/ch/rgw/ch.rgw.elexis.docmgr-lucinda.feature/1.0.0-SNAPSHOT/ch.rgw.elexis.docmgr-lucinda.feature-1.0.0-SNAPSHOT.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/lucinda-client-0.3.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
