@@ -42,7 +42,7 @@ class Communicator(val cfg: Configuration) : AbstractVerticle() {
         val dispatcher = Dispatcher(cfg, vertx)
         eb.consumer<Message<JsonObject>>(baseaddr + ADDR_PING) { msg ->
             log.info("we got a Ping!")
-            msg.reply(JsonObject().put("status", "ok").put("pong", ip))
+            msg.reply(JsonObject().put("status", "ok").put("pong", ip).put("rest","1.0").put("port",cfg.get("rest_port","2016")))
         }
         /*
          * address defaulting to 'ch.rgw.lucinda.import':
