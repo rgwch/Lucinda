@@ -23,6 +23,7 @@ public class Integration {
     public void testLucinda(TestContext ctx) {
         Client client = new Client();
         Async async1 = ctx.async();
+        Async async4=ctx.async();
         client.connect(null, "192.168.16.*", result -> {
             String retval = (String) result.get("status");
             if(retval.equals("connected")) {
@@ -52,7 +53,8 @@ public class Integration {
                     });
                 });
             }else if(retval.equals("REST ok")){
-                Async async2=ctx.async();
+                async4.complete();
+                //Async async2=ctx.async();
 
             }
         });
