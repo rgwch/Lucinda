@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Copyright (c) 2016 by G. Weirich
+ *
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ *
+ * Contributors:
+ * G. Weirich - initial implementation
+ ********************************************************************************/
+
 package ch.rgw.lucinda
 
 import ch.rgw.tools.Configuration
@@ -13,21 +27,26 @@ import java.util.logging.Logger
 
 
 /**
+ * Sommetimes, a REST Api is more convenient, than the EventBus. For example, if multicast is not easily possible, as in
+ * VPN or Docker scenarios. REST is always available. Lucinde offers both interfaces.
+ * Only the channel for async return messages is always EventBus this time.
+ *
  * Created by gerry on 22.05.16.
  */
 class Restpoint(val cfg: Configuration) : AbstractVerticle() {
     val log = Logger.getLogger("Restpoint")
+    val APIVERSION="1.0"
 
     override fun start(future: Future<Void>) {
         super.start()
         val dispatcher = Dispatcher(cfg, vertx);
         val router = Router.router(vertx)
 
-        router.get("/api/1.0/ping").handler { ctx ->
+        router.get("/api/${APIVERSION}/ping").handler { ctx ->
             ctx.response().end("pong")
             log.info("we've got a ping!")
         }
-        router.post("/api/1.0/query").handler { ctx ->
+        router.post("/api/${APIVERSION}/query").handler { ctx ->
             val j = ctx.bodyAsString
             log.info("git REST " + j)
             try {
@@ -41,14 +60,14 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
 
         }
 
-        router.get("/api/1.0/get/:id").handler { ctx ->
+        router.get("/api/${APIVERSION}/get/:id").handler { ctx ->
             val id = ctx.request().getParam("id")
             val bytes = Buffer.buffer(dispatcher.get(id))
             ctx.response().putHeader("content-type", "application/octet-stream")
             ctx.response().end(bytes)
         }
 
-        router.post("/api/1.0/index").handler { ctx ->
+        router.post("/api/${APIVERSION}/index").handler { ctx ->
             val j = ctx.bodyAsJson
             dispatcher.addToIndex(j, object : Handler<AsyncResult<Int>> {
                 override fun handle(result: AsyncResult<Int>) {
@@ -56,7 +75,7 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
                         log.info("indexed ${j.getString("title")}")
                         ctx.response().write(Json.encode(JsonObject().put("status", "ok").put("_id", j.getString("_id"))))
                         ctx.response().putHeader("content-type", "application/json; charset=utf-8")
-                        ctx.response().statusCode = 201
+                        ctx.response().statusCode = 200
                         ctx.response().statusMessage = "content indexed"
                         ctx.response().end();
                     } else {
@@ -70,7 +89,7 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
             })
         }
 
-        router.post("/api/1.0/addfile").handler { ctx ->
+        router.post("/api/${APIVERSION}/addfile").handler { ctx ->
             val j = ctx.bodyAsJson
             dispatcher.indexAndStore(j, object : Handler<AsyncResult<Int>> {
                 override fun handle(result: AsyncResult<Int>) {
@@ -94,7 +113,7 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
 
         vertx.createHttpServer()
                 .requestHandler { request -> router.accept(request) }
-                .listen(cfg.get("rest_port", "8080").toInt()) {
+                .listen(cfg.get("rest_port", "2016").toInt()) {
                     result ->
                     if (result.succeeded()) {
                         future.complete()
