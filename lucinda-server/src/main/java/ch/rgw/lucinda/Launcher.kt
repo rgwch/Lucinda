@@ -168,36 +168,50 @@ class Launcher(val cfg: Configuration) : AbstractVerticle() {
     val log = Logger.getLogger("lucinda.launcher")
     var communicatorID: String = ""
     var autoscannerID: String = ""
+    var restpointID:String=""
 
     override fun start() {
         super.start()
-        vertx.deployVerticle(Communicator(cfg), DeploymentOptions().setWorker(true)) { handler: AsyncResult<String> ->
-            if (handler.succeeded()) {
-                log.log(Level.INFO, "Communicator launch successful " + handler.result())
-                communicatorID = handler.result()
-                val watchdirs = cfg.get("fs_watch")
-                if (watchdirs != null) {
-                    vertx.deployVerticle(Autoscanner(), DeploymentOptions().setWorker(true)) { handler2 ->
-                        if (handler2.succeeded()) {
-                            log.info("setup watch hook(s) for ${watchdirs}")
-                            autoscannerID = handler2.result()
-                            val dirs = JsonArray()
-                            watchdirs.split("\\s*,\\s*".toRegex()).forEach {
-                                dirs.add(it)
-                            }
+        if(cfg.get("msg_use","no")=="yes") {
+            vertx.deployVerticle(Communicator(cfg), DeploymentOptions().setWorker(true)) { handler ->
+                if (handler.succeeded()) {
+                    log.log(Level.INFO, "Communicator launch successful " + handler.result())
+                    communicatorID = handler.result()
+                } else {
+                    log.log(Level.SEVERE, "Communicator launch failed " + handler.result())
+                }
+            }
+        }
+        if(cfg.get("rest_use","no")=="yes"){
+            vertx.deployVerticle(Restpoint(cfg), DeploymentOptions().setWorker(true)){ handler ->
+                if(handler.succeeded()){
+                    log.info("Restpoint launch succeeded")
+                    restpointID=handler.result()
+                }else{
+                    log.severe("Restpoint launch failed "+handler.result())
+                }
 
-                            vertx.eventBus().send<Any>(baseaddr + Autoscanner.ADDR_START, JsonObject().put("dirs", dirs)) { answer ->
-                                if (answer.failed()) {
-                                    log.severe("could not start Autoscanner " + answer.result())
-                                }
-                            }
-                        } else {
-                            log.severe("Autoscanner launch failed " + handler2.result())
+            }
+        }
+        val watchdirs = cfg.get("fs_watch")
+        if (watchdirs != null) {
+            vertx.deployVerticle(Autoscanner(), DeploymentOptions().setWorker(true)) { handler2 ->
+                if (handler2.succeeded()) {
+                    log.info("setup watch hook(s) for ${watchdirs}")
+                    autoscannerID = handler2.result()
+                    val dirs = JsonArray()
+                    watchdirs.split("\\s*,\\s*".toRegex()).forEach {
+                        dirs.add(it)
+                    }
+
+                    vertx.eventBus().send<Any>(baseaddr + Autoscanner.ADDR_START, JsonObject().put("dirs", dirs)) { answer ->
+                        if (answer.failed()) {
+                            log.severe("could not start Autoscanner " + answer.result())
                         }
                     }
+                } else {
+                    log.severe("Autoscanner launch failed " + handler2.result())
                 }
-            } else {
-                log.log(Level.SEVERE, "Communicator launch failed " + handler.result())
             }
         }
 
@@ -207,6 +221,9 @@ class Launcher(val cfg: Configuration) : AbstractVerticle() {
         super.stop()
         if (communicatorID.isNotEmpty()) {
             vertx.undeploy(communicatorID)
+        }
+        if(restpointID.isNotEmpty()){
+            vertx.undeploy(restpointID)
         }
         if (autoscannerID.isNotEmpty()) {
             vertx.eventBus().send<Any>(baseaddr + Autoscanner.ADDR_STOP, "") {

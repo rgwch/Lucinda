@@ -2,10 +2,14 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/elexis-docmgr-lucinda/ch.rgw.elexis.docmgr_lucinda.iml" filepath="$PROJECT_DIR$/elexis-docmgr-lucinda/ch.rgw.elexis.docmgr_lucinda.iml" />
       <module fileurl="file://$PROJECT_DIR$/elexis-docmgr-lucinda/docmgr-lucinda.iml" filepath="$PROJECT_DIR$/elexis-docmgr-lucinda/docmgr-lucinda.iml" />
+      <module fileurl="file://$PROJECT_DIR$/docmgr-lucinda-aggregator.iml" filepath="$PROJECT_DIR$/docmgr-lucinda-aggregator.iml" />
       <module fileurl="file://$PROJECT_DIR$/elexis-docmgr-lucinda-feature/docmgr-lucinda-feature.iml" filepath="$PROJECT_DIR$/elexis-docmgr-lucinda-feature/docmgr-lucinda-feature.iml" />
       <module fileurl="file://$PROJECT_DIR$/elexis-docmgr-lucinda-p2/elexis-docmgr-lucinda-p2.iml" filepath="$PROJECT_DIR$/elexis-docmgr-lucinda-p2/elexis-docmgr-lucinda-p2.iml" />
       <module fileurl="file://$PROJECT_DIR$/lucinda-client/lucinda-client.iml" filepath="$PROJECT_DIR$/lucinda-client/lucinda-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lucinda-client/lucinda-client.iml" filepath="$PROJECT_DIR$/lucinda-client/lucinda-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lucinda-server/lucinda-server.iml" filepath="$PROJECT_DIR$/lucinda-server/lucinda-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/lucinda-server/lucinda-server.iml" filepath="$PROJECT_DIR$/lucinda-server/lucinda-server.iml" />
     </modules>
   </component>
