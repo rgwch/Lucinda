@@ -6,6 +6,7 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.*;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.spi.cluster.hazelcast.HazelcastClusterManager;
 
@@ -129,7 +130,7 @@ public class Client {
                     }else{
                         handler.signal(make("status:error","message:"+response.statusMessage()));
                     }
-                }).write(queryPhrase).end();
+                }).end(queryPhrase);
             }else {
                 vertx.eventBus().send(prefix + ".find", new JsonObject().put("query", queryPhrase), result -> {
                     if (result.succeeded()) {
@@ -207,7 +208,7 @@ public class Client {
                         }else{
                             handler.signal(make("status:error","message:"+response.statusMessage()));
                         }
-                    });
+                    }).end(envelope.encode());
                 }else {
 
                     vertx.eventBus().send(prefix + ".index", envelope, result -> {
@@ -255,7 +256,7 @@ public class Client {
                         }else{
                             handler.signal(make("status:error","message:"+response.statusMessage()));
                         }
-                    });
+                    }).end(envelope.encode());
 
                 }else {
                     vertx.eventBus().send(prefix + ".import", envelope, result -> {

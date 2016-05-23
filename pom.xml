@@ -66,6 +66,8 @@
 		<!-- activate operating system dependent testing vm args -->
 	</profiles>
 <modules>
+  <module>lucinda-server</module>
+  <module>lucinda-client</module>
   <module>elexis-docmgr-lucinda</module>
   <module>elexis-docmgr-lucinda-feature</module>
   <module>elexis-docmgr-lucinda-p2</module>

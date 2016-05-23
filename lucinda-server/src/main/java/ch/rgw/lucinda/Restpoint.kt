@@ -58,7 +58,8 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
                     if(result.isEmpty){
                         ctx.response().setStatusCode(204).end()
                     }else {
-                        ctx.response().setStatusCode(200).putHeader("content-type", "application/json; charset=utf-8").end(Json.encode(result))
+                        val resp=JsonObject().put("status","ok").put("result",result)
+                        ctx.response().setStatusCode(200).putHeader("content-type", "application/json; charset=utf-8").end(Json.encode(resp))
                     }
                 } catch(ex: Exception) {
                     ctx.response().setStatusCode(400).end(ex.message)
@@ -73,8 +74,11 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
         router.get("/api/${APIVERSION}/get/:id").handler { ctx ->
             val id = ctx.request().getParam("id")
             val bytes = Buffer.buffer(dispatcher.get(id))
-            ctx.response().putHeader("content-type", "application/octet-stream")
-            ctx.response().end(bytes)
+            if(bytes==null){
+                ctx.response().setStatusCode(404).end();
+            }else {
+                ctx.response().putHeader("content-type", "application/octet-stream").setStatusCode(200).end(bytes)
+            }
         }
 
         /**

@@ -36,7 +36,7 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="Maven: p2.eclipse-plugin:ch.rgw.utility:3.2.0.a20160522-1414">
+      <library name="Maven: p2.eclipse-plugin:ch.rgw.utility:3.2.0.a20160521-0751">
         <CLASSES>
           <root url="jar://$MAVEN_REPOSITORY$/ch/elexis/ch.rgw.utility/3.2.0-SNAPSHOT/ch.rgw.utility-3.2.0-SNAPSHOT.jar!/" />
         </CLASSES>
@@ -54,9 +54,9 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="Maven: p2.eclipse-plugin:ch.elexis.core:3.2.0.a20160522-1414">
+      <library name="Maven: p2.eclipse-plugin:ch.elexis.core:3.2.0.a20160518-1328">
         <CLASSES>
-          <root url="jar://$MAVEN_REPOSITORY$/ch/elexis/ch.elexis.core/3.2.0-SNAPSHOT/ch.elexis.core-3.2.0-SNAPSHOT.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/p2/osgi/bundle/ch.elexis.core/3.2.0.a20160518-1328/ch.elexis.core-3.2.0.a20160518-1328.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -126,9 +126,9 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="Maven: p2.eclipse-plugin:ch.elexis.core.data:3.2.0.a20160522-1414">
+      <library name="Maven: p2.eclipse-plugin:ch.elexis.core.data:3.2.0.a20160518-1328">
         <CLASSES>
-          <root url="jar://$MAVEN_REPOSITORY$/ch/elexis/ch.elexis.core.data/3.2.0-SNAPSHOT/ch.elexis.core.data-3.2.0-SNAPSHOT.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/p2/osgi/bundle/ch.elexis.core.data/3.2.0.a20160518-1328/ch.elexis.core.data-3.2.0.a20160518-1328.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -225,7 +225,7 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="Maven: p2.eclipse-plugin:ch.elexis.core.ui.icons:3.2.0.a20160522-1414">
+      <library name="Maven: p2.eclipse-plugin:ch.elexis.core.ui.icons:3.2.0.a20160314-0709">
         <CLASSES>
           <root url="jar://$MAVEN_REPOSITORY$/ch/elexis/ch.elexis.core.ui.icons/3.2.0-SNAPSHOT/ch.elexis.core.ui.icons-3.2.0-SNAPSHOT.jar!/" />
         </CLASSES>
@@ -243,9 +243,9 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="Maven: p2.eclipse-plugin:ch.elexis.core.ui:3.2.0.a20160522-1414">
+      <library name="Maven: p2.eclipse-plugin:ch.elexis.core.ui:3.2.0.a20160520-0645">
         <CLASSES>
-          <root url="jar://$MAVEN_REPOSITORY$/ch/elexis/ch.elexis.core.ui/3.2.0-SNAPSHOT/ch.elexis.core.ui-3.2.0-SNAPSHOT.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/p2/osgi/bundle/ch.elexis.core.ui/3.2.0.a20160520-0645/ch.elexis.core.ui-3.2.0.a20160520-0645.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -279,7 +279,7 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="Maven: p2.eclipse-plugin:ch.rgw.elexis.docmgr_lucinda:1.0.0.a20160522-0932">
+      <library name="Maven: p2.eclipse-plugin:ch.rgw.elexis.docmgr_lucinda:1.0.0.a20160521-0948">
         <CLASSES>
           <root url="jar://$MAVEN_REPOSITORY$/ch/rgw/ch.rgw.elexis.docmgr_lucinda/1.0.0-SNAPSHOT/ch.rgw.elexis.docmgr_lucinda-1.0.0-SNAPSHOT.jar!/" />
         </CLASSES>
@@ -288,16 +288,16 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="Maven: p2.eclipse-plugin:ch.rgw.elexis.docmgr_lucinda:lib/lucinda-client-0.3.2.jar:1.0.0.a20160522-0932">
+      <library name="Maven: p2.eclipse-plugin:ch.rgw.elexis.docmgr_lucinda:lib/lucinda-client-0.3.1.jar:1.0.0.a20160521-0948">
         <CLASSES>
-          <root url="jar://$MAVEN_REPOSITORY$/.cache/tycho/ch.rgw.elexis.docmgr_lucinda-1.0.0-SNAPSHOT.jar/lib/lucinda-client-0.3.2.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/.cache/tycho/ch.rgw.elexis.docmgr_lucinda-1.0.0-SNAPSHOT.jar/lib/lucinda-client-0.3.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="Maven: p2.eclipse-feature:ch.rgw.elexis.docmgr-lucinda.feature:1.0.0.a20160522-0932">
+      <library name="Maven: p2.eclipse-feature:ch.rgw.elexis.docmgr-lucinda.feature:1.0.0.a20160521-0948">
         <CLASSES>
           <root url="jar://$MAVEN_REPOSITORY$/ch/rgw/ch.rgw.elexis.docmgr-lucinda.feature/1.0.0-SNAPSHOT/ch.rgw.elexis.docmgr-lucinda.feature-1.0.0-SNAPSHOT.jar!/" />
         </CLASSES>

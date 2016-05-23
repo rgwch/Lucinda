@@ -124,7 +124,8 @@ public class RestTest {
                 http.post("/api/1.0/query", retr -> {
                     Assert.assertEquals(200,retr.statusCode());
                     rsp.bodyHandler(buffer ->{
-                        JsonArray found=buffer.toJsonArray();
+                        JsonObject result=buffer.toJsonObject();
+                        JsonArray found=result.getJsonArray("result");
                         Assert.assertEquals(1,found.size());
                         JsonObject hit=found.getJsonObject(0);
                         Assert.assertEquals("baz",hit.getString("foo"));
@@ -139,7 +140,8 @@ public class RestTest {
         Async async=ctx.async();
         http.post("/api/1.0/query", response -> {
             response.bodyHandler(buffer -> {
-               JsonArray results=new JsonArray(buffer.toString());
+               JsonObject result=buffer.toJsonObject();
+                JsonArray results=result.getJsonArray("result");
                 Assert.assertEquals(1,results.size() );
                 async.complete();
             });

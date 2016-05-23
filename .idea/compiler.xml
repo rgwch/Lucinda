@@ -22,7 +22,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
-        <module name="ch.rgw.elexis.docmgr_lucinda" />
+        <module name="docmgr-lucinda" />
         <module name="docmgr-lucinda-feature" />
         <module name="elexis-docmgr-lucinda-p2" />
       </profile>
@@ -43,6 +43,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="ch.rgw.elexis.docmgr_lucinda" target="1.5" />
+      <module name="docmgr-lucinda" target="1.5" />
       <module name="docmgr-lucinda-aggregator" target="1.5" />
       <module name="docmgr-lucinda-feature" target="1.5" />
       <module name="elexis-docmgr-lucinda-p2" target="1.5" />
