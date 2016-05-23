@@ -106,7 +106,7 @@ public class Client {
             });
         } catch (Exception ex) {
             ex.printStackTrace();
-
+            messageHandler.signal(make("status:exception","message:"ex.getMessage()));
         }
     }
 

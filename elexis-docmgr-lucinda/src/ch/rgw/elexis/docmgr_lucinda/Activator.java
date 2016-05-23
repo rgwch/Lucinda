@@ -41,12 +41,14 @@ public class Activator extends AbstractUIPlugin {
 	private static Activator plugin;
 	private Client lucinda;
 	private boolean connected;
+	private boolean RestAPI=false;
 	private List<Handler> handlers = new ArrayList<>();
 	private ConsultationIndexer consultationIndexer=new ConsultationIndexer();
 	private OmnivoreIndexer omnivoreIndexer=new OmnivoreIndexer();
 	private List<Document> messages=new LinkedList<>();
 
 	private IProgressController progressController;
+
 	
 	/**
 	 * The constructor
@@ -95,18 +97,23 @@ public class Activator extends AbstractUIPlugin {
 						syncOmnivore(true);
 					}
 					break;
+				case "REST ok":
+					connected=true;
+					RestAPI=true;
+					break;
 				case "disconnected":
 					connected = false;
 					break;
 				case "failure":
 					SWTHelper.showInfo("Lucinda", (String) result.get("message"));
+					break;
 				case "error":
 					SWTHelper.showError("Lucinda", "Lucinda Fehler",
 						"Meldung vom Server: " + result.get("message"));
-						
+					break;	
 				default:
 					SWTHelper.showError("Lucinda", "Lucinda",
-						"Unerwartete Antwort von Lucinda: " + result.get("message"));
+						"Unerwartete Antwort von Lucinda: " + result.get("status")+", "+result.get("message"));
 				}
 				for (Handler handler : handlers) {
 					handler.signal(result);
@@ -151,6 +158,9 @@ public class Activator extends AbstractUIPlugin {
 		}
 	}
 	
+	public boolean isRestAPI(){
+		return RestAPI;
+	}
 	public void addMessage(Document message){
 		messages.add(message);
 	}
