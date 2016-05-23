@@ -44,7 +44,9 @@ class Dispatcher(val cfg: Configuration, val vertx: Vertx) {
         val fname = parms.getString("filename")
         val concern = parms.getString("concern")
         val key = parms.getBinary("key")
-        val dir = cfg.get("fs_import", "target/store") + (if(concern!=null) {File.separator + concern} else "")
+        val dir = cfg.get("fs_import", "target/store") + (if (concern != null) {
+            File.separator + concern
+        } else "")
         return File(dir, fname)
     }
 
@@ -68,10 +70,10 @@ class Dispatcher(val cfg: Configuration, val vertx: Vertx) {
         requireNotNull(payload)
         val uuid = StringTool.byteArraytoHex(ch.rgw.crypt.makeHash(payload))
         parm.put("uuid", uuid)
-        val temp=File.createTempFile("__lucinda__","_addToIndex_")
+        val temp = File.createTempFile("__lucinda__", "_addToIndex_")
         temp.deleteOnExit()
-        FileTool.writeFile(temp,payload)
-        vertx.executeBlocking<Int>(FileImporter(Paths.get(temp.absolutePath), parm), object: Handler<AsyncResult<Int>>{
+        FileTool.writeFile(temp, payload)
+        vertx.executeBlocking<Int>(FileImporter(Paths.get(temp.absolutePath), parm), object : Handler<AsyncResult<Int>> {
             override fun handle(result: AsyncResult<Int>) {
                 temp.delete()
                 handler.handle(result);
@@ -91,12 +93,12 @@ class Dispatcher(val cfg: Configuration, val vertx: Vertx) {
      *      </ul>
 
      */
-    fun indexAndStore(parms: JsonObject, handler: Handler<AsyncResult<Int>>)  {
+    fun indexAndStore(parms: JsonObject, handler: Handler<AsyncResult<Int>>) {
         requireNotNull(parms.getBinary("payload"))
         requireNotNull(parms.getString("filename"))
         val output = makeDirPath(parms)
-        val dir=output.parentFile
-        if(!dir.exists()){
+        val dir = output.parentFile
+        if (!dir.exists()) {
             dir.mkdirs();
         }
         parms.put("url", output.absolutePath)
@@ -126,14 +128,16 @@ class Dispatcher(val cfg: Configuration, val vertx: Vertx) {
         return null;
     }
 
-    fun update(o: JsonObject){
+    fun update(o: JsonObject) {
         val doc: Document? = indexManager.getDocument(o.getString("_id"))
-        if(doc!=null){
+        if (doc != null) {
             o.map.forEach {
-                val f=doc.getField(it.key)
-                if(f!=null){
-                    doc.removeField(it.key)
-                    doc.add(TextField(it.key,it.value.toString(), Field.Store.YES))
+                if(it.key!="_id" && it.key!="payload") {
+                    val f = doc.getField(it.key)
+                    if (f != null) {
+                        doc.removeField(it.key)
+                    }
+                    doc.add(TextField(it.key, it.value.toString(), Field.Store.YES))
                 }
             }
             indexManager.updateDocument(doc)

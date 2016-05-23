@@ -35,7 +35,7 @@ import java.util.logging.Logger
  */
 class Restpoint(val cfg: Configuration) : AbstractVerticle() {
     val log = Logger.getLogger("Restpoint")
-    val APIVERSION="1.0"
+    val APIVERSION = "1.0"
 
     override fun start(future: Future<Void>) {
         super.start()
@@ -46,20 +46,30 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
             ctx.response().end("pong")
             log.info("we've got a ping!")
         }
+        /**
+         * find files
+         */
         router.post("/api/${APIVERSION}/query").handler { ctx ->
-            val j = ctx.bodyAsString
-            log.info("git REST " + j)
-            try {
-                val result = dispatcher.find(JsonObject().put("query", j))
-                ctx.response().putHeader("content-type", "application/json; charset=utf-8")
-                ctx.response().end(Json.encode(result))
-            } catch(ex: Exception) {
-                ctx.response().statusCode = 400;
-                ctx.response().end(ex.message)
+            ctx.request().bodyHandler { buffer ->
+                val j = buffer.toString()
+                log.info("got REST " + j)
+                try {
+                    val result = dispatcher.find(JsonObject().put("query", j))
+                    if(result.isEmpty){
+                        ctx.response().setStatusCode(204).end()
+                    }else {
+                        ctx.response().setStatusCode(200).putHeader("content-type", "application/json; charset=utf-8").end(Json.encode(result))
+                    }
+                } catch(ex: Exception) {
+                    ctx.response().setStatusCode(400).end(ex.message)
+                }
             }
 
         }
 
+        /**
+         * Retrieve a file by _id
+         */
         router.get("/api/${APIVERSION}/get/:id").handler { ctx ->
             val id = ctx.request().getParam("id")
             val bytes = Buffer.buffer(dispatcher.get(id))
@@ -67,54 +77,84 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
             ctx.response().end(bytes)
         }
 
+        /**
+         * Index a file without adding it to the store
+         */
         router.post("/api/${APIVERSION}/index").handler { ctx ->
-            val j = ctx.bodyAsJson
-            dispatcher.addToIndex(j, object : Handler<AsyncResult<Int>> {
-                override fun handle(result: AsyncResult<Int>) {
-                    if (result.succeeded()) {
-                        log.info("indexed ${j.getString("title")}")
-                        ctx.response().write(Json.encode(JsonObject().put("status", "ok").put("_id", j.getString("_id"))))
-                        ctx.response().putHeader("content-type", "application/json; charset=utf-8")
-                        ctx.response().statusCode = 200
-                        ctx.response().statusMessage = "content indexed"
-                        ctx.response().end();
-                    } else {
-                        log.warning("failed to import ${j.getString("url")}; ${result.cause().message}")
-                        ctx.response().write(Json.encode(JsonObject().put("status", "fail").put("_id", j.getString("_id")).put("message", result.cause().message)))
-                        ctx.response().statusCode = 500
-                        ctx.response().end()
-                    }
-                }
-
-            })
-        }
-
-        router.post("/api/${APIVERSION}/addfile").handler { ctx ->
-            if((ctx.body == null) or (ctx.body.length()<10)){
-                ctx.response().statusCode=200
-                ctx.response().end();
-            }else {
-                val s = ctx.bodyAsString
-                val j = JsonObject(s)
-                dispatcher.indexAndStore(j, object : Handler<AsyncResult<Int>> {
-                    override fun handle(result: AsyncResult<Int>) {
-                        if (result.succeeded()) {
-                            log.info("indexed ${j.getString("title")}")
-                            ctx.response().write(Json.encode(JsonObject().put("status", "ok").put("_id", j.getString("_id"))))
-                            ctx.response().putHeader("content-type", "application/json; charset=utf-8")
-                            ctx.response().statusCode = 201
-                            ctx.response().statusMessage = "content indexed and added"
-                            ctx.response().end();
-                        } else {
-                            log.warning("failed to import ${j.getString("url")}; ${result.cause().message}")
-                            ctx.response().write(Json.encode(JsonObject().put("status", "fail").put("_id", j.getString("_id")).put("message", result.cause().message)))
-                            ctx.response().statusCode = 500
-                            ctx.response().end()
+            ctx.request().bodyHandler { buffer ->
+                try {
+                    val j = buffer.toJsonObject()
+                    dispatcher.addToIndex(j, object : Handler<AsyncResult<Int>> {
+                        override fun handle(result: AsyncResult<Int>) {
+                            if (result.succeeded()) {
+                                log.info("indexed ${j.getString("title")}")
+                                ctx.response().statusCode = 200
+                                ctx.response().statusMessage = "content indexed"
+                                ctx.response().putHeader("content-type", "application/json; charset=utf-8")
+                                ctx.response().end(Json.encode(JsonObject().put("status", "ok").put("_id", j.getString("_id"))))
+                            } else {
+                                log.warning("failed to import ${j.getString("url")}; ${result.cause().message}")
+                                ctx.response().statusCode = 500
+                                ctx.response().end(Json.encode(JsonObject().put("status", "fail").put("_id", j.getString("_id")).put("message", result.cause().message)))
+                            }
                         }
 
-                    }
-                })
+                    })
+                } catch(e: Exception) {
+                    e.printStackTrace()
+                    log.severe("Exception while handling request " + e.message)
+                    ctx.response().setStatusCode(400).end("failed to import")
+                }
             }
+
+        }
+
+        /**
+         * Add a file t the index and to the store
+         */
+        router.post("/api/${APIVERSION}/addfile").handler { ctx ->
+            ctx.request().bodyHandler { buffer ->
+                try {
+                    val j = buffer.toJsonObject()
+                    dispatcher.indexAndStore(j, object : Handler<AsyncResult<Int>> {
+                        override fun handle(result: AsyncResult<Int>) {
+                            if (result.succeeded()) {
+                                log.info("indexed ${j.getString("title")}")
+                                ctx.response().putHeader("content-type", "application/json; charset=utf-8")
+                                ctx.response().statusCode = 201
+                                ctx.response().statusMessage = "content indexed and added"
+                                ctx.response().end(Json.encode(JsonObject().put("status", "ok").put("_id", j.getString("_id"))))
+                            } else {
+                                log.warning("failed to import ${j.getString("url")}; ${result.cause().message}")
+                                ctx.response().statusCode = 500
+                                ctx.response().end(Json.encode(JsonObject().put("status", "fail").put("_id", j.getString("_id")).put("message", result.cause().message)))
+                            }
+
+                        }
+                    })
+                } catch(e: Exception) {
+                    e.printStackTrace()
+                    log.severe("Exception while handling request " + e.message)
+                    ctx.response().setStatusCode(400).end("failed to import")
+                }
+            }
+        }
+
+        router.post("/api/${APIVERSION}/update").handler { ctx ->
+            ctx.request().bodyHandler { buffer ->
+                try {
+                    dispatcher.update(buffer.toJsonObject())
+                    ctx.response().statusCode = 202
+                    ctx.response().statusMessage = "update ok"
+                    ctx.response().end()
+                } catch(e: Exception) {
+                    log.warning("update failed ${buffer.toString()}; ${e.message}")
+                    ctx.response().setStatusCode(417).end()
+
+                }
+
+            }
+
         }
 
         vertx.createHttpServer()
@@ -128,5 +168,6 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
                     }
                 }
     }
+
 
 }

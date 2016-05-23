@@ -12,6 +12,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import net.didion.jwnl.data.Exc;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
@@ -57,33 +58,93 @@ public class RestTest {
     }
 
     @Test
-    public void testParse(TestContext ctx) throws Exception {
+    public void testAddFile(TestContext ctx) throws Exception {
         File file = new File("target/test-classes/test.odt");
         //System.out.print(file.getAbsolutePath());
         byte[] cnt= FileTool.readFile(file);
         Async async=ctx.async();
         HttpClientRequest hcr=http.post("/api/1.0/addfile", response -> {
+            Assert.assertEquals(201,response.statusCode());
+            retrieve(ctx);
+            Async async2=ctx.async();
+            http.getNow("/api/1.0/get/1234567890", rsp -> {
+                rsp.bodyHandler(buffer ->{
+                    byte[] check=buffer.getBytes();
+                    Assert.assertArrayEquals(check,cnt);
+                    async2.complete();
+                });
+            });
             async.complete();
         });
         JsonObject jo=new JsonObject()
                 .put("_id","1234567890")
                 .put("title","odttest")
+                .put("filename","test.odt")
                 .put("payload",cnt);
         hcr.putHeader("content-type","application/json; charset=utf-8");
         hcr.end(Json.encode(jo));
-
-      /*
-        file = new File("target/test-classes/test.pdf");
-        fis = new FileInputStream(file);
-        indexManager.addDocument(fis, new JsonObject().put("uri", file.getAbsolutePath()).put("_id","2"));
-        fis.close();
-        JsonArray res = indexManager.queryDocuments("lorem", 10);
-        */
-       /*
-        for (Object doc : res) {
-            System.out.print(Json.encodePrettily(doc));
-        }
-        */
     }
 
+    @Test
+    public void testIndexFile(TestContext ctx) throws Exception{
+        File file = new File("target/test-classes/test.pdf");
+        byte[] cnt= FileTool.readFile(file);
+        Async async=ctx.async();
+        HttpClientRequest hcr=http.post("/api/1.0/index", response -> {
+            Assert.assertEquals(200,response.statusCode());
+            retrieve(ctx);
+            async.complete();
+        });
+        JsonObject jo=new JsonObject()
+            .put("_id","1234567890")
+            .put("title","pdftest")
+            .put("filename","test.pdf")
+            .put("payload",cnt);
+        hcr.putHeader("content-type","application/json; charset=utf-8");
+        hcr.end(Json.encode(jo));
+    }
+
+    @Test
+    public void testUpdate(TestContext ctx){
+        byte[] cnt={1,2,3,4,5,6,7,8,9,10};
+        JsonObject jo=new JsonObject()
+            .put("payload",cnt)
+            .put("_id","1234")
+            .put("foo","bar");
+        Async async=ctx.async();
+        http.post("/api/1.0/index", response -> {
+            Assert.assertEquals(200,response.statusCode());
+            Async async2=ctx.async();
+            async.complete();
+            jo.put("foo","baz").put("hello","world");
+            http.post("/api/1.0/update", rsp -> {
+                Assert.assertEquals(202,rsp.statusCode());
+                Async async3=ctx.async();
+                async2.complete();
+                http.post("/api/1.0/query", retr -> {
+                    Assert.assertEquals(200,retr.statusCode());
+                    rsp.bodyHandler(buffer ->{
+                        JsonArray found=buffer.toJsonArray();
+                        Assert.assertEquals(1,found.size());
+                        JsonObject hit=found.getJsonObject(0);
+                        Assert.assertEquals("baz",hit.getString("foo"));
+                        async3.complete();
+                    });
+                }).putHeader("content-type","text/plain").end("hello:world");
+            }).putHeader("content-type","application/json").end(jo.encode());
+        }).putHeader("content-type","application/json; charset=utf-8").end(jo.encode());
+    }
+
+    private void retrieve(TestContext ctx){
+        Async async=ctx.async();
+        http.post("/api/1.0/query", response -> {
+            response.bodyHandler(buffer -> {
+               JsonArray results=new JsonArray(buffer.toString());
+                Assert.assertEquals(1,results.size() );
+                async.complete();
+            });
+        }).putHeader("content-type","text/plain; charset=utf-8")
+            .end("lorem");
+
+    }
 }

@@ -17,6 +17,7 @@ import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import org.junit.AfterClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -36,7 +37,7 @@ public class TestParse {
 
     }
 
-    @Test
+    @Test @Ignore
     public void testParse() throws Exception {
         File file = new File("target/test-classes/test.odt");
         //System.out.print(file.getAbsolutePath());
