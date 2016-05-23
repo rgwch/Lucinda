@@ -90,25 +90,31 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
         }
 
         router.post("/api/${APIVERSION}/addfile").handler { ctx ->
-            val j = ctx.bodyAsJson
-            dispatcher.indexAndStore(j, object : Handler<AsyncResult<Int>> {
-                override fun handle(result: AsyncResult<Int>) {
-                    if (result.succeeded()) {
-                        log.info("indexed ${j.getString("title")}")
-                        ctx.response().write(Json.encode(JsonObject().put("status", "ok").put("_id", j.getString("_id"))))
-                        ctx.response().putHeader("content-type", "application/json; charset=utf-8")
-                        ctx.response().statusCode = 201
-                        ctx.response().statusMessage = "content indexed and added"
-                        ctx.response().end();
-                    } else {
-                        log.warning("failed to import ${j.getString("url")}; ${result.cause().message}")
-                        ctx.response().write(Json.encode(JsonObject().put("status", "fail").put("_id", j.getString("_id")).put("message", result.cause().message)))
-                        ctx.response().statusCode = 500
-                        ctx.response().end()
-                    }
+            if((ctx.body == null) or (ctx.body.length()<10)){
+                ctx.response().statusCode=200
+                ctx.response().end();
+            }else {
+                val s = ctx.bodyAsString
+                val j = JsonObject(s)
+                dispatcher.indexAndStore(j, object : Handler<AsyncResult<Int>> {
+                    override fun handle(result: AsyncResult<Int>) {
+                        if (result.succeeded()) {
+                            log.info("indexed ${j.getString("title")}")
+                            ctx.response().write(Json.encode(JsonObject().put("status", "ok").put("_id", j.getString("_id"))))
+                            ctx.response().putHeader("content-type", "application/json; charset=utf-8")
+                            ctx.response().statusCode = 201
+                            ctx.response().statusMessage = "content indexed and added"
+                            ctx.response().end();
+                        } else {
+                            log.warning("failed to import ${j.getString("url")}; ${result.cause().message}")
+                            ctx.response().write(Json.encode(JsonObject().put("status", "fail").put("_id", j.getString("_id")).put("message", result.cause().message)))
+                            ctx.response().statusCode = 500
+                            ctx.response().end()
+                        }
 
-                }
-            })
+                    }
+                })
+            }
         }
 
         vertx.createHttpServer()
