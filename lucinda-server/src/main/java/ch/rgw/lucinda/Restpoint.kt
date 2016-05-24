@@ -20,6 +20,7 @@ import io.vertx.core.AsyncResult
 import io.vertx.core.Future
 import io.vertx.core.Handler
 import io.vertx.core.buffer.Buffer
+import io.vertx.core.http.HttpServerOptions
 import io.vertx.core.json.Json
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
@@ -161,7 +162,8 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
 
         }
 
-        vertx.createHttpServer()
+        val hso=HttpServerOptions().setCompressionSupported(true).setIdleTimeout(0).setTcpKeepAlive(true)
+        vertx.createHttpServer(hso)
                 .requestHandler { request -> router.accept(request) }
                 .listen(cfg.get("rest_port", "2016").toInt()) {
                     result ->
