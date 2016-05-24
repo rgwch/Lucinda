@@ -19,7 +19,7 @@
             <phase>process-resources</phase>
             <configuration>
               <tasks>
-              <copy file="../lucinda-client/target/lucinda-client-0.4.0-SNAPSHOT.jar" todir="lib"/>
+              <copy file="../lucinda-client/target/lucinda-client-0.4.1-SNAPSHOT.jar" todir="lib"/>
               </tasks>
             </configuration>
             <goals>
