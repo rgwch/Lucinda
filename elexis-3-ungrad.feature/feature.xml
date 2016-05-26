@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="ch.rgw.elexis.ungrad"
+      label="Elexis drü komma ungrad"
+      version="3.2.0.qualifier"
+      provider-name="G. Weirich">
+
+   <description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <includes
+         id="ch.elexis.core.application.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="ch.elexis.omnivore.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="com.jsigle.noatext_jsl.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="ch.elexis.agenda.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="ch.rgw.elexis.docmgr-lucinda.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="ch.elexis.base.ch.feature"
+         version="0.0.0"/>
+
+</feature>
