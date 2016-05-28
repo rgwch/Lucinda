@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
 import ch.elexis.core.ui.icons.Images;
+import ch.rgw.elexis.docmgr_lucinda.Activator;
 import ch.rgw.elexis.docmgr_lucinda.controller.DocumentSorter;
 
 public class Master extends Composite {
@@ -219,8 +220,16 @@ public class Master extends Composite {
 			@Override
 			public void run(){
 				if (bConnected) {
+					StringBuilder sb=new StringBuilder("Verbunden mit Lucinda Server (");
+					if(Activator.getDefault().isBusAPI()){
+						sb.append("EventBus ");
+					}
+					if(Activator.getDefault().isRestAPI()){
+						sb.append("REST");
+					}
+					sb.append("). Click um die Verbindung zu erneuern");
 					lblConnection.setImage(Images.IMG_BULLET_GREEN.getImage());
-					lblConnection.setToolTipText("Verbunden mit Lucinda Server. Click um die Verbindung zu trennen");
+					lblConnection.setToolTipText(sb.toString());
 				} else {
 					lblConnection.setImage(Images.IMG_BULLET_RED.getImage());
 					lblConnection.setToolTipText("Warte auf Verbindung...");

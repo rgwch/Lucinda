@@ -52,6 +52,7 @@ public class Client {
      */
     public void connect(final String server_ip, final int port, final Handler handler) {
         vertx = Vertx.vertx();
+        messageHandler=handler;
         HttpClientOptions hop = new HttpClientOptions().setDefaultHost(server_ip)
                 .setDefaultPort(port).setTryUseCompression(true)
                 .setKeepAlive(true).setIdleTimeout(300);
@@ -64,10 +65,10 @@ public class Client {
                     preferREST = true;
                 }
             });
-        }).setTimeout(2000L).exceptionHandler(exception -> {
+        }).setTimeout(10000L).exceptionHandler(exception -> {
             log.severe("REST failure " + exception.getMessage());
             exception.printStackTrace();
-            handler.signal(make("status:failure", "message:" + exception.getMessage()));
+            messageHandler.signal(make("status:failure", "message:" + exception.getMessage()));
         });
         htr.end();
     }

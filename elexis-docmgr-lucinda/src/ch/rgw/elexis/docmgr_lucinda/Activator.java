@@ -42,6 +42,7 @@ public class Activator extends AbstractUIPlugin {
 	private Client lucinda;
 	private boolean connected;
 	private boolean RestAPI = false;
+	private boolean BusApi=false;
 	private List<Handler> handlers = new ArrayList<>();
 	private ConsultationIndexer consultationIndexer = new ConsultationIndexer();
 	private OmnivoreIndexer omnivoreIndexer = new OmnivoreIndexer();
@@ -91,7 +92,7 @@ public class Activator extends AbstractUIPlugin {
 	public void connectRest() {
 		if (!connected) {
 			String server = Preferences.get(Preferences.SERVER_ADDR, "127.0.0.1");
-			int port = Integer.parseInt(Preferences.get(Preferences.SERVER_PORT, "80"));
+			int port = Integer.parseInt(Preferences.get(Preferences.SERVER_PORT, "2016"));
 			lucinda.connect(server, port, result -> {
 				switch ((String) result.get("status")) {
 
@@ -106,6 +107,10 @@ public class Activator extends AbstractUIPlugin {
 					}
 			
 					break;
+				case "disconnected":
+					connected=false;
+					RestAPI=false;
+					break;
 				case "failure":
 					SWTHelper.showInfo("Lucinda", (String) result.get("message"));
 					break;
@@ -117,6 +122,10 @@ public class Activator extends AbstractUIPlugin {
 					SWTHelper.showError("Lucinda", "Lucinda",
 							"Unerwartete Antwort von Lucinda: " + result.get("status") + ", " + result.get("message"));
 				}
+				for (Handler handler : handlers) {
+					handler.signal(result);
+				}
+
 			});
 		}
 	}
@@ -130,6 +139,7 @@ public class Activator extends AbstractUIPlugin {
 				switch ((String) result.get("status")) {
 				case "connected":
 					connected = true;
+					BusApi=true;
 					if (Preferences.get(Preferences.INCLUDE_KONS, "0").equals("1")) {
 						syncKons(true);
 					}
@@ -201,6 +211,9 @@ public class Activator extends AbstractUIPlugin {
 		return RestAPI;
 	}
 
+	public boolean isBusAPI(){
+		return BusApi;
+	}
 	public void addMessage(Document message) {
 		messages.add(message);
 	}
