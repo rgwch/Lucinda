@@ -27,12 +27,12 @@
     </modules>
     <repositories>
         <repository>
-            <id>elexis.3.core.${repo_variant}</id>
+            <id>elexis-core</id>
             <url>http://download.elexis.info/elexis.3.core/${repo_variant}/</url>
             <layout>p2</layout>
         </repository>
         <repository>
-            <id>elexis.3.base.${repo_variant}</id>
+            <id>elexis-base</id>
             <url>http://download.elexis.info/elexis.3.base/${repo_variant}/</url>
             <layout>p2</layout>
         </repository>
@@ -136,6 +136,7 @@
             <plugin>
                 <groupId>org.eclipse.tycho</groupId>
                 <artifactId>tycho-source-plugin</artifactId>
+                <version>${tycho-version}</version>
                 <executions>
                     <execution>
                         <id>plugin-source</id>
