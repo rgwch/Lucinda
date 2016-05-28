@@ -24,6 +24,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ProgressBar;
+import org.eclipse.swt.widgets.Text;
 
 import ch.rgw.elexis.docmgr_lucinda.controller.Controller;
 import ch.rgw.elexis.docmgr_lucinda.model.Document;
@@ -108,8 +109,8 @@ public class GlobalViewPane extends Composite {
 		master.setConnected(bConnected);
 	}
 
-	public String getText() {
-		return master.getText();
+	public Text getSearchField() {
+		return master.getSearchField();
 	}
 
 	@Override

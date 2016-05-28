@@ -26,6 +26,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.spi.cluster.hazelcast.HazelcastClusterManager;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -167,6 +168,9 @@ public class Client {
                         JsonObject result = buffer.toJsonObject();
                         handler.signal(result.getMap());
                     });
+                } else if(response.statusCode()==204){ // Empty result
+                    Map result=add(make("status:ok"),"result",new ArrayList());
+                    handler.signal(result);
                 } else {
                     handler.signal(make("status:error", "message:" + response.statusMessage()));
                 }

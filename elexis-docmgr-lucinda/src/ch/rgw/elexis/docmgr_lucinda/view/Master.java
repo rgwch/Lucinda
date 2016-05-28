@@ -242,8 +242,8 @@ public class Master extends Composite {
 		});
 	}
 	
-	public String getText(){
-		return text.getText();
+	public Text getSearchField(){
+		return text;
 	}
 	@Override
 	protected void checkSubclass(){

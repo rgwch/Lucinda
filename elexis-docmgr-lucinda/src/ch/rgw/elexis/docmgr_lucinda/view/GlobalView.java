@@ -23,6 +23,9 @@ import org.eclipse.ui.part.ViewPart;
 
 import ch.elexis.admin.AccessControlDefaults;
 import ch.elexis.core.data.events.ElexisEvent;
+import ch.elexis.core.data.events.ElexisEventDispatcher;
+import ch.elexis.core.ui.actions.GlobalEventDispatcher;
+import ch.elexis.core.ui.actions.IActivationListener;
 import ch.elexis.core.ui.actions.RestrictedAction;
 import ch.elexis.core.ui.events.ElexisUiEventListenerImpl;
 import ch.elexis.core.ui.icons.Images;
@@ -30,9 +33,8 @@ import ch.elexis.data.Patient;
 import ch.rgw.elexis.docmgr_lucinda.Activator;
 import ch.rgw.elexis.docmgr_lucinda.Preferences;
 import ch.rgw.elexis.docmgr_lucinda.controller.Controller;
-import ch.rgw.tools.TimeTool;
 
-public class GlobalView extends ViewPart {
+public class GlobalView extends ViewPart implements IActivationListener {
 
 	private Controller controller;
 	private Action doubleClickAction, filterCurrentPatAction, showInboxAction, showConsAction, showOmnivoreAction;
@@ -43,11 +45,7 @@ public class GlobalView extends ViewPart {
 
 		@Override
 		public void run(ElexisEvent ev) {
-			Patient pat = (Patient) ev.getObject();
-			StringBuilder qs = new StringBuilder().append("+lastname:").append(pat.getName()).append(" +firstname:")
-					.append(pat.getVorname()).append(" +birthdate:")
-					.append(new TimeTool(pat.getGeburtsdatum()).toString(TimeTool.DATE_COMPACT));
-			controller.runQuery(qs.toString());
+			controller.changePatient((Patient) ev.getObject());
 		}
 
 	};
@@ -61,6 +59,16 @@ public class GlobalView extends ViewPart {
 		makeActions();
 		controller.createView(parent);
 		contributeToActionBars();
+		GlobalEventDispatcher.addActivationListener(this, this);
+	}
+
+	public void visible(final boolean mode) {
+		controller.reload();
+		if (mode) {
+			ElexisEventDispatcher.getInstance().addListeners(eeli_pat);
+		} else {
+			ElexisEventDispatcher.getInstance().removeListeners(eeli_pat);
+		}
 	}
 
 	@Override
@@ -75,17 +83,18 @@ public class GlobalView extends ViewPart {
 		fillLocalToolBar(bars.getToolBarManager());
 	}
 
-	private void fillLocalToolBar(IToolBarManager manager){
+	private void fillLocalToolBar(IToolBarManager manager) {
 		manager.add(filterCurrentPatAction);
 		manager.add(showInboxAction);
 		manager.add(showConsAction);
 		manager.add(showOmnivoreAction);
 	}
+
 	private void fillLocalPullDown(IMenuManager manager) {
 		manager.add(indexOmnivoreAction);
 		manager.add(indexKonsAction);
 		manager.add(filterCurrentPatAction);
-		
+
 	}
 
 	private void makeActions() {
@@ -102,10 +111,10 @@ public class GlobalView extends ViewPart {
 				Preferences.set(Preferences.INCLUDE_OMNI, isChecked() ? "1" : "0");
 			}
 		};
-		if(Preferences.get(Preferences.INCLUDE_OMNI, "0").equals("1")){
+		if (Preferences.get(Preferences.INCLUDE_OMNI, "0").equals("1")) {
 			indexOmnivoreAction.setChecked(true);
 		}
-		
+
 		indexKonsAction = new RestrictedAction(AccessControlDefaults.DOCUMENT_CREATE, "Synchronisiere Kons",
 				Action.AS_CHECK_BOX) {
 			{
@@ -123,7 +132,7 @@ public class GlobalView extends ViewPart {
 			indexKonsAction.setChecked(true);
 		}
 
-		filterCurrentPatAction=new Action("Aktueller Patient",Action.AS_CHECK_BOX){
+		filterCurrentPatAction = new Action("Aktueller Patient", Action.AS_CHECK_BOX) {
 			{
 				setToolTipText("Nur Treffer für den aktuellen patienten anzeigen");
 				setImageDescriptor(Images.IMG_FILTER.getImageDescriptor());
@@ -134,35 +143,44 @@ public class GlobalView extends ViewPart {
 				controller.restrictToCurrentPatient(isChecked());
 			}
 		};
-		showConsAction=new Action("Kons",Action.AS_CHECK_BOX){
+		showConsAction = new Action("Kons", Action.AS_CHECK_BOX) {
 			{
 				setToolTipText("Konsultationstexte weglassen");
 			}
+
 			@Override
-			public void run(){
+			public void run() {
 				controller.toggleDoctypeFilter(isChecked(), "Konsultation");
 			}
 		};
-		showOmnivoreAction=new Action("Omni",Action.AS_CHECK_BOX){
+		showOmnivoreAction = new Action("Omni", Action.AS_CHECK_BOX) {
 			{
 				setToolTipText("Omnivore Dokumente weglassen");
 			}
+
 			@Override
-			public void run(){
+			public void run() {
 				controller.toggleDoctypeFilter(isChecked(), "Omnivore");
 			}
-	
+
 		};
-		showInboxAction=new Action("Inbox",Action.AS_CHECK_BOX){
+		showInboxAction = new Action("Inbox", Action.AS_CHECK_BOX) {
 			{
 				setToolTipText("Inbox Dokumente weglassen");
 			}
+
 			@Override
-			public void run(){
+			public void run() {
 				controller.toggleDoctypeFilter(isChecked(), "Inbox");
 			}
-	
+
 		};
+	}
+
+	@Override
+	public void activation(boolean mode) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

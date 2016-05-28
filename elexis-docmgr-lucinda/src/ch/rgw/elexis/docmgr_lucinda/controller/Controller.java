@@ -30,6 +30,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Text;
 
 import ch.elexis.core.data.events.ElexisEventDispatcher;
 import ch.elexis.core.ui.util.SWTHelper;
@@ -114,9 +115,12 @@ public class Controller implements Handler, IProgressController {
 	
 	public void restrictToCurrentPatient(boolean bRestrict){
 		bRestrictCurrentPatient=bRestrict;
-		runQuery(view.getText());
+		runQuery(view.getSearchField().getText());
 	}
 	
+	public void reload(){
+		runQuery(view.getSearchField().getText());
+	}
 	/**
 	 * Send a query to the lucinda server.
 	 * @param input Query String
@@ -257,5 +261,15 @@ public class Controller implements Handler, IProgressController {
 		}
 		viewer.refresh();
 	}
-	
+
+	public void changePatient(Patient object) {
+		if(bRestrictCurrentPatient){
+			Text text=view.getSearchField();
+			String q=text.getText();
+			if(q.isEmpty()){
+				text.setText("*:*");
+			}
+			runQuery(q);
+		}
+	}
 }
