@@ -33,55 +33,95 @@ import ch.rgw.lucinda.Handler;
  * The activator class controls the plug-in life cycle
  */
 public class Activator extends AbstractUIPlugin {
-	
+
 	// The plug-in ID
 	public static final String PLUGIN_ID = "ch.rgw.elexis.docmgr-lucinda"; //$NON-NLS-1$
-	
+
 	// The shared instance
 	private static Activator plugin;
 	private Client lucinda;
 	private boolean connected;
-	private boolean RestAPI=false;
+	private boolean RestAPI = false;
 	private List<Handler> handlers = new ArrayList<>();
-	private ConsultationIndexer consultationIndexer=new ConsultationIndexer();
-	private OmnivoreIndexer omnivoreIndexer=new OmnivoreIndexer();
-	private List<Document> messages=new LinkedList<>();
+	private ConsultationIndexer consultationIndexer = new ConsultationIndexer();
+	private OmnivoreIndexer omnivoreIndexer = new OmnivoreIndexer();
+	private List<Document> messages = new LinkedList<>();
 
 	private IProgressController progressController;
 
-	
 	/**
 	 * The constructor
 	 */
-	public Activator(){}
-	
-	public Client getLucinda(){
+	public Activator() {
+	}
+
+	public Client getLucinda() {
 		return lucinda;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.
 	 * BundleContext)
 	 */
-	public void start(BundleContext context) throws Exception{
+	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
 		lucinda = new Client();
 		connect();
 	}
-	
-	public void addHandler(Handler handler){
+
+	public void connect() {
+		if(Preferences.get(Preferences.SERVER_ADDR, "")!=""){
+			connectRest();
+		}else{
+			connectBus();
+		}
+	}
+
+	public void addHandler(Handler handler) {
 		handlers.add(handler);
 	}
-	
-	public void removeHandler(Handler handler){
+
+	public void removeHandler(Handler handler) {
 		handlers.remove(handler);
 	}
-	
-		
-	public void connect(){
+
+	public void connectRest() {
+		if (!connected) {
+			String server = Preferences.get(Preferences.SERVER_ADDR, "127.0.0.1");
+			int port = Integer.parseInt(Preferences.get(Preferences.SERVER_PORT, "80"));
+			lucinda.connect(server, port, result -> {
+				switch ((String) result.get("status")) {
+
+				case "connected":
+					connected = true;
+					RestAPI = true;
+					if (Preferences.get(Preferences.INCLUDE_KONS, "0").equals("1")) {
+						syncKons(true);
+					}
+					if (Preferences.get(Preferences.INCLUDE_OMNI, "0").equals("1")) {
+						syncOmnivore(true);
+					}
+			
+					break;
+				case "failure":
+					SWTHelper.showInfo("Lucinda", (String) result.get("message"));
+					break;
+				case "error":
+					SWTHelper.showError("Lucinda", "Lucinda Fehler", "Meldung vom Server: " + result.get("message"));
+					break;
+			
+				default:
+					SWTHelper.showError("Lucinda", "Lucinda",
+							"Unerwartete Antwort von Lucinda: " + result.get("status") + ", " + result.get("message"));
+				}
+			});
+		}
+	}
+
+	public void connectBus() {
 		if (!connected) {
 			String prefix = Preferences.get(Preferences.MSG, "ch.rgw.lucinda");
 			String network = Preferences.get(Preferences.NETWORK, "");
@@ -90,16 +130,16 @@ public class Activator extends AbstractUIPlugin {
 				switch ((String) result.get("status")) {
 				case "connected":
 					connected = true;
-					if(Preferences.get(Preferences.INCLUDE_KONS, "0").equals("1")){
+					if (Preferences.get(Preferences.INCLUDE_KONS, "0").equals("1")) {
 						syncKons(true);
 					}
-					if(Preferences.get(Preferences.INCLUDE_OMNI,"0").equals("1")){
+					if (Preferences.get(Preferences.INCLUDE_OMNI, "0").equals("1")) {
 						syncOmnivore(true);
 					}
 					break;
 				case "REST ok":
-					connected=true;
-					RestAPI=true;
+					connected = true;
+					RestAPI = true;
 					break;
 				case "disconnected":
 					connected = false;
@@ -108,22 +148,21 @@ public class Activator extends AbstractUIPlugin {
 					SWTHelper.showInfo("Lucinda", (String) result.get("message"));
 					break;
 				case "error":
-					SWTHelper.showError("Lucinda", "Lucinda Fehler",
-						"Meldung vom Server: " + result.get("message"));
-					break;	
+					SWTHelper.showError("Lucinda", "Lucinda Fehler", "Meldung vom Server: " + result.get("message"));
+					break;
 				default:
 					SWTHelper.showError("Lucinda", "Lucinda",
-						"Unerwartete Antwort von Lucinda: " + result.get("status")+", "+result.get("message"));
+							"Unerwartete Antwort von Lucinda: " + result.get("status") + ", " + result.get("message"));
 				}
 				for (Handler handler : handlers) {
 					handler.signal(result);
 				}
-				
+
 			});
 		}
 	}
-	
-	public void disconnect(){
+
+	public void disconnect() {
 		if (connected) {
 			connected = false;
 			if (lucinda != null) {
@@ -131,58 +170,60 @@ public class Activator extends AbstractUIPlugin {
 			}
 		}
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.
 	 * BundleContext)
 	 */
-	public void stop(BundleContext context) throws Exception{
+	public void stop(BundleContext context) throws Exception {
 		disconnect();
 		plugin = null;
 		super.stop(context);
 	}
-	
-	public void syncKons(boolean doSync){
+
+	public void syncKons(boolean doSync) {
 		consultationIndexer.setActive(doSync);
-		if(doSync){
+		if (doSync) {
 			consultationIndexer.start(progressController);
 		}
 	}
-	
-	public void syncOmnivore(boolean doSync){
+
+	public void syncOmnivore(boolean doSync) {
 		omnivoreIndexer.setActive(doSync);
-		if(doSync){
+		if (doSync) {
 			omnivoreIndexer.start(progressController);
 		}
 	}
-	
-	public boolean isRestAPI(){
+
+	public boolean isRestAPI() {
 		return RestAPI;
 	}
-	public void addMessage(Document message){
+
+	public void addMessage(Document message) {
 		messages.add(message);
 	}
-	
-	public void addMessages(List<Document> messages){
+
+	public void addMessages(List<Document> messages) {
 		this.messages.addAll(messages);
 	}
-	
-	public List<Document> getMessages(){
+
+	public List<Document> getMessages() {
 		return messages;
 	}
+
 	/**
 	 * Returns the shared instance
 	 *
 	 * @return the shared instance
 	 */
-	public static Activator getDefault(){
+	public static Activator getDefault() {
 		return plugin;
 	}
 
 	public void setProgressController(IProgressController controller) {
 		progressController = controller;
 	}
-	
+
 }

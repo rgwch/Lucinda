@@ -44,6 +44,12 @@ public class Client {
     private Logger log = Logger.getLogger("Lucinda Client");
     private HttpClient http;
 
+    /**
+     * Connect to a Lucinda Server (REST only. Server address provided)
+     * @param server_ip Address of the server
+     * @param port Port to connect
+     * @param handler The handler to call for lucinda related messages
+     */
     public void connect(final String server_ip, final int port, final Handler handler) {
         vertx = Vertx.vertx();
         HttpClientOptions hop = new HttpClientOptions().setDefaultHost(server_ip)
@@ -53,7 +59,7 @@ public class Client {
         HttpClientRequest htr = http.request(HttpMethod.GET, api + "ping", response -> {
             response.bodyHandler(buffer -> {
                 if (buffer.toString().equals("pong")) {
-                    messageHandler.signal(make("status:REST ok"));
+                    messageHandler.signal(make("status:connected"));
                     log.info("Rest API ok");
                     preferREST = true;
                 }
@@ -68,7 +74,7 @@ public class Client {
 
 
     /**
-     * Connect to a lucinda server
+     * Connect to a lucinda server (EventBus and REST. Auto discover Server)
      *
      * @param prefix  The message prefix to use. This must macth the prefix of the desired server. If in doubt, use 'null'
      * @param netmask The Network to use, e.g. 192.168.0.*
@@ -127,7 +133,7 @@ public class Client {
                                 });
                                 htr.end();
                             }
-                            messageHandler.signal(make("status:eventBusConnected"));
+                            messageHandler.signal(make("status:connected"));
                         } else {
                             log.warning("ping failed");
                             messageHandler.signal(make("status:failure", "message:" + "ping fail " + msg.cause().getMessage()));

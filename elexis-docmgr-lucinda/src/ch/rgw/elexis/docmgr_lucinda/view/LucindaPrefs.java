@@ -26,35 +26,29 @@ import ch.rgw.elexis.docmgr_lucinda.Activator;
 import ch.rgw.elexis.docmgr_lucinda.Preferences;
 
 public class LucindaPrefs extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
-	
-	public LucindaPrefs(){
+
+	public LucindaPrefs() {
 		super(GRID);
 		setPreferenceStore(new SettingsPreferenceStore(CoreHub.localCfg));
 		setDescription("Lucinda Client");
 	}
-	
+
 	@Override
-	public void init(IWorkbench workbench){
+	public void init(IWorkbench workbench) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 	@Override
-	protected void createFieldEditors(){
+	protected void createFieldEditors() {
 		addField(new StringFieldEditor(Preferences.NETWORK, "Netmask", getFieldEditorParent()));
 		addField(new StringFieldEditor(Preferences.MSG, "Message Prefix", getFieldEditorParent()));
-		addField(new MultilineFieldEditor(Preferences.EXCLUDEMETA, "Auszuschliessende Metadaten", 5, 0, true, getFieldEditorParent()));
-		addField(new MultilineFieldEditor(Preferences.MACROS, "Makros für das Suchfeld", 5,0,true,getFieldEditorParent()));
+		addField(new StringFieldEditor(Preferences.SERVER_ADDR, "Server Address", getFieldEditorParent()));
+		addField(new StringFieldEditor(Preferences.SERVER_PORT, " Server Port", getFieldEditorParent()));
+		addField(new MultilineFieldEditor(Preferences.EXCLUDEMETA, "Auszuschliessende Metadaten", 5, 0, true,
+				getFieldEditorParent()));
+		// addField(new MultilineFieldEditor(Preferences.MACROS, "Makros für das
+		// Suchfeld", 5,0,true,getFieldEditorParent()));
 	}
-	
-	@Override
-	public boolean performOk(){
-		if (super.performOk()) {
-			Activator.getDefault().disconnect();
-			Activator.getDefault().connect();
-			return true;
-		}
-		return false;
-	}
-	
+
 }

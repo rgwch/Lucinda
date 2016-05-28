@@ -24,7 +24,7 @@ import ch.rgw.tools.net.NetTool;
 public class Preferences {
 	static final Settings cfg = CoreHub.localCfg;
 	public static final String MSG = "ch.rgw.lucinda";
-	
+
 	private static final String BASE = "ch.rgw.docmgr-lucinda.";
 	public static final String NETWORK = BASE + "network";
 	public static final String INCLUDE_KONS = BASE + "withKons";
@@ -33,8 +33,10 @@ public class Preferences {
 	public static final String LASTSCAN_KONS = BASE + "konsLast";
 	public static final String EXCLUDEMETA = BASE + "excludemeta";
 	public static final String MACROS = BASE + "macros";
-	
-	public List<String> getNetworks(){
+	public static final String SERVER_ADDR = BASE + "serverAddr";
+	public static final String SERVER_PORT = BASE + "serverPort";
+
+	public List<String> getNetworks() {
 		ArrayList<String> ret = new ArrayList<String>();
 		for (String ip : NetTool.IPs) {
 			if (ip.split(".").length == 4) {
@@ -43,12 +45,12 @@ public class Preferences {
 		}
 		return ret;
 	}
-	
-	public static String get(final String key, final String def){
+
+	public static String get(final String key, final String def) {
 		return cfg.get(key, def);
 	}
-	
-	public static void set(final String key, final String value){
+
+	public static void set(final String key, final String value) {
 		cfg.set(key, value);
 	}
 }
