@@ -38,7 +38,9 @@ import ch.elexis.core.ui.util.SWTHelper;
 import ch.elexis.data.Konsultation;
 import ch.elexis.data.Patient;
 import ch.rgw.elexis.docmgr_lucinda.Activator;
+import ch.rgw.elexis.docmgr_lucinda.Preferences;
 import ch.rgw.elexis.docmgr_lucinda.model.Document;
+import ch.rgw.elexis.docmgr_lucinda.view.GlobalView;
 import ch.rgw.elexis.docmgr_lucinda.view.GlobalViewPane;
 import ch.rgw.elexis.docmgr_lucinda.view.Master;
 import ch.rgw.io.FileTool;
@@ -79,6 +81,17 @@ public class Controller implements Handler, IProgressController {
 	}
 	
 	public Composite createView(Composite parent){
+		if(Boolean.parseBoolean(Preferences.get(Preferences.SHOW_CONS, "true"))){
+			docFilter.add(GlobalView.KONSULTATION_NAME);
+		}
+		if(Boolean.parseBoolean(Preferences.get(Preferences.SHOW_OMNIVORE, "true"))){
+			docFilter.add(GlobalView.OMNIVORE_NAME);
+		}
+		if(Boolean.parseBoolean(Preferences.get(Preferences.SHOW_INBOX, "true"))){
+			docFilter.add(GlobalView.INBOX_NAME);
+		}
+		
+		
 		view = new GlobalViewPane(parent, this);
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			
@@ -111,6 +124,7 @@ public class Controller implements Handler, IProgressController {
 		return new LucindaLabelProvider();
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public void clear(){
 		viewer.setInput(new ArrayList());
 	}

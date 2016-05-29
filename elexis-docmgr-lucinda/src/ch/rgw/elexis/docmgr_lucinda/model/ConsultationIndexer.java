@@ -48,15 +48,16 @@ public class ConsultationIndexer implements Customer {
 
 	/**
 	 * Start indexing. All consultations since last run are fetched from the database.
-	 * A progress indicator and a Sender are initialized
-
+	 * A progress indicator and a Sender are initialized.
+	 * Note: Possibly, there exist more than Integer.MAX_VALUE consultations. So the 
+	 * List.size() call would not be correct.
 	 * @See Sender
 	 */
 	public void start(IProgressController pc) {
 		this.pc=pc;
 		String lastCheck = Preferences.get(Preferences.LASTSCAN_KONS, "20010101");
 		Query<Konsultation> qbe = new Query<Konsultation>(Konsultation.class);
-		qbe.add(Konsultation.DATE, Query.GREATER, lastCheck);
+		qbe.add(Konsultation.DATE, Query.GREATER_OR_EQUAL, lastCheck);
 		qbe.orderBy(false, Konsultation.DATE);
 		List<? extends PersistentObject> konsen = qbe.execute();
 		progressHandle=pc.initProgress(konsen.size());

@@ -35,7 +35,12 @@ public class Preferences {
 	public static final String MACROS = BASE + "macros";
 	public static final String SERVER_ADDR = BASE + "serverAddr";
 	public static final String SERVER_PORT = BASE + "serverPort";
+	public static final String RESTRICT_CURRENT = BASE + "restrictToCurrentPatient";
+	public static final String SHOW_INBOX = BASE + "showInbox";
+	public static final String SHOW_OMNIVORE = BASE + "showOmnivore";
+	public static final String SHOW_CONS = BASE + "showConsultation";
 
+	
 	public List<String> getNetworks() {
 		ArrayList<String> ret = new ArrayList<String>();
 		for (String ip : NetTool.IPs) {

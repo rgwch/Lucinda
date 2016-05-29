@@ -19,6 +19,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.internal.handlers.ShowKeyAssistHandler;
 import org.eclipse.ui.part.ViewPart;
 
 import ch.elexis.admin.AccessControlDefaults;
@@ -34,8 +35,13 @@ import ch.rgw.elexis.docmgr_lucinda.Activator;
 import ch.rgw.elexis.docmgr_lucinda.Preferences;
 import ch.rgw.elexis.docmgr_lucinda.controller.Controller;
 
+import static ch.rgw.elexis.docmgr_lucinda.Preferences.*;
+
 public class GlobalView extends ViewPart implements IActivationListener {
 
+	public static final String INBOX_NAME = "Inbox";
+	public static final String OMNIVORE_NAME = "Omnivore";
+	public static final String KONSULTATION_NAME = "Konsultation";
 	private Controller controller;
 	private Action doubleClickAction, filterCurrentPatAction, showInboxAction, showConsAction, showOmnivoreAction;
 	private RestrictedAction indexOmnivoreAction, indexKonsAction;
@@ -56,6 +62,15 @@ public class GlobalView extends ViewPart implements IActivationListener {
 
 	@Override
 	public void createPartControl(Composite parent) {
+		/*
+		 * If the view is set to show nothing at all (which is the case e.g. on first launch), set it to show all results.
+		 */
+		if(is(SHOW_CONS)|is(SHOW_INBOX)|is(SHOW_OMNIVORE)==false){
+			save(SHOW_CONS,true);
+			save(SHOW_OMNIVORE,true);
+			save(SHOW_INBOX,true);
+		}
+
 		makeActions();
 		controller.createView(parent);
 		contributeToActionBars();
@@ -108,12 +123,10 @@ public class GlobalView extends ViewPart implements IActivationListener {
 			@Override
 			public void doRun() {
 				Activator.getDefault().syncOmnivore(this.isChecked());
-				Preferences.set(Preferences.INCLUDE_OMNI, isChecked() ? "1" : "0");
+				save(INCLUDE_OMNI, isChecked());
 			}
 		};
-		if (Preferences.get(Preferences.INCLUDE_OMNI, "0").equals("1")) {
-			indexOmnivoreAction.setChecked(true);
-		}
+		indexOmnivoreAction.setChecked(is(INCLUDE_OMNI));
 
 		indexKonsAction = new RestrictedAction(AccessControlDefaults.DOCUMENT_CREATE, "Synchronisiere Kons",
 				Action.AS_CHECK_BOX) {
@@ -125,12 +138,10 @@ public class GlobalView extends ViewPart implements IActivationListener {
 			@Override
 			public void doRun() {
 				Activator.getDefault().syncKons(this.isChecked());
-				Preferences.set(Preferences.INCLUDE_KONS, isChecked() ? "1" : "0");
+				save(INCLUDE_KONS, isChecked());
 			}
 		};
-		if (Preferences.get(Preferences.INCLUDE_KONS, "0").equals("1")) {
-			indexKonsAction.setChecked(true);
-		}
+		indexKonsAction.setChecked(is(INCLUDE_KONS));
 
 		filterCurrentPatAction = new Action("Aktueller Patient", Action.AS_CHECK_BOX) {
 			{
@@ -141,46 +152,80 @@ public class GlobalView extends ViewPart implements IActivationListener {
 			@Override
 			public void run() {
 				controller.restrictToCurrentPatient(isChecked());
+				save(RESTRICT_CURRENT, isChecked());
 			}
 		};
+		filterCurrentPatAction.setChecked(is(RESTRICT_CURRENT));
+		/*
+		 * Show results from consultation texts
+		 */
 		showConsAction = new Action("Kons", Action.AS_CHECK_BOX) {
 			{
-				setToolTipText("Konsultationstexte weglassen");
+				setToolTipText("Konsultationstexte anzeigen");
 			}
 
 			@Override
 			public void run() {
-				controller.toggleDoctypeFilter(isChecked(), "Konsultation");
+				controller.toggleDoctypeFilter(isChecked(), KONSULTATION_NAME);
+				save(SHOW_CONS,isChecked());
 			}
 		};
+		showConsAction.setChecked(is(SHOW_CONS));;
+		
+		/*
+		 * Show results from Omnivore
+		 */
 		showOmnivoreAction = new Action("Omni", Action.AS_CHECK_BOX) {
 			{
-				setToolTipText("Omnivore Dokumente weglassen");
+				setToolTipText("Omnivore Dokumente anzeigen");
 			}
 
 			@Override
 			public void run() {
-				controller.toggleDoctypeFilter(isChecked(), "Omnivore");
+				controller.toggleDoctypeFilter(isChecked(), OMNIVORE_NAME);
+				save(SHOW_OMNIVORE,isChecked());
 			}
 
 		};
-		showInboxAction = new Action("Inbox", Action.AS_CHECK_BOX) {
+		showOmnivoreAction.setChecked(is(SHOW_OMNIVORE));
+		/*
+		 * Show results from Lucinda Inbox
+		 */
+		showInboxAction = new Action(INBOX_NAME, Action.AS_CHECK_BOX) {
 			{
-				setToolTipText("Inbox Dokumente weglassen");
+				setToolTipText("Inbox Dokumente anzeigen");
 			}
 
 			@Override
 			public void run() {
-				controller.toggleDoctypeFilter(isChecked(), "Inbox");
+				controller.toggleDoctypeFilter(isChecked(), INBOX_NAME);
+				save(SHOW_INBOX,isChecked());
 			}
 
 		};
+		showInboxAction.setChecked(is(SHOW_INBOX));
 	}
 
 	@Override
 	public void activation(boolean mode) {
 		// TODO Auto-generated method stub
 
+	}
+
+	private void save(String name, boolean value) {
+		save(name, Boolean.toString(value));
+	}
+
+	private void save(String name, String value) {
+		Preferences.set(name, value);
+	}
+
+	private String load(String name) {
+		return Preferences.get(name, "");
+	}
+
+	private boolean is(String name) {
+		return Boolean.parseBoolean(Preferences.get(name, Boolean.toString(false)));
 	}
 
 }

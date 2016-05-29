@@ -22,7 +22,7 @@ public class DocumentFilter extends ViewerFilter {
 	@Override
 	public boolean select(Viewer viewer, Object parentElement, Object element){
 		Document doc=new Document(element);
-		return !(doctypes.contains(doc.get("lucinda_doctype")));
+		return doctypes.contains(doc.get("lucinda_doctype"));
 	}
 	
 }
