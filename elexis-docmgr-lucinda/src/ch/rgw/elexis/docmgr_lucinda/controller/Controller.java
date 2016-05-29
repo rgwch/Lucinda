@@ -30,6 +30,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
 import ch.elexis.core.data.events.ElexisEventDispatcher;
@@ -39,6 +40,7 @@ import ch.elexis.data.Patient;
 import ch.rgw.elexis.docmgr_lucinda.Activator;
 import ch.rgw.elexis.docmgr_lucinda.model.Document;
 import ch.rgw.elexis.docmgr_lucinda.view.GlobalViewPane;
+import ch.rgw.elexis.docmgr_lucinda.view.Master;
 import ch.rgw.io.FileTool;
 import ch.rgw.lucinda.Client;
 import ch.rgw.lucinda.Handler;
@@ -113,8 +115,16 @@ public class Controller implements Handler, IProgressController {
 		viewer.setInput(new ArrayList());
 	}
 	
+	int cPatWidth=0;
 	public void restrictToCurrentPatient(boolean bRestrict){
 		bRestrictCurrentPatient=bRestrict;
+		TableColumn tc=viewer.getTable().getColumn(Master.COLUMN_NAME);
+		if(bRestrict){
+			cPatWidth=tc.getWidth();
+			tc.setWidth(0);
+		}else{
+			tc.setWidth(cPatWidth>0?cPatWidth:100);
+		}
 		runQuery(view.getSearchField().getText());
 	}
 	

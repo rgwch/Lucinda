@@ -135,7 +135,7 @@ public class GlobalView extends ViewPart implements IActivationListener {
 		filterCurrentPatAction = new Action("Aktueller Patient", Action.AS_CHECK_BOX) {
 			{
 				setToolTipText("Nur Treffer für den aktuellen patienten anzeigen");
-				setImageDescriptor(Images.IMG_FILTER.getImageDescriptor());
+				setImageDescriptor(Images.IMG_PERSON.getImageDescriptor());
 			}
 
 			@Override

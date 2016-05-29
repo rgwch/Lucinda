@@ -42,11 +42,19 @@ import ch.rgw.elexis.docmgr_lucinda.Activator;
 import ch.rgw.elexis.docmgr_lucinda.controller.DocumentSorter;
 
 public class Master extends Composite {
+	
 	private Text text;
 	private Table table;
 	private TableViewer tableViewer;
 	private Label lblConnection;
 	private Button btnGo;
+	public static int COLUMN_TYPE=0;
+	public static int COLUMN_NAME=1;
+	public static int COLUMN_DATE=2;
+	public static int COLUMN_DOC=3;
+	String[] columnTitles={"Typ","Patient","Datum","Dokument"};
+	int[] columnWidths={50,100,100,150};
+
 	
 	Master(final Composite parent, final GlobalViewPane gvp){
 		super(parent, SWT.NONE);
@@ -171,32 +179,13 @@ public class Master extends Composite {
 	}
 
 	private void createColumns(){
-		TableViewerColumn tvc0= new TableViewerColumn(tableViewer,SWT.NONE);
-		TableColumn tc0=tvc0.getColumn();
-		tc0.setText("Typ");
-		tc0.setWidth(50);
-		
-		TableViewerColumn tvc1 = new TableViewerColumn(tableViewer, SWT.NONE);
-		TableColumn tc1 = tvc1.getColumn();
-		
-		tc1.setWidth(100);
-		tc1.setText("Patient");	
-		
-		TableViewerColumn tvc2 = new TableViewerColumn(tableViewer, SWT.NONE);
-		TableColumn tc2 = tvc2.getColumn();
-		tc2.setWidth(100);
-		tc2.setText("Datum");
-		
-		TableViewerColumn tvc3 = new TableViewerColumn(tableViewer, SWT.NONE);
-		TableColumn tc3 = tvc3.getColumn();
-		tc3.setWidth(100);
-		tc3.setText("Dokument");
-		
-		
-		addHeaderListener(tvc0.getColumn(), 0);
-		addHeaderListener(tvc1.getColumn(), 1);
-		addHeaderListener(tvc2.getColumn(), 2);
-		addHeaderListener(tvc3.getColumn(), 3);
+		for(int i=0;i<columnTitles.length;i++){
+			TableViewerColumn tvc=new TableViewerColumn(tableViewer,SWT.NULL);
+			TableColumn tc=tvc.getColumn();
+			tc.setText(columnTitles[i]);
+			tc.setWidth(columnWidths[i]);
+			addHeaderListener(tc, i);
+		}
 	}
 	
 	private void addHeaderListener(final TableColumn tc, int index){
