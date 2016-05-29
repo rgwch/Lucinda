@@ -70,9 +70,9 @@ public class Controller implements Handler, IProgressController {
 	
 	public Controller(){
 		lucinda = Activator.getDefault().getLucinda();
+		Activator.getDefault().addHandler(this);
 		bRestrictCurrentPatient=Boolean.parseBoolean(Preferences.get(Preferences.RESTRICT_CURRENT, Boolean.toString(false)));
 		cnt = new ContentProvider();
-		Activator.getDefault().addHandler(this);
 		Activator.getDefault().setProgressController(this);
 	}
 	

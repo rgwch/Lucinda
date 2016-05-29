@@ -1,13 +1,13 @@
 /*******************************************************************************
  * Copyright (c) 2016 by G. Weirich
- *
- *
+ * <p>
+ * <p>
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *
- *
+ * <p>
+ * <p>
  * Contributors:
  * G. Weirich - initial implementation
  ******************************************************************************/
@@ -44,6 +44,8 @@ public class Client {
     private Handler messageHandler;
     private Logger log = Logger.getLogger("Lucinda Client");
     private HttpClient http;
+    private VertxOptions vertxOptions = new VertxOptions().setMaxEventLoopExecuteTime(10000000000L)
+            .setBlockedThreadCheckInterval(3000);
 
     /**
      * Connect to a Lucinda Server (REST only. Server address provided)
@@ -52,8 +54,8 @@ public class Client {
      * @param handler The handler to call for lucinda related messages
      */
     public void connect(final String server_ip, final int port, final Handler handler) {
-        vertx = Vertx.vertx();
-        messageHandler=handler;
+        vertx = Vertx.vertx(vertxOptions);
+        messageHandler = handler;
         HttpClientOptions hop = new HttpClientOptions().setDefaultHost(server_ip)
                 .setDefaultPort(port).setTryUseCompression(true)
                 .setKeepAlive(true).setIdleTimeout(300);
@@ -88,7 +90,6 @@ public class Client {
             this.prefix = "ch.rgw.lucinda";
         }
         this.messageHandler = handler;
-        VertxOptions vertxOptions = new VertxOptions().setClustered(true).setMaxEventLoopExecuteTime(5000000000L).setBlockedThreadCheckInterval(3000);
         String ip = Util.matchIP(netmask);
         log.info("trying IP " + ip);
         if (!ip.isEmpty()) {
@@ -100,7 +101,7 @@ public class Client {
             vertxOptions.setClusterManager(new HazelcastClusterManager(hazel));
         }
         try {
-            Vertx.clusteredVertx(vertxOptions, result -> {
+            Vertx.clusteredVertx(vertxOptions.setClustered(true), result -> {
                 if (result.succeeded()) {
                     log.info("Clustering succeded");
                     vertx = result.result();
@@ -168,8 +169,8 @@ public class Client {
                         JsonObject result = buffer.toJsonObject();
                         handler.signal(result.getMap());
                     });
-                } else if(response.statusCode()==204){ // Empty result
-                    Map result=add(make("status:ok"),"result",new ArrayList());
+                } else if (response.statusCode() == 204) { // Empty result
+                    Map result = add(make("status:ok"), "result", new ArrayList());
                     handler.signal(result);
                 } else {
                     handler.signal(make("status:error", "message:" + response.statusMessage()));

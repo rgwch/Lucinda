@@ -91,13 +91,8 @@ public class GlobalView extends ViewPart implements IActivationListener {
 			ElexisEventDispatcher.getInstance().addListeners(eeli_pat);
 		} else {
 			ElexisEventDispatcher.getInstance().removeListeners(eeli_pat);
+			save(COLUMN_WIDTHS,controller.getColumnWidths());
 		}
-	}
-
-	@Override
-	public void dispose(){
-		save(COLUMN_WIDTHS,controller.getColumnWidths());
-		super.dispose();
 	}
 	
 	@Override
