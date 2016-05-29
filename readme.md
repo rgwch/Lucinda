@@ -7,3 +7,4 @@ Uses Apache Tika and Apache Lucene for indexing and retrieving files.
 
 This repository consists of the lucinda-server, a generic client library, an [Elexis](http://github.com/elexis) Plugin using this library, and a [P2 site](https://wiki.eclipse.org/Equinox/p2) to install the plugin in to a running Elexis instance.
 
+You should be able to build all with `mvn clean install -Dmaven.test.skip=true`
