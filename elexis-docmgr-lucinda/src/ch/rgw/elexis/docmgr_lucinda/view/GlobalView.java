@@ -14,12 +14,19 @@
 
 package ch.rgw.elexis.docmgr_lucinda.view;
 
+import static ch.rgw.elexis.docmgr_lucinda.Preferences.COLUMN_WIDTHS;
+import static ch.rgw.elexis.docmgr_lucinda.Preferences.INCLUDE_KONS;
+import static ch.rgw.elexis.docmgr_lucinda.Preferences.INCLUDE_OMNI;
+import static ch.rgw.elexis.docmgr_lucinda.Preferences.RESTRICT_CURRENT;
+import static ch.rgw.elexis.docmgr_lucinda.Preferences.SHOW_CONS;
+import static ch.rgw.elexis.docmgr_lucinda.Preferences.SHOW_INBOX;
+import static ch.rgw.elexis.docmgr_lucinda.Preferences.SHOW_OMNIVORE;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.internal.handlers.ShowKeyAssistHandler;
 import org.eclipse.ui.part.ViewPart;
 
 import ch.elexis.admin.AccessControlDefaults;
@@ -35,8 +42,6 @@ import ch.rgw.elexis.docmgr_lucinda.Activator;
 import ch.rgw.elexis.docmgr_lucinda.Preferences;
 import ch.rgw.elexis.docmgr_lucinda.controller.Controller;
 
-import static ch.rgw.elexis.docmgr_lucinda.Preferences.*;
-
 public class GlobalView extends ViewPart implements IActivationListener {
 
 	public static final String INBOX_NAME = "Inbox";
@@ -50,9 +55,10 @@ public class GlobalView extends ViewPart implements IActivationListener {
 			ElexisEvent.EVENT_SELECTED) {
 
 		@Override
-		public void run(ElexisEvent ev) {
+		public void runInUi(ElexisEvent ev) {
 			controller.changePatient((Patient) ev.getObject());
 		}
+	
 
 	};
 
@@ -65,7 +71,7 @@ public class GlobalView extends ViewPart implements IActivationListener {
 		/*
 		 * If the view is set to show nothing at all (which is the case e.g. on first launch), set it to show all results.
 		 */
-		if(is(SHOW_CONS)|is(SHOW_INBOX)|is(SHOW_OMNIVORE)==false){
+		if((is(SHOW_CONS)||is(SHOW_INBOX)||is(SHOW_OMNIVORE))==false){
 			save(SHOW_CONS,true);
 			save(SHOW_OMNIVORE,true);
 			save(SHOW_INBOX,true);
@@ -74,6 +80,8 @@ public class GlobalView extends ViewPart implements IActivationListener {
 		makeActions();
 		controller.createView(parent);
 		contributeToActionBars();
+		String colWidths=load(COLUMN_WIDTHS);
+		controller.setColumnWidths(colWidths);
 		GlobalEventDispatcher.addActivationListener(this, this);
 	}
 
@@ -86,6 +94,12 @@ public class GlobalView extends ViewPart implements IActivationListener {
 		}
 	}
 
+	@Override
+	public void dispose(){
+		save(COLUMN_WIDTHS,controller.getColumnWidths());
+		super.dispose();
+	}
+	
 	@Override
 	public void setFocus() {
 		// TODO Auto-generated method stub
@@ -208,8 +222,6 @@ public class GlobalView extends ViewPart implements IActivationListener {
 
 	@Override
 	public void activation(boolean mode) {
-		// TODO Auto-generated method stub
-
 	}
 
 	private void save(String name, boolean value) {

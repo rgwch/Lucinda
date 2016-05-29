@@ -39,8 +39,8 @@ public class Preferences {
 	public static final String SHOW_INBOX = BASE + "showInbox";
 	public static final String SHOW_OMNIVORE = BASE + "showOmnivore";
 	public static final String SHOW_CONS = BASE + "showConsultation";
+	public static final String COLUMN_WIDTHS = BASE + "columnWidths";
 
-	
 	public List<String> getNetworks() {
 		ArrayList<String> ret = new ArrayList<String>();
 		for (String ip : NetTool.IPs) {

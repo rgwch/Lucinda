@@ -70,6 +70,7 @@ public class Controller implements Handler, IProgressController {
 	
 	public Controller(){
 		lucinda = Activator.getDefault().getLucinda();
+		bRestrictCurrentPatient=Boolean.parseBoolean(Preferences.get(Preferences.RESTRICT_CURRENT, Boolean.toString(false)));
 		cnt = new ContentProvider();
 		Activator.getDefault().addHandler(this);
 		Activator.getDefault().setProgressController(this);
@@ -324,4 +325,29 @@ public class Controller implements Handler, IProgressController {
 			runQuery(q);
 		}
 	}
+	
+	public void setColumnWidths(String widths) {
+		TableColumn[] tcs=viewer.getTable().getColumns();
+		String[] cw = widths.split(",");
+		if (cw.length == tcs.length) {
+			for (int i = 0; i < cw.length; i++) {
+				try {
+					int w = Integer.parseInt(cw[i]);
+					tcs[i].setWidth(w);
+				} catch (NumberFormatException nex) {
+					// do nothing
+				}
+			}
+		}
+	}
+
+	public String getColumnWidths() {
+		TableColumn[] tcs=viewer.getTable().getColumns();
+		StringBuilder sb=new StringBuilder();
+		for(int i=0;i<tcs.length;i++){
+			sb.append(Integer.toString(tcs[i].getWidth())).append(",");
+		}
+		return sb.substring(0, sb.length()-1);
+	}
+
 }
