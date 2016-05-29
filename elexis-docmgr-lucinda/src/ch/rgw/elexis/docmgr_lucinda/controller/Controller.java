@@ -15,6 +15,7 @@
 package ch.rgw.elexis.docmgr_lucinda.controller;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +38,7 @@ import ch.elexis.core.data.events.ElexisEventDispatcher;
 import ch.elexis.core.ui.util.SWTHelper;
 import ch.elexis.data.Konsultation;
 import ch.elexis.data.Patient;
+import ch.elexis.omnivore.data.DocHandle;
 import ch.rgw.elexis.docmgr_lucinda.Activator;
 import ch.rgw.elexis.docmgr_lucinda.Preferences;
 import ch.rgw.elexis.docmgr_lucinda.model.Document;
@@ -182,14 +184,40 @@ public class Controller implements Handler, IProgressController {
 	}
 	
 	public void loadDocument(final Document doc){
-		lucinda.get(doc.get("_id"), result -> {
-			if (result.get("status").equals("ok")) {
-				@SuppressWarnings("unused")
-				byte[] contents = (byte[]) result.get("result");
-				String ext = FileTool.getExtension(doc.get("url"));
-				launchViewerForDocument(contents, ext);
+		switch(doc.get("lucinda_doctype")){
+		case GlobalView.INBOX_NAME:
+			lucinda.get(doc.get("_id"), result -> {
+				if (result.get("status").equals("ok")) {
+					@SuppressWarnings("unused")
+					byte[] contents = (byte[]) result.get("result");
+					String ext = FileTool.getExtension(doc.get("url"));
+					launchViewerForDocument(contents, ext);
+				}
+			});
+			break;
+		case GlobalView.KONSULTATION_NAME:
+			Konsultation kons=Konsultation.load(doc.get("_id"));
+			if(kons.exists()){
+				String entry=kons.getEintrag().getHead();
+				launchViewerForDocument(entry.getBytes(), "txt");
+			}else{
+				SWTHelper.showError("Konsultation nicht gefunden", 
+						MessageFormat.format("Die Konsultation mit dem Titel: '%s' scheint nicht (mehr) zu existieren.", doc.get("title")));
 			}
-		});
+			break;
+		case GlobalView.OMNIVORE_NAME:
+			DocHandle dh=DocHandle.load(doc.get("_id"));
+			if(dh.exists()){
+				dh.execute();
+			}else{
+				SWTHelper.showError("Omnivore-Dokument nicht gefunden", 
+						"Das Omnivore-Dokument mit dem Titel: '%s' konntr nicht gefunden werden. Eventuell wurde es gelöscht oder verschoben.", doc.get("title"));
+			}
+			break;
+		default:
+			SWTHelper.showError("Unbekannter Dokumententyp", MessageFormat.format("Für den Typ %s ist kein Viewer konfiguriert", doc.get("lucinda_doctype")));
+		}
+		
 	}
 	
 	@Override
