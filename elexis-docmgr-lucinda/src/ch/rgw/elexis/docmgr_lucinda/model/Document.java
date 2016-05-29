@@ -47,7 +47,7 @@ public class Document {
 	public String get(String field) {
 		Object o=map.get(field);
 		if(o==null || !(o instanceof String)){
-			return "";
+			return ""; //$NON-NLS-1$
 		}else{
 			return (String)o;
 		}
@@ -62,30 +62,30 @@ public class Document {
 	}
 	
 	public TimeTool getDate() {
-		TimeTool tt = try_date(get("date"));
+		TimeTool tt = try_date(get("date")); //$NON-NLS-1$
 		if (tt == null) {
-			tt = try_date(get("parseDate"));
+			tt = try_date(get("parseDate")); //$NON-NLS-1$
 		}
 		if (tt == null) {
-			tt = try_date(get("meta:creation-date"));
+			tt = try_date(get("meta:creation-date")); //$NON-NLS-1$
 		}
 		if (tt == null) {
-			tt = try_titledate(get("title"));
+			tt = try_titledate(get("title")); //$NON-NLS-1$
 		}
 		return tt == null ? new TimeTool() : tt;
 	}
 
 	private TimeTool try_titledate(String d) {
-		d = d.replaceAll("[_\\.]", "-");
-		final Pattern p1 = Pattern.compile("\\d{4}-\\d{1,2}-\\d{1,2}");
+		d = d.replaceAll("[_\\.]", "-"); //$NON-NLS-1$ //$NON-NLS-2$
+		final Pattern p1 = Pattern.compile("\\d{4}-\\d{1,2}-\\d{1,2}"); //$NON-NLS-1$
 		Matcher m1 = p1.matcher(d);
 		if (m1.find()) {
 			return new TimeTool(m1.group());
 		}
-		final Pattern p2 = Pattern.compile("\\d{1,2}-\\d{1,2}-\\d{2,4}");
+		final Pattern p2 = Pattern.compile("\\d{1,2}-\\d{1,2}-\\d{2,4}"); //$NON-NLS-1$
 		Matcher m2 = p2.matcher(d);
 		if (m2.find()) {
-			return new TimeTool(m2.group().replaceAll("-", "."));
+			return new TimeTool(m2.group().replaceAll("-", ".")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return null;
 	}

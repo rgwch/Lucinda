@@ -55,7 +55,7 @@ public class ConsultationIndexer implements Customer {
 	 */
 	public void start(IProgressController pc) {
 		this.pc=pc;
-		String lastCheck = Preferences.get(Preferences.LASTSCAN_KONS, "20010101");
+		String lastCheck = Preferences.get(Preferences.LASTSCAN_KONS, "20010101"); //$NON-NLS-1$
 		Query<Konsultation> qbe = new Query<Konsultation>(Konsultation.class);
 		qbe.add(Konsultation.DATE, Query.GREATER_OR_EQUAL, lastCheck);
 		qbe.orderBy(false, Konsultation.DATE);
@@ -97,31 +97,31 @@ public class ConsultationIndexer implements Customer {
 			String firstname = get(patient, Patient.FLD_FIRSTNAME);
 			String birthdate = new TimeTool(bdRaw).toString(TimeTool.DATE_COMPACT);
 			String konsdate = new TimeTool(kons.getDatum()).toString(TimeTool.DATE_COMPACT);
-			StringBuilder concern = new StringBuilder().append(lastname).append("_").append(firstname).append("_")
-					.append(birthdate.substring(6)).append(".").append(birthdate.substring(4,6)).append(".").append(birthdate.substring(0,4));
+			StringBuilder concern = new StringBuilder().append(lastname).append("_").append(firstname).append("_") //$NON-NLS-1$ //$NON-NLS-2$
+					.append(birthdate.substring(6)).append(".").append(birthdate.substring(4,6)).append(".").append(birthdate.substring(0,4)); //$NON-NLS-1$ //$NON-NLS-2$
 			try {
 				VersionedResource vr = kons.getEintrag();
-				String text = "<empty>";
+				String text = "<empty>"; //$NON-NLS-1$
 				if (vr != null && vr.getHead() != null) {
 					text = vr.getHead();
 				}
 				
-				meta.put("lastname", lastname);
-				meta.put("firstname", firstname);
-				meta.put("birthdate", birthdate);
-				meta.put("date", konsdate);
-				meta.put("author", kons.getAuthor() == null ? "?" : kons.getAuthor());
-				meta.put("fall", get(kons, Konsultation.FLD_CASE_ID));
-				meta.put("mandant", get(kons, Konsultation.FLD_MANDATOR_ID));
-				meta.put("label", kons.getVerboseLabel());
-				meta.put("rechnung", get(kons, Konsultation.FLD_BILL_ID));
-				meta.put("concern", concern.toString());
-				meta.put("payload", text.getBytes("utf-8"));
-				meta.put("title", kons.getLabel());
-				meta.put("type", "Konsultation");
+				meta.put("lastname", lastname); //$NON-NLS-1$
+				meta.put("firstname", firstname); //$NON-NLS-1$
+				meta.put("birthdate", birthdate); //$NON-NLS-1$
+				meta.put("date", konsdate); //$NON-NLS-1$
+				meta.put("author", kons.getAuthor() == null ? "?" : kons.getAuthor()); //$NON-NLS-1$ //$NON-NLS-2$
+				meta.put("fall", get(kons, Konsultation.FLD_CASE_ID)); //$NON-NLS-1$
+				meta.put("mandant", get(kons, Konsultation.FLD_MANDATOR_ID)); //$NON-NLS-1$
+				meta.put("label", kons.getVerboseLabel()); //$NON-NLS-1$
+				meta.put("rechnung", get(kons, Konsultation.FLD_BILL_ID)); //$NON-NLS-1$
+				meta.put("concern", concern.toString()); //$NON-NLS-1$
+				meta.put("payload", text.getBytes("utf-8")); //$NON-NLS-1$ //$NON-NLS-2$
+				meta.put("title", kons.getLabel()); //$NON-NLS-1$
+				meta.put("type", Preferences.KONSULTATION_NAME); //$NON-NLS-1$
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
-				log.error("error indexing " + kons.getLabel(), e);
+				log.error("error indexing " + kons.getLabel(), e); //$NON-NLS-1$
 			}
 			pc.addProgress(progressHandle, 1);
 			return meta;
@@ -136,7 +136,7 @@ public class ConsultationIndexer implements Customer {
 	private String get(PersistentObject po, String field) {
 		String ret = po.get(field);
 		if (ret == null) {
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 		return ret;
 	}

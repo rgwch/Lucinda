@@ -15,6 +15,7 @@
 package ch.rgw.elexis.docmgr_lucinda.controller;
 
 import ch.elexis.core.ui.util.viewers.TableLabelProvider;
+import ch.rgw.elexis.docmgr_lucinda.Preferences;
 import ch.rgw.elexis.docmgr_lucinda.model.Document;
 import ch.rgw.tools.TimeTool;
 
@@ -25,15 +26,15 @@ public class LucindaLabelProvider extends TableLabelProvider {
 		Document e = new Document(element);
 		switch (columnIndex) {
 		case 0: 
-			return e.get("lucinda_doctype");
+			return e.get(Preferences.FLD_LUCINDA_DOCTYPE);
 		case 1:
-			return e.get("lastname");
+			return e.get("lastname"); //$NON-NLS-1$
 		case 2:
 			return e.getDate().toString(TimeTool.DATE_MYSQL);
 		case 3:
-			return e.get("title");
+			return e.get("title"); //$NON-NLS-1$
 		default:
-			return "?";
+			return "?"; //$NON-NLS-1$
 		}
 	}
 

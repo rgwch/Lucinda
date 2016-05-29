@@ -29,7 +29,7 @@ public class LucindaPrefs extends FieldEditorPreferencePage implements IWorkbenc
 	public LucindaPrefs() {
 		super(GRID);
 		setPreferenceStore(new SettingsPreferenceStore(CoreHub.localCfg));
-		setDescription("Lucinda Client");
+		setDescription("Lucinda Client"); //$NON-NLS-1$
 	}
 
 	@Override
@@ -40,11 +40,11 @@ public class LucindaPrefs extends FieldEditorPreferencePage implements IWorkbenc
 
 	@Override
 	protected void createFieldEditors() {
-		addField(new StringFieldEditor(Preferences.NETWORK, "Netmask", getFieldEditorParent()));
-		addField(new StringFieldEditor(Preferences.MSG, "Message Prefix", getFieldEditorParent()));
-		addField(new StringFieldEditor(Preferences.SERVER_ADDR, "Server Address", getFieldEditorParent()));
-		addField(new StringFieldEditor(Preferences.SERVER_PORT, " Server Port", getFieldEditorParent()));
-		addField(new MultilineFieldEditor(Preferences.EXCLUDEMETA, "Auszuschliessende Metadaten", 5, 0, true,
+		addField(new StringFieldEditor(Preferences.NETWORK, "Netmask", getFieldEditorParent())); //$NON-NLS-1$
+		addField(new StringFieldEditor(Preferences.MSG, "Message Prefix", getFieldEditorParent())); //$NON-NLS-1$
+		addField(new StringFieldEditor(Preferences.SERVER_ADDR, "Server Address", getFieldEditorParent())); //$NON-NLS-1$
+		addField(new StringFieldEditor(Preferences.SERVER_PORT, " Server Port", getFieldEditorParent())); //$NON-NLS-1$
+		addField(new MultilineFieldEditor(Preferences.EXCLUDEMETA, Messages.LucindaPrefs_exclude_Metadata, 5, 0, true,
 				getFieldEditorParent()));
 		// addField(new MultilineFieldEditor(Preferences.MACROS, "Makros für das
 		// Suchfeld", 5,0,true,getFieldEditorParent()));

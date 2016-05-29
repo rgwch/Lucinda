@@ -51,7 +51,7 @@ public class OmnivoreIndexer implements Customer {
 
 	public void start(IProgressController pc) {
 		this.pc=pc;
-		String lastCheck = Preferences.get(Preferences.LASTSCAN_OMNI, "20010101");
+		String lastCheck = Preferences.get(Preferences.LASTSCAN_OMNI, "20010101"); //$NON-NLS-1$
 		Query<DocHandle> qbe = new Query<DocHandle>(DocHandle.class);
 		qbe.add(DocHandle.FLD_DATE, Query.GREATER_OR_EQUAL, lastCheck);
 		qbe.orderBy(false, DocHandle.FLD_DATE);
@@ -93,20 +93,20 @@ public class OmnivoreIndexer implements Customer {
 			String firstname = get(patient, Patient.FLD_FIRSTNAME);
 			String birthdate = new TimeTool(bdRaw).toString(TimeTool.DATE_COMPACT);
 			String docdate = new TimeTool(dh.getCreationDate()).toString(TimeTool.DATE_COMPACT);
-			StringBuilder concern = new StringBuilder().append(lastname).append("_").append(firstname).append("_")
+			StringBuilder concern = new StringBuilder().append(lastname).append("_").append(firstname).append("_") //$NON-NLS-1$ //$NON-NLS-2$
 					.append(birthdate);
 
-			meta.put("lastname", lastname);
-			meta.put("firstname", firstname);
-			meta.put("birthdate", birthdate);
-			meta.put("date", docdate);
-			meta.put("category", dh.getCategory());
-			meta.put("keywords", dh.getKeywords());
-			meta.put("concern", concern.toString());
-			meta.put("payload", dh.getContents());
-			meta.put("concern", concern.toString());
-			meta.put("title", dh.getTitle());
-			meta.put("type", "Omnivore");
+			meta.put("lastname", lastname); //$NON-NLS-1$
+			meta.put("firstname", firstname); //$NON-NLS-1$
+			meta.put("birthdate", birthdate); //$NON-NLS-1$
+			meta.put("date", docdate); //$NON-NLS-1$
+			meta.put("category", dh.getCategory()); //$NON-NLS-1$
+			meta.put("keywords", dh.getKeywords()); //$NON-NLS-1$
+			meta.put("concern", concern.toString()); //$NON-NLS-1$
+			meta.put("payload", dh.getContents()); //$NON-NLS-1$
+			meta.put("concern", concern.toString()); //$NON-NLS-1$
+			meta.put("title", dh.getTitle()); //$NON-NLS-1$
+			meta.put("type", Preferences.OMNIVORE_NAME); //$NON-NLS-1$
 			pc.addProgress(progressHandle, 1);
 			return meta;
 		} else {
@@ -121,7 +121,7 @@ public class OmnivoreIndexer implements Customer {
 	private String get(PersistentObject po, String field) {
 		String ret = po.get(field);
 		if (ret == null) {
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 		return ret;
 	}

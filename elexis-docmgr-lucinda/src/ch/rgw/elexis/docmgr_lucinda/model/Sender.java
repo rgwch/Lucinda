@@ -49,7 +49,7 @@ public class Sender implements Handler {
 	@Override
 	public void signal(Map<String, Object> message) {
 		answers.add(new Document(message));
-		onTheWay.remove(message.get("_id"));
+		onTheWay.remove(message.get("_id")); //$NON-NLS-1$
 		if (toDo.isEmpty() && onTheWay.isEmpty()) {
 			customer.finished(answers);
 		}
@@ -68,10 +68,10 @@ public class Sender implements Handler {
 				if (order == null) {
 					toDo.clear();
 				} else {
-					byte[] contents = (byte[]) order.toMap().get("payload");
+					byte[] contents = (byte[]) order.toMap().get("payload"); //$NON-NLS-1$
 					onTheWay.add(po.getId());
-					Activator.getDefault().getLucinda().addToIndex(po.getId(), order.get("title"),
-							order.get("type"), order.toMap(), contents, this);
+					Activator.getDefault().getLucinda().addToIndex(po.getId(), order.get("title"), //$NON-NLS-1$
+							order.get("type"), order.toMap(), contents, this); //$NON-NLS-1$
 				}
 			}
 		}

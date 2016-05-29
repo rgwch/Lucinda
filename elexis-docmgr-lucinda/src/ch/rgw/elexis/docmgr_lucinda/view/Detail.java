@@ -50,12 +50,12 @@ public class Detail extends Composite {
 		tv.getTable().setHeaderVisible(true);
 		tv.getTable().setLinesVisible(true);
 		tc1.setWidth(200);
-		tc1.setText("Key");
+		tc1.setText("key"); //$NON-NLS-1$
 		
 		TableViewerColumn tvc2 = new TableViewerColumn(tv, SWT.NONE);
 		TableColumn tc2 = tvc2.getColumn();
 		tc2.setWidth(100);
-		tc2.setText("Value");
+		tc2.setText("value"); //$NON-NLS-1$
 		
 		tv.setContentProvider(new IStructuredContentProvider() {
 			/*
@@ -63,7 +63,7 @@ public class Detail extends Composite {
 			 */
 			@Override
 			public void inputChanged(Viewer viewer, Object oldInput, Object newInput){
-				exclusions = CoreHub.localCfg.get(Preferences.EXCLUDEMETA, "").split(",");
+				exclusions = CoreHub.localCfg.get(Preferences.EXCLUDEMETA, "").split(","); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			
 			@Override

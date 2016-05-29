@@ -52,7 +52,7 @@ public class Master extends Composite {
 	public static int COLUMN_NAME = 1;
 	public static int COLUMN_DATE = 2;
 	public static int COLUMN_DOC = 3;
-	String[] columnTitles = { "Typ", "Patient", "Datum", "Dokument" };
+	String[] columnTitles = { Messages.Master_col_caption_type, Messages.Master_col_caption_patient, Messages.Master_col_caption_date, Messages.Master_col_caption_doc };
 	int[] columnWidths = { 50, 100, 100, 150 };
 
 	Master(final Composite parent, final GlobalViewPane gvp) {
@@ -100,7 +100,7 @@ public class Master extends Composite {
 				gvp.controller.runQuery(text.getText());
 			}
 		});
-		btnGo.setText("Suche");
+		btnGo.setText(Messages.Master_searchButton_caption);
 
 		lblConnection = new Label(searchBox, SWT.NONE);
 		FormData fd_lblConnection = new FormData();
@@ -127,13 +127,13 @@ public class Master extends Composite {
 
 			@Override
 			public void mouseUp(org.eclipse.swt.events.MouseEvent e) {
-				text.setText("");
+				text.setText(""); //$NON-NLS-1$
 			}
 
 		});
 
 		lblClear.setImage(Images.IMG_CLEAR.getImage());
-		lblClear.setToolTipText("Hier klicken, um das Suchfeld zu leeren");
+		lblClear.setToolTipText(Messages.Master_clearButton_tooltip);
 		tableViewer = new TableViewer(this, SWT.BORDER | SWT.FULL_SELECTION | SWT.VIRTUAL);
 		table = tableViewer.getTable();
 		FormData fd_table = new FormData();
@@ -191,12 +191,12 @@ public class Master extends Composite {
 		tc.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (tc.getData("direction") == null) {
-					tc.setData("direction", false);
+				if (tc.getData("direction") == null) { //$NON-NLS-1$
+					tc.setData("direction", false); //$NON-NLS-1$
 				}
-				boolean bDirec = !(Boolean) tc.getData("direction");
+				boolean bDirec = !(Boolean) tc.getData("direction"); //$NON-NLS-1$
 				tableViewer.setSorter(new DocumentSorter(index, bDirec));
-				tc.setData("direction", bDirec);
+				tc.setData("direction", bDirec); //$NON-NLS-1$
 			}
 
 		});
@@ -208,19 +208,19 @@ public class Master extends Composite {
 			@Override
 			public void run() {
 				if (bConnected) {
-					StringBuilder sb = new StringBuilder("Verbunden mit Lucinda Server (");
+					StringBuilder sb = new StringBuilder(Messages.Master_connected_tooltip);
 					if (Activator.getDefault().isBusAPI()) {
-						sb.append("EventBus ");
+						sb.append("EventBus "); //$NON-NLS-1$
 					}
 					if (Activator.getDefault().isRestAPI()) {
-						sb.append("REST");
+						sb.append("REST"); //$NON-NLS-1$
 					}
-					sb.append("). Click um die Verbindung zu erneuern");
+					sb.append(Messages.Master_connected_tooltip2);
 					lblConnection.setImage(Images.IMG_BULLET_GREEN.getImage());
 					lblConnection.setToolTipText(sb.toString());
 				} else {
 					lblConnection.setImage(Images.IMG_BULLET_RED.getImage());
-					lblConnection.setToolTipText("Warte auf Verbindung...");
+					lblConnection.setToolTipText(Messages.Master_disconnected_tooltip);
 				}
 				text.setEnabled(bConnected);
 				btnGo.setEnabled(bConnected);

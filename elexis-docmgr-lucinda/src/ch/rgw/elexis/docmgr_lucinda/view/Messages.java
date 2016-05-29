@@ -1,106 +1,36 @@
 package ch.rgw.elexis.docmgr_lucinda.view;
 
+import org.eclipse.osgi.util.NLS;
 
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.part.ViewPart;
-
-import ch.rgw.elexis.docmgr_lucinda.Activator;
-import ch.rgw.elexis.docmgr_lucinda.model.Document;
-import ch.rgw.lucinda.Handler;
-
-public class Messages extends ViewPart implements Handler {
-	private TreeViewer tv;
-	public Messages() {
-		// TODO Auto-generated constructor stub
+public class Messages extends NLS {
+	private static final String BUNDLE_NAME = "ch.rgw.elexis.docmgr_lucinda.view.messages"; //$NON-NLS-1$
+	public static String GlobalView_11;
+	public static String GlobalView_actPatient_name;
+	public static String GlobalView_actPatient_tooltip;
+	public static String GlobalView_filterInbox_name;
+	public static String GlobalView_filterKons_name;
+	public static String GlobalView_filterKons_tooltip;
+	public static String GlobalView_filterOmni_name;
+	public static String GlobalView_filterOmni_tooltip;
+	public static String GlobalView_omnivoreImport_Name;
+	public static String GlobalView_omnivoreImport_tooltip;
+	public static String GlobalView_synckons_Name;
+	public static String GlobalView_synckons_tooltip;
+	public static String LucindaPrefs_exclude_Metadata;
+	public static String Master_clearButton_tooltip;
+	public static String Master_col_caption_date;
+	public static String Master_col_caption_doc;
+	public static String Master_col_caption_patient;
+	public static String Master_col_caption_type;
+	public static String Master_connected_tooltip;
+	public static String Master_connected_tooltip2;
+	public static String Master_disconnected_tooltip;
+	public static String Master_searchButton_caption;
+	static {
+		// initialize resource bundle
+		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}
 
-	@Override
-	public void createPartControl(Composite parent) {
-		parent.setLayout(new FillLayout());
-		tv=new TreeViewer(parent);
-		tv.setContentProvider(new ITreeContentProvider() {
-			
-			@Override
-			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {}
-			
-			@Override
-			public void dispose() {}
-			
-			@Override
-			public boolean hasChildren(Object element) {
-				if(element instanceof Document){
-					return true;
-				}else{
-					return false;
-				}
-			}
-			
-			@Override
-			public Object getParent(Object element) {
-				return null;
-			}
-			
-			@Override
-			public Object[] getElements(Object inputElement) {
-				return Activator.getDefault().getMessages().toArray();
-			}
-			
-			@Override
-			public Object[] getChildren(Object parentElement) {
-				Document doc=(Document) parentElement;
-				Set<Entry<String,Object>> entries=doc.toMap().entrySet();
-				return entries.toArray();
-			}
-		});
-			
-		tv.setLabelProvider(new LabelProvider(){
-
-			@Override
-			public String getText(Object element) {
-				if(element instanceof Document){
-					return ((Document)element).get("status");
-				}else if(element instanceof Entry){
-					Entry e=(Entry)element;
-					return e.getKey()+": "+e.getValue();
-				}else{
-					return "?";
-				}
-
-			}
-			
-		});
-		Activator.getDefault().addHandler(this);
-		
-		tv.setInput(Activator.getDefault().getMessages());
+	private Messages() {
 	}
-
-	@Override
-	public void setFocus() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void signal(Map<String, Object> msg) {
-		Display.getDefault().asyncExec(new Runnable(){
-
-			@Override
-			public void run() {
-				tv.add("/", new Document(msg));
-			}
-			
-		});
-		
-	}
-
 }

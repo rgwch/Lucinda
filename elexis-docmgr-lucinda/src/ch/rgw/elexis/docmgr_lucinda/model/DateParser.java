@@ -14,38 +14,38 @@ import ch.rgw.tools.TimeTool;
 
 public class DateParser {
     private static final Map<String, String> DATE_FORMAT_REGEXPS = new HashMap<String, String>() {{
-        put("^\\d{8}$", "yyyyMMdd");
-        put("^\\d{1,2}-\\d{1,2}-\\d{4}$", "dd-MM-yyyy");
-        put("^\\d{1,2}\\.\\d{1,2}\\.\\d{4}$", "dd.MM.yyyy");
-        put("^\\d{4}-\\d{1,2}-\\d{1,2}$", "yyyy-MM-dd");
-        put("^\\d{1,2}/\\d{1,2}/\\d{4}$", "MM/dd/yyyy");
-        put("^\\d{4}/\\d{1,2}/\\d{1,2}$", "yyyy/MM/dd");
-        put("^\\d{1,2}\\s[a-zA-Z]{3}\\s\\d{4}$", "dd MMM yyyy");
-        put("^\\d{1,2}[\\s\\.]+[a-zA-Z]{3}\\s\\d{4}$", "dd. MMM yyyy");
-        put("^\\d{1,2}\\s[a-zA-Z]{4,}\\s\\d{4}$", "dd MMMM yyyy");
-        put("^\\d{1,2}\\.\\s[a-zA-Z]{4,}\\s\\d{4}$", "dd. MMMM yyyy");
-        put("^\\d{12}$", "yyyyMMddHHmm");
-        put("^\\d{8}\\s\\d{4}$", "yyyyMMdd HHmm");
-        put("^\\d{1,2}-\\d{1,2}-\\d{4}\\s\\d{1,2}:\\d{2}$", "dd-MM-yyyy HH:mm");
-        put("^\\d{1,2}\\.\\d{1,2}\\.\\d{4}[\\s,]+\\d{1,2}:\\d{2}$", "dd.MM.yyyy HH:mm");
-        put("^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}$", "yyyy-MM-dd HH:mm");
-        put("^\\d{4}-\\d{2}-\\d{2}t\\d{1,2}:\\d{2}:\\d{2}", "yyyy-MM-dd'T'HH:mm:ss");
-        put("^\\d{4}-\\d{2}-\\d{2}t\\d{1,2}:\\d{2}:\\d{2}z", "yyyy-MM-dd'T'HH:mm:ss'Z'");
-        put("^\\d{1,2}/\\d{1,2}/\\d{4}\\s\\d{1,2}:\\d{2}$", "MM/dd/yyyy HH:mm");
-        put("^\\d{4}/\\d{1,2}/\\d{1,2}\\s\\d{1,2}:\\d{2}$", "yyyy/MM/dd HH:mm");
-        put("^\\d{1,2}\\s[a-z]{3}\\s\\d{4}\\s\\d{1,2}:\\d{2}$", "dd MMM yyyy HH:mm");
-        put("^\\d{1,2}\\.\\s[a-z]{3}\\s\\d{4},\\s\\d{1,2}:\\d{2}$", "dd. MMM yyyy, HH:mm");
-        put("^\\d{1,2}\\s[a-z]{4,}\\s\\d{4}\\s\\d{1,2}:\\d{2}$", "dd MMMM yyyy HH:mm");
-        put("^\\d{1,2}\\.\\s[a-z]{4,}\\s\\d{4},\\s\\d{1,2}:\\d{2}$", "dd. MMMM yyyy, HH:mm");
-        put("^\\d{14}$", "yyyyMMddHHmmss");
-        put("^\\d{8}\\s\\d{6}$", "yyyyMMdd HHmmss");
-        put("^\\d{1,2}-\\d{1,2}-\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd-MM-yyyy HH:mm:ss");
-        put("^\\d{1,2}\\.\\d{1,2}\\.\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd.MM.yyyy HH:mm:ss");
-        put("^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}$", "yyyy-MM-dd HH:mm:ss");
-        put("^\\d{1,2}/\\d{1,2}/\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "MM/dd/yyyy HH:mm:ss");
-        put("^\\d{4}/\\d{1,2}/\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}$", "yyyy/MM/dd HH:mm:ss");
-        put("^\\d{1,2}\\s[a-z]{3}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd MMM yyyy HH:mm:ss");
-        put("^\\d{1,2}\\s[a-z]{4,}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd MMMM yyyy HH:mm:ss");
+        put("^\\d{8}$", "yyyyMMdd"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{1,2}-\\d{1,2}-\\d{4}$", "dd-MM-yyyy"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{1,2}\\.\\d{1,2}\\.\\d{4}$", "dd.MM.yyyy"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{4}-\\d{1,2}-\\d{1,2}$", "yyyy-MM-dd"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{1,2}/\\d{1,2}/\\d{4}$", "MM/dd/yyyy"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{4}/\\d{1,2}/\\d{1,2}$", "yyyy/MM/dd"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{1,2}\\s[a-zA-Z]{3}\\s\\d{4}$", "dd MMM yyyy"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{1,2}[\\s\\.]+[a-zA-Z]{3}\\s\\d{4}$", "dd. MMM yyyy"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{1,2}\\s[a-zA-Z]{4,}\\s\\d{4}$", "dd MMMM yyyy"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{1,2}\\.\\s[a-zA-Z]{4,}\\s\\d{4}$", "dd. MMMM yyyy"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{12}$", "yyyyMMddHHmm"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{8}\\s\\d{4}$", "yyyyMMdd HHmm"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{1,2}-\\d{1,2}-\\d{4}\\s\\d{1,2}:\\d{2}$", "dd-MM-yyyy HH:mm"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{1,2}\\.\\d{1,2}\\.\\d{4}[\\s,]+\\d{1,2}:\\d{2}$", "dd.MM.yyyy HH:mm"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}$", "yyyy-MM-dd HH:mm"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{4}-\\d{2}-\\d{2}t\\d{1,2}:\\d{2}:\\d{2}", "yyyy-MM-dd'T'HH:mm:ss"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{4}-\\d{2}-\\d{2}t\\d{1,2}:\\d{2}:\\d{2}z", "yyyy-MM-dd'T'HH:mm:ss'Z'"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{1,2}/\\d{1,2}/\\d{4}\\s\\d{1,2}:\\d{2}$", "MM/dd/yyyy HH:mm"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{4}/\\d{1,2}/\\d{1,2}\\s\\d{1,2}:\\d{2}$", "yyyy/MM/dd HH:mm"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{1,2}\\s[a-z]{3}\\s\\d{4}\\s\\d{1,2}:\\d{2}$", "dd MMM yyyy HH:mm"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{1,2}\\.\\s[a-z]{3}\\s\\d{4},\\s\\d{1,2}:\\d{2}$", "dd. MMM yyyy, HH:mm"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{1,2}\\s[a-z]{4,}\\s\\d{4}\\s\\d{1,2}:\\d{2}$", "dd MMMM yyyy HH:mm"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{1,2}\\.\\s[a-z]{4,}\\s\\d{4},\\s\\d{1,2}:\\d{2}$", "dd. MMMM yyyy, HH:mm"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{14}$", "yyyyMMddHHmmss"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{8}\\s\\d{6}$", "yyyyMMdd HHmmss"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{1,2}-\\d{1,2}-\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd-MM-yyyy HH:mm:ss"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{1,2}\\.\\d{1,2}\\.\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd.MM.yyyy HH:mm:ss"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}$", "yyyy-MM-dd HH:mm:ss"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{1,2}/\\d{1,2}/\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "MM/dd/yyyy HH:mm:ss"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{4}/\\d{1,2}/\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}$", "yyyy/MM/dd HH:mm:ss"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{1,2}\\s[a-z]{3}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd MMM yyyy HH:mm:ss"); //$NON-NLS-1$ //$NON-NLS-2$
+        put("^\\d{1,2}\\s[a-z]{4,}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd MMMM yyyy HH:mm:ss"); //$NON-NLS-1$ //$NON-NLS-2$
     }};
 
     /**
@@ -80,7 +80,7 @@ public class DateParser {
     public static TimeTool parse(String dateString) throws ParseException {
         String dateFormat = determineDateFormat(dateString);
         if (dateFormat == null) {
-            throw new ParseException("Unknown date format.", 0);
+            throw new ParseException(Messages.DateParser_unknown_date_format, 0);
         }
         return new TimeTool(parse(dateString, dateFormat));
     }

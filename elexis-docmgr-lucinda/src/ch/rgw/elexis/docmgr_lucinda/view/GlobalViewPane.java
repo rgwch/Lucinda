@@ -82,7 +82,7 @@ public class GlobalViewPane extends Composite {
 			@Override
 			public void run() {
 				progressBar.setSelection(position);
-				progressBar.setToolTipText(position + " von " + progressBar.getMaximum());
+				progressBar.setToolTipText(position + " von " + progressBar.getMaximum()); //$NON-NLS-1$
 			}
 
 		});

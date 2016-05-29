@@ -44,9 +44,6 @@ import ch.rgw.elexis.docmgr_lucinda.controller.Controller;
 
 public class GlobalView extends ViewPart implements IActivationListener {
 
-	public static final String INBOX_NAME = "Inbox";
-	public static final String OMNIVORE_NAME = "Omnivore";
-	public static final String KONSULTATION_NAME = "Konsultation";
 	private Controller controller;
 	private Action doubleClickAction, filterCurrentPatAction, showInboxAction, showConsAction, showOmnivoreAction;
 	private RestrictedAction indexOmnivoreAction, indexKonsAction;
@@ -122,10 +119,10 @@ public class GlobalView extends ViewPart implements IActivationListener {
 	}
 
 	private void makeActions() {
-		indexOmnivoreAction = new RestrictedAction(AccessControlDefaults.DOCUMENT_CREATE, "Omnivore import",
+		indexOmnivoreAction = new RestrictedAction(AccessControlDefaults.DOCUMENT_CREATE, Messages.GlobalView_omnivoreImport_Name,
 				Action.AS_CHECK_BOX) {
 			{
-				setToolTipText("Index all documents from omnivore (this may take a long time!)");
+				setToolTipText(Messages.GlobalView_omnivoreImport_tooltip);
 				setImageDescriptor(Images.IMG_DATABASE.getImageDescriptor());
 			}
 
@@ -137,10 +134,10 @@ public class GlobalView extends ViewPart implements IActivationListener {
 		};
 		indexOmnivoreAction.setChecked(is(INCLUDE_OMNI));
 
-		indexKonsAction = new RestrictedAction(AccessControlDefaults.DOCUMENT_CREATE, "Synchronisiere Kons",
+		indexKonsAction = new RestrictedAction(AccessControlDefaults.DOCUMENT_CREATE, Messages.GlobalView_synckons_Name,
 				Action.AS_CHECK_BOX) {
 			{
-				setToolTipText("Indexiere Konsultationen für Lucinda");
+				setToolTipText(Messages.GlobalView_synckons_tooltip);
 				setImageDescriptor(Images.IMG_GEAR.getImageDescriptor());
 			}
 
@@ -152,9 +149,9 @@ public class GlobalView extends ViewPart implements IActivationListener {
 		};
 		indexKonsAction.setChecked(is(INCLUDE_KONS));
 
-		filterCurrentPatAction = new Action("Aktueller Patient", Action.AS_CHECK_BOX) {
+		filterCurrentPatAction = new Action(Messages.GlobalView_actPatient_name, Action.AS_CHECK_BOX) {
 			{
-				setToolTipText("Nur Treffer für den aktuellen patienten anzeigen");
+				setToolTipText(Messages.GlobalView_actPatient_tooltip);
 				setImageDescriptor(Images.IMG_PERSON.getImageDescriptor());
 			}
 
@@ -168,14 +165,14 @@ public class GlobalView extends ViewPart implements IActivationListener {
 		/*
 		 * Show results from consultation texts
 		 */
-		showConsAction = new Action("Kons", Action.AS_CHECK_BOX) {
+		showConsAction = new Action(Messages.GlobalView_filterKons_name, Action.AS_CHECK_BOX) {
 			{
-				setToolTipText("Konsultationstexte anzeigen");
+				setToolTipText(Messages.GlobalView_filterKons_tooltip);
 			}
 
 			@Override
 			public void run() {
-				controller.toggleDoctypeFilter(isChecked(), KONSULTATION_NAME);
+				controller.toggleDoctypeFilter(isChecked(), Preferences.KONSULTATION_NAME);
 				save(SHOW_CONS,isChecked());
 			}
 		};
@@ -184,14 +181,14 @@ public class GlobalView extends ViewPart implements IActivationListener {
 		/*
 		 * Show results from Omnivore
 		 */
-		showOmnivoreAction = new Action("Omni", Action.AS_CHECK_BOX) {
+		showOmnivoreAction = new Action(Messages.GlobalView_filterOmni_name, Action.AS_CHECK_BOX) {
 			{
-				setToolTipText("Omnivore Dokumente anzeigen");
+				setToolTipText(Messages.GlobalView_filterOmni_tooltip);
 			}
 
 			@Override
 			public void run() {
-				controller.toggleDoctypeFilter(isChecked(), OMNIVORE_NAME);
+				controller.toggleDoctypeFilter(isChecked(), Preferences.OMNIVORE_NAME);
 				save(SHOW_OMNIVORE,isChecked());
 			}
 
@@ -200,14 +197,14 @@ public class GlobalView extends ViewPart implements IActivationListener {
 		/*
 		 * Show results from Lucinda Inbox
 		 */
-		showInboxAction = new Action(INBOX_NAME, Action.AS_CHECK_BOX) {
+		showInboxAction = new Action(Preferences.INBOX_NAME, Action.AS_CHECK_BOX) {
 			{
-				setToolTipText("Inbox Dokumente anzeigen");
+				setToolTipText(Messages.GlobalView_filterInbox_name);
 			}
 
 			@Override
 			public void run() {
-				controller.toggleDoctypeFilter(isChecked(), INBOX_NAME);
+				controller.toggleDoctypeFilter(isChecked(), Preferences.INBOX_NAME);
 				save(SHOW_INBOX,isChecked());
 			}
 
@@ -228,7 +225,7 @@ public class GlobalView extends ViewPart implements IActivationListener {
 	}
 
 	private String load(String name) {
-		return Preferences.get(name, "");
+		return Preferences.get(name, Messages.GlobalView_11);
 	}
 
 	private boolean is(String name) {

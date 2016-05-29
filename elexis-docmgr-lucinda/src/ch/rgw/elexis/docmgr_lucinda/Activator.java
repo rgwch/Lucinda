@@ -74,7 +74,7 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	public void connect() {
-		if(Preferences.get(Preferences.SERVER_ADDR, "")!=""){
+		if(Preferences.get(Preferences.SERVER_ADDR, "")!=""){ //$NON-NLS-1$ //$NON-NLS-2$
 			connectRest();
 		}else{
 			connectBus();
@@ -91,36 +91,36 @@ public class Activator extends AbstractUIPlugin {
 
 	public void connectRest() {
 		if (!connected) {
-			String server = Preferences.get(Preferences.SERVER_ADDR, "127.0.0.1");
-			int port = Integer.parseInt(Preferences.get(Preferences.SERVER_PORT, "2016"));
+			String server = Preferences.get(Preferences.SERVER_ADDR, "127.0.0.1"); //$NON-NLS-1$
+			int port = Integer.parseInt(Preferences.get(Preferences.SERVER_PORT, "2016")); //$NON-NLS-1$
 			lucinda.connect(server, port, result -> {
-				switch ((String) result.get("status")) {
+				switch ((String) result.get("status")) { //$NON-NLS-1$
 
-				case "connected":
+				case "connected": //$NON-NLS-1$
 					connected = true;
 					RestAPI = true;
-					if (Preferences.get(Preferences.INCLUDE_KONS, "0").equals("1")) {
+					if (Preferences.get(Preferences.INCLUDE_KONS, "0").equals("1")) { //$NON-NLS-1$ //$NON-NLS-2$
 						syncKons(true);
 					}
-					if (Preferences.get(Preferences.INCLUDE_OMNI, "0").equals("1")) {
+					if (Preferences.get(Preferences.INCLUDE_OMNI, "0").equals("1")) { //$NON-NLS-1$ //$NON-NLS-2$
 						syncOmnivore(true);
 					}
 			
 					break;
-				case "disconnected":
+				case "disconnected": //$NON-NLS-1$
 					connected=false;
 					RestAPI=false;
 					break;
-				case "failure":
-					SWTHelper.showInfo("Lucinda", (String) result.get("message"));
+				case "failure": //$NON-NLS-1$
+					SWTHelper.showInfo("Lucinda", (String) result.get("message")); //$NON-NLS-1$ //$NON-NLS-2$
 					break;
-				case "error":
-					SWTHelper.showError("Lucinda", "Lucinda Fehler", "Meldung vom Server: " + result.get("message"));
+				case "error": //$NON-NLS-1$
+					SWTHelper.showError("Lucinda", Messages.Activator_Lucinda_error_caption, Messages.Activator_Server_Message + result.get("message")); //$NON-NLS-1$ //$NON-NLS-2$
 					break;
 			
 				default:
-					SWTHelper.showError("Lucinda", "Lucinda",
-							"Unerwartete Antwort von Lucinda: " + result.get("status") + ", " + result.get("message"));
+					SWTHelper.showError("Lucinda", "Lucinda", //$NON-NLS-1$ //$NON-NLS-2$
+							Messages.Activator_unexpected_answer + result.get("status") + Messages.Activator_14 + result.get("message"));  //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$
 				}
 				for (Handler handler : handlers) {
 					handler.signal(result);
@@ -132,37 +132,37 @@ public class Activator extends AbstractUIPlugin {
 
 	public void connectBus() {
 		if (!connected) {
-			String prefix = Preferences.get(Preferences.MSG, "ch.rgw.lucinda");
-			String network = Preferences.get(Preferences.NETWORK, "");
+			String prefix = Preferences.get(Preferences.MSG, "ch.rgw.lucinda"); //$NON-NLS-1$
+			String network = Preferences.get(Preferences.NETWORK, ""); //$NON-NLS-1$
 			lucinda.connect(prefix, network, result -> {
 				addMessage(new Document(result));
-				switch ((String) result.get("status")) {
-				case "connected":
+				switch ((String) result.get("status")) { //$NON-NLS-1$
+				case "connected": //$NON-NLS-1$
 					connected = true;
 					BusApi=true;
-					if (Preferences.get(Preferences.INCLUDE_KONS, "0").equals("1")) {
+					if (Preferences.get(Preferences.INCLUDE_KONS, "0").equals("1")) { //$NON-NLS-1$ //$NON-NLS-2$
 						syncKons(true);
 					}
-					if (Preferences.get(Preferences.INCLUDE_OMNI, "0").equals("1")) {
+					if (Preferences.get(Preferences.INCLUDE_OMNI, "0").equals("1")) { //$NON-NLS-1$ //$NON-NLS-2$
 						syncOmnivore(true);
 					}
 					break;
-				case "REST ok":
+				case "REST ok": //$NON-NLS-1$
 					connected = true;
 					RestAPI = true;
 					break;
-				case "disconnected":
+				case "disconnected": //$NON-NLS-1$
 					connected = false;
 					break;
-				case "failure":
-					SWTHelper.showInfo("Lucinda", (String) result.get("message"));
+				case "failure": //$NON-NLS-1$
+					SWTHelper.showInfo("Lucinda", (String) result.get("message")); //$NON-NLS-1$ //$NON-NLS-2$
 					break;
-				case "error":
-					SWTHelper.showError("Lucinda", "Lucinda Fehler", "Meldung vom Server: " + result.get("message"));
+				case "error": //$NON-NLS-1$
+					SWTHelper.showError("Lucinda", Messages.Activator_Lucinda_error_caption, Messages.Activator_Server_message + result.get("message")); //$NON-NLS-1$ //$NON-NLS-2$
 					break;
 				default:
-					SWTHelper.showError("Lucinda", "Lucinda",
-							"Unerwartete Antwort von Lucinda: " + result.get("status") + ", " + result.get("message"));
+					SWTHelper.showError("Lucinda", "Lucinda", //$NON-NLS-1$ //$NON-NLS-2$
+							Messages.Activator_unexpected_answer + result.get("status") + ", " + result.get("message"));  //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$
 				}
 				for (Handler handler : handlers) {
 					handler.signal(result);
