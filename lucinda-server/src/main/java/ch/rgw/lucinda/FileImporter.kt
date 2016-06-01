@@ -64,13 +64,31 @@ class FileImporter(val file: Path, val fileMetadata: JsonObject) : Handler<Futur
     }
 
 
+    /*
+     * Handle a file to import. Sometimes, a file can't be parsed, because it was not yet fully written at the
+     * time, this method is called. So We'll retry in such cases after a while
+     */
     override fun handle(future: Future<Int>) {
-        val errmsg = process();
-        if (errmsg.isEmpty()) {
-            future.complete()
-        } else {
-            future.fail("Failed: ${file.toFile().absolutePath}; ${errmsg}")
+        var retryCount=0
+        var errmsg = ""
+        while (retryCount<2) {
+            log.fine("handle: ${file.fileName}")
+            errmsg = process();
+            if (errmsg.isEmpty()) {
+                future.complete()
+                return
+            } else {
+                log.info("retrying ${file.toAbsolutePath()}")
+                try {
+                    Thread.sleep(2000L)
+                } catch(ex: InterruptedException) {
+                    /* never mind */
+                }
+                retryCount++
+            }
         }
+        log.warning("${file.toAbsolutePath()} failed.")
+        future.fail("Failed: ${file.toFile().absolutePath}; ${errmsg}")
     }
 
     fun process(): String {

@@ -210,11 +210,9 @@ class Autoscanner : AbstractVerticle() {
      */
     fun addFile(file: Path) {
         if (Files.isHidden(file) || file.toString().startsWith(".")) {
-            log.fine("skip hidden file ${file}")
             return;
         }
         if (Files.size(file) == 0L) {
-            log.fine("skip empty file {$file}")
             return
         }
         val filename=file.toFile().absolutePath
