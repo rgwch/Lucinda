@@ -1,13 +1,13 @@
 /*******************************************************************************
  * Copyright (c) 2016 by G. Weirich
- * <p>
- * <p>
+ * <p/>
+ * <p/>
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * <p>
- * <p>
+ * <p/>
+ * <p/>
  * Contributors:
  * G. Weirich - initial implementation
  ******************************************************************************/
@@ -36,324 +36,270 @@ import java.util.logging.Logger;
  * Created by gerry on 10.05.16.
  */
 public class Client {
-    private String api = "/api/1.0/";
-    private Vertx vertx;
-    private String prefix;
-    private boolean eventBusConnected = false;
-    private boolean preferREST = false;
-    private Handler messageHandler;
-    private Logger log = Logger.getLogger("Lucinda Client");
-    private HttpClient http;
-    private VertxOptions vertxOptions = new VertxOptions().setMaxEventLoopExecuteTime(10000000000L)
-            .setBlockedThreadCheckInterval(3000);
+  private String api = "/api/1.0/";
+  private Vertx vertx;
+  private String prefix;
+  private boolean eventBusConnected = false;
+  private boolean preferREST = false;
+  private Logger log = Logger.getLogger("Lucinda Client");
+  private HttpClient http;
+  private VertxOptions vertxOptions = new VertxOptions().setMaxEventLoopExecuteTime(10000000000L)
+      .setBlockedThreadCheckInterval(3000);
 
-    /**
-     * Connect to a Lucinda Server (REST only. Server address provided)
-     * @param server_ip Address of the server
-     * @param port Port to connect
-     * @param handler The handler to call for lucinda related messages
-     */
-    public void connect(final String server_ip, final int port, final Handler handler) {
-        vertx = Vertx.vertx(vertxOptions);
-        messageHandler = handler;
-        HttpClientOptions hop = new HttpClientOptions().setDefaultHost(server_ip)
-                .setDefaultPort(port).setTryUseCompression(true)
-                .setKeepAlive(true).setIdleTimeout(300);
-        http = vertx.createHttpClient(hop);
-        HttpClientRequest htr = http.request(HttpMethod.GET, api + "ping", response -> {
-            response.bodyHandler(buffer -> {
-                if (buffer.toString().equals("pong")) {
-                    messageHandler.signal(make("status:connected"));
-                    log.info("Rest API ok");
-                    preferREST = true;
-                }
-            });
-        }).setTimeout(10000L).exceptionHandler(exception -> {
-            log.severe("REST failure " + exception.getMessage());
-            exception.printStackTrace();
-            messageHandler.signal(make("status:failure", "message:" + exception.getMessage()));
+  /**
+   * Connect to a Lucinda Server (REST only. Server address provided)
+   *
+   * @param server_ip Address of the server
+   * @param port      Port to connect
+   * @param handler   The handler to call for lucinda related messages
+   */
+  public void connect(final String server_ip, final int port, final Handler handler) {
+    vertx = Vertx.vertx(vertxOptions);
+    HttpClientOptions hop = new HttpClientOptions().setDefaultHost(server_ip)
+        .setDefaultPort(port).setTryUseCompression(true)
+        .setKeepAlive(true).setIdleTimeout(300);
+    http = vertx.createHttpClient(hop);
+    HttpClientRequest htr = http.request(HttpMethod.GET, api + "ping", response -> {
+      response.bodyHandler(buffer -> {
+        if (buffer.toString().equals("pong")) {
+          handler.signal(make("status:connected"));
+          log.info("Rest API ok");
+          preferREST = true;
+        }
+      });
+    }).setTimeout(5000L).exceptionHandler(exception -> {
+      log.severe("REST failure " + exception.getMessage());
+      exception.printStackTrace();
+      handler.signal(make("status:failure", "message:" + exception.getMessage()));
+    });
+    htr.end();
+  }
+
+
+  /**
+   * Connect to a lucinda server (Auto discover Server with distributed eventBus)
+   *
+   * @param prefix  The message prefix to use. This must macth the prefix of the desired server. If in doubt, use 'null'
+   * @param netmask The Network to use, e.g. 192.168.0.*
+   * @param handler The handler to call for lucinda related messages
+   */
+  public void connect(final String prefix, final String netmask, final Handler handler) {
+    this.prefix = prefix;
+    if (prefix == null) {
+      this.prefix = "ch.rgw.lucinda";
+    }
+    String ip = Util.matchIP(netmask);
+    log.info("trying IP " + ip);
+    if (!ip.isEmpty()) {
+      Config hazel = new Config();
+      NetworkConfig nc = hazel.getNetworkConfig();
+      nc.getInterfaces().setEnabled(true).addInterface(ip);
+      nc.setPublicAddress(ip);
+      vertxOptions.setClusterHost(ip);
+      vertxOptions.setClusterManager(new HazelcastClusterManager(hazel));
+    }
+    try {
+      Vertx.clusteredVertx(vertxOptions.setClustered(true), result -> {
+        if (result.succeeded()) {
+          log.info("Clustering succeded");
+          vertx = result.result();
+          vertx.eventBus().send(this.prefix + ".ping", new JsonObject(), msg -> {
+            if (msg.succeeded()) {
+              vertx.eventBus().consumer(this.prefix + ".error", err -> {
+                JsonObject errmsg = (JsonObject) err.body();
+                handler.signal(errmsg.getMap());
+              });
+              eventBusConnected = true;
+              JsonObject pong = (JsonObject) msg.result().body();
+              String server_ip = pong.getString("pong");
+              String api_version = pong.getString("rest");
+              if (api_version != null) {
+                api = "/api/" + api_version + "/";
+                HttpClientOptions hop = new HttpClientOptions().setDefaultHost(server_ip)
+                    .setDefaultPort(Integer.parseInt(pong.getString("port"))).setTryUseCompression(true)
+                    .setKeepAlive(true).setIdleTimeout(60);
+                http = vertx.createHttpClient(hop);
+                HttpClientRequest htr = http.request(HttpMethod.GET, api + "ping", response -> {
+                  response.bodyHandler(buffer -> {
+                    if (buffer.toString().equals("pong")) {
+                      handler.signal(make("status:REST ok"));
+                      log.info("Rest API ok");
+                      preferREST = true;
+                    }
+                  });
+                }).setTimeout(2000L).exceptionHandler(exception -> {
+                  log.severe("REST failure " + exception.getMessage());
+                  exception.printStackTrace();
+                  handler.signal(make("status:failure", "message:" + exception.getMessage()));
+                });
+                htr.end();
+              }
+              handler.signal(make("status:connected"));
+            } else {
+              log.warning("ping failed");
+              handler.signal(make("status:failure", "message:" + "ping fail " + msg.cause().getMessage()));
+            }
+          });
+
+
+        } else {
+          log.warning("Clustering failed ");
+          handler.signal(make("status:error", "message:" + "clustering fail " + result.cause().getMessage()));
+        }
+      });
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      handler.signal(make("status:exception", "message:" + ex.getMessage()));
+    }
+  }
+
+  /**
+   * Search the index
+   *
+   * @param queryPhrase What to search
+   * @param handler
+   */
+  public void query(final String queryPhrase, final Handler handler) {
+    http.post(api + "query", response -> {
+      if (response.statusCode() == 200) {
+        response.bodyHandler(buffer -> {
+          JsonObject result = buffer.toJsonObject();
+          handler.signal(result.getMap());
         });
-        htr.end();
-    }
+      } else if (response.statusCode() == 204) { // Empty result
+        Map result = add(make("status:ok"), "result", new ArrayList());
+        handler.signal(result);
+      } else {
+        handler.signal(make("status:error", "message:" + response.statusMessage()));
+      }
+    }).end(queryPhrase);
 
+  }
 
-    /**
-     * Connect to a lucinda server (EventBus and REST. Auto discover Server)
-     *
-     * @param prefix  The message prefix to use. This must macth the prefix of the desired server. If in doubt, use 'null'
-     * @param netmask The Network to use, e.g. 192.168.0.*
-     * @param handler The handler to call for lucinda related messages
-     */
-    public void connect(final String prefix, final String netmask, final Handler handler) {
-        this.prefix = prefix;
-        if (prefix == null) {
-            this.prefix = "ch.rgw.lucinda";
-        }
-        this.messageHandler = handler;
-        String ip = Util.matchIP(netmask);
-        log.info("trying IP " + ip);
-        if (!ip.isEmpty()) {
-            Config hazel = new Config();
-            NetworkConfig nc = hazel.getNetworkConfig();
-            nc.getInterfaces().setEnabled(true).addInterface(ip);
-            nc.setPublicAddress(ip);
-            vertxOptions.setClusterHost(ip);
-            vertxOptions.setClusterManager(new HazelcastClusterManager(hazel));
-        }
-        try {
-            Vertx.clusteredVertx(vertxOptions.setClustered(true), result -> {
-                if (result.succeeded()) {
-                    log.info("Clustering succeded");
-                    vertx = result.result();
-                    vertx.eventBus().send(this.prefix + ".ping", new JsonObject(), msg -> {
-                        if (msg.succeeded()) {
-                            vertx.eventBus().consumer(this.prefix + ".error", err -> {
-                                JsonObject errmsg = (JsonObject) err.body();
-                                messageHandler.signal(errmsg.getMap());
-                            });
-                            eventBusConnected = true;
-                            JsonObject pong = (JsonObject) msg.result().body();
-                            String server_ip = pong.getString("pong");
-                            String api_version = pong.getString("rest");
-                            if (api_version != null) {
-                                api = "/api/" + api_version + "/";
-                                HttpClientOptions hop = new HttpClientOptions().setDefaultHost(server_ip)
-                                        .setDefaultPort(Integer.parseInt(pong.getString("port"))).setTryUseCompression(true)
-                                        .setKeepAlive(true).setIdleTimeout(60);
-                                http = vertx.createHttpClient(hop);
-                                HttpClientRequest htr = http.request(HttpMethod.GET, api + "ping", response -> {
-                                    response.bodyHandler(buffer -> {
-                                        if (buffer.toString().equals("pong")) {
-                                            messageHandler.signal(make("status:REST ok"));
-                                            log.info("Rest API ok");
-                                            preferREST = true;
-                                        }
-                                    });
-                                }).setTimeout(2000L).exceptionHandler(exception -> {
-                                    log.severe("REST failure " + exception.getMessage());
-                                    exception.printStackTrace();
-                                    handler.signal(make("status:failure", "message:" + exception.getMessage()));
-                                });
-                                htr.end();
-                            }
-                            messageHandler.signal(make("status:connected"));
-                        } else {
-                            log.warning("ping failed");
-                            messageHandler.signal(make("status:failure", "message:" + "ping fail " + msg.cause().getMessage()));
-                        }
-                    });
+  /**
+   * retrieve a document from its id
+   *
+   * @param id      uinique id of the document
+   * @param handler
+   */
+  public void get(final String id, final Handler handler) {
+    http.getNow(api + "get/" + id, response -> {
+      if (response.statusCode() == 200) {
+        response.bodyHandler(buffer -> {
+          byte[] file = buffer.getBytes();
+          handler.signal(add(make("status:ok"), "result", file));
+        });
+      } else if (response.statusCode() == 404) {
+        handler.signal(make("status:not found"));
+      } else {
+        handler.signal(make("status:error", "message:" + response.statusMessage()));
+      }
+    });
+  }
 
+  /**
+   * Add a document to the index. Note: The document itself will not be stored, only parsed and added to the index.
+   * The caller must handle it by itself and make sure, that it can retrieve the document with the given id
+   *
+   * @param id       unique id for the document. The caller should be able to retrieve or reconstruct the document later with
+   *                 this id
+   * @param title    A title for the document.
+   * @param doctype  a random document type (this is mot the mime-type but rather some application dependant organisational attribute)
+   * @param metadata application efined metadata. These are stored with the index and can be queried for. Example: If there is
+   *                 an attribute "author: john doe", a later query can search for "author: john*"
+   * @param contents The file contents parse. Many file types are supported and recognized by content (not by file extension),
+   *                 such as .odt, .doc, .pdf, tif. Image files are parsed throug OCR and any foiund text is indexed
+   * @param handler  Handler to call after indexing
+   */
+  public void addToIndex(final String id, final String title, final String doctype, Map<String, Object> metadata, final byte[] contents, final Handler handler) {
 
-                } else {
-                    log.warning("Clustering failed ");
-                    messageHandler.signal(make("status:error", "message:" + "clustering fail " + result.cause().getMessage()));
-                }
-            });
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            messageHandler.signal(make("status:exception", "message:" + ex.getMessage()));
-        }
-    }
-
-    /**
-     * Search the index
-     *
-     * @param queryPhrase What to search
-     * @param handler
-     */
-    public void query(final String queryPhrase, final Handler handler) {
-        if (preferREST) {
-            http.post(api + "query", response -> {
-                if (response.statusCode() == 200) {
-                    response.bodyHandler(buffer -> {
-                        JsonObject result = buffer.toJsonObject();
-                        handler.signal(result.getMap());
-                    });
-                } else if (response.statusCode() == 204) { // Empty result
-                    Map result = add(make("status:ok"), "result", new ArrayList());
-                    handler.signal(result);
-                } else {
-                    handler.signal(make("status:error", "message:" + response.statusMessage()));
-                }
-            }).end(queryPhrase);
-        } else if (eventBusConnected) {
-            vertx.eventBus().send(prefix + ".find", new JsonObject().put("query", queryPhrase), result -> {
-                if (result.succeeded()) {
-                    JsonObject found = (JsonObject) result.result().body();
-                    handler.signal(found.getMap());
-                } else {
-                    handler.signal(make("status:error", "message:" + result.cause().getMessage()));
-                }
-            });
+    try {
+      JsonObject envelope = prepare(id, title, doctype, metadata, contents);
+      http.post(api + "index", response -> {
+        if (response.statusCode() == 200) {
+          handler.signal(make("status:ok"));
         } else {
-            handler.signal(make("status:error", "message:no connection"));
-
+          handler.signal(make("status:error", "message:" + response.statusMessage()));
         }
+      }).end(envelope.encode());
+
+    } catch (IOException ex) {
+      ex.printStackTrace();
+      handler.signal(make("status:error", "message:" + ex.getMessage()));
     }
 
-    /**
-     * retrieve a document from its id
-     *
-     * @param id      uinique id of the document
-     * @param handler
-     */
-    public void get(final String id, final Handler handler) {
-        if (preferREST) {
-            http.getNow(api + "get/" + id, response -> {
-                if (response.statusCode() == 200) {
-                    response.bodyHandler(buffer -> {
-                        byte[] file = buffer.getBytes();
-                        handler.signal(add(make("status:ok"), "result", file));
-                    });
-                } else if (response.statusCode() == 404) {
-                    handler.signal(make("status:not found"));
-                } else {
-                    handler.signal(make("status:error", "message:" + response.statusMessage()));
-                }
-            });
-        } else if (eventBusConnected) {
-            vertx.eventBus().send(prefix + ".get", new JsonObject().put("_id", id), result -> {
-                if (result.succeeded()) {
-                    JsonObject found = (JsonObject) result.result().body();
-                    handler.signal(add(make("status:ok"), "result", found.getBinary("result")));
-                } else {
-                    handler.signal(make("status:error", "message:" + result.cause().getMessage()));
-                }
-            });
+  }
+
+  /**
+   * Add a file to the Lucinda store and index.
+   *
+   * @param filename Name for the file to write (no path, only filename)
+   * @param concern  some grouping hint for the file (e.g. name of the group). The file will be stored in a subdirectory of that name.
+   *                 if concern is null, the base directory for imports is used.
+   * @param doctype  a random document type (this is mot the mime-type but rather some application dependant organisational attribute)
+   * @param metadata application efined metadata. These are stored with the index and can be queried for. Example: If there is
+   *                 an attribute "author: john doe", a later query can search for "author: john*"
+   * @param contents The file contents parse. Many file types are supported and recognized by content (not by file extension),
+   *                 such as .odt, .doc, .pdf, tif. Image files are parsed throug OCR and any foiund text is indexed
+   * @param handler  Handler to call after the import
+   */
+  public void addFile(final String filename, final String concern, final String doctype, Map<String, Object> metadata, final byte[] contents, final Handler handler) {
+
+    try {
+      JsonObject envelope = prepare("", filename, doctype, metadata, contents);
+      if (concern != null) {
+        envelope.put("concern", concern);
+      }
+      http.post(api + "index", response -> {
+        if (response.statusCode() == 201) {
+          handler.signal(make("status:ok"));
         } else {
-            handler.signal(make("status:error", "message:no connection"));
-
+          handler.signal(make("status:error", "message:" + response.statusMessage()));
         }
-    }
+      }).end(envelope.encode());
 
-    /**
-     * Add a document to the index. Note: The document itself will not be stored, only parsed and added to the index.
-     * The caller must handle it by itself and make sure, that it can retrieve the document with the given id
-     *
-     * @param id       unique id for the document. The caller should be able to retrieve or reconstruct the document later with
-     *                 this id
-     * @param title    A title for the document.
-     * @param doctype  a random document type (this is mot the mime-type but rather some application dependant organisational attribute)
-     * @param metadata application efined metadata. These are stored with the index and can be queried for. Example: If there is
-     *                 an attribute "author: john doe", a later query can search for "author: john*"
-     * @param contents The file contents parse. Many file types are supported and recognized by content (not by file extension),
-     *                 such as .odt, .doc, .pdf, tif. Image files are parsed throug OCR and any foiund text is indexed
-     * @param handler  Handler to call after indexing
-     */
-    public void addToIndex(final String id, final String title, final String doctype, Map<String, Object> metadata, final byte[] contents, final Handler handler) {
-
-        try {
-            JsonObject envelope = prepare(id, title, doctype, metadata, contents);
-            if (preferREST) {
-                http.post(api + "index", response -> {
-                    if (response.statusCode() == 200) {
-                        handler.signal(make("status:ok"));
-                    } else {
-                        handler.signal(make("status:error", "message:" + response.statusMessage()));
-                    }
-                }).end(envelope.encode());
-            } else if (eventBusConnected) {
-
-                vertx.eventBus().send(prefix + ".index", envelope, result -> {
-                    if (result.succeeded()) {
-                        handler.signal(make("status:ok"));
-                    } else {
-                        handler.signal(make("status:error", "message:" + result.cause().getMessage()));
-                    }
-                });
-            } else {
-                handler.signal(make("status:error", "message:no connection"));
-            }
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            handler.signal(make("status:error", "message:" + ex.getMessage()));
-        }
+    } catch (IOException ex) {
+      ex.printStackTrace();
+      handler.signal(make("status:error", "message:" + ex.getMessage()));
 
     }
+  }
 
-    /**
-     * Add a file to the Lucinda store and index.
-     *
-     * @param filename Name for the file to write (no path, only filename)
-     * @param concern  some grouping hint for the file (e.g. name of the group). The file will be stored in a subdirectory of that name.
-     *                 if concern is null, the base directory for imports is used.
-     * @param doctype  a random document type (this is mot the mime-type but rather some application dependant organisational attribute)
-     * @param metadata application efined metadata. These are stored with the index and can be queried for. Example: If there is
-     *                 an attribute "author: john doe", a later query can search for "author: john*"
-     * @param contents The file contents parse. Many file types are supported and recognized by content (not by file extension),
-     *                 such as .odt, .doc, .pdf, tif. Image files are parsed throug OCR and any foiund text is indexed
-     * @param handler  Handler to call after the import
-     */
-    public void addFile(final String filename, final String concern, final String doctype, Map<String, Object> metadata, final byte[] contents, final Handler handler) {
 
-        try {
-            JsonObject envelope = prepare("", filename, doctype, metadata, contents);
-            if (concern != null) {
-                envelope.put("concern", concern);
-            }
-            if (preferREST) {
-                http.post(api + "index", response -> {
-                    if (response.statusCode() == 201) {
-                        handler.signal(make("status:ok"));
-                    } else {
-                        handler.signal(make("status:error", "message:" + response.statusMessage()));
-                    }
-                }).end(envelope.encode());
-
-            } else if (eventBusConnected) {
-                vertx.eventBus().send(prefix + ".import", envelope, result -> {
-                    if (result.succeeded()) {
-                        handler.signal(make("status:ok"));
-                    } else {
-                        handler.signal(make("status:error", "message:" + result.cause().getMessage()));
-                    }
-                });
-            } else {
-                handler.signal(make("status:error", "message:no connection"));
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            handler.signal(make("status:error", "message:" + ex.getMessage()));
-
-        }
+  private JsonObject prepare(final String id, final String title, final String doctype, Map<String, Object> metadata, final byte[] contents) throws IOException {
+    if (metadata == null) {
+      metadata = new HashMap<>();
     }
-
-
-    private JsonObject prepare(final String id, final String title, final String doctype, Map<String, Object> metadata, final byte[] contents) throws IOException {
-        if (metadata == null) {
-            metadata = new HashMap<>();
-        }
-        if (!id.isEmpty()) {
-            metadata.put("_id", id);
-        }
-        metadata.put("title", title);
-        metadata.put("lucinda_doctype", doctype);
-        metadata.put("filename", title);
-        metadata.put("payload", contents);
-        return new JsonObject(metadata);
+    if (!id.isEmpty()) {
+      metadata.put("_id", id);
     }
+    metadata.put("title", title);
+    metadata.put("lucinda_doctype", doctype);
+    metadata.put("filename", title);
+    metadata.put("payload", contents);
+    return new JsonObject(metadata);
+  }
 
-    public void shutDown() {
-        eventBusConnected = false;
-        preferREST = false;
-        vertx.close();
-        http.close();
-    }
+  public void shutDown() {
+    eventBusConnected = false;
+    preferREST = false;
+    vertx.close();
+    http.close();
+  }
 
-    /* syntactic sugar to create and initialize a Map with a single call */
-    private Map<String, Object> make(String... params) {
-        Map<String, Object> ret = new HashMap<>();
-        for (String param : params) {
-            String[] p = param.split(":");
-            ret.put(p[0], p[1]);
-        }
-        return ret;
+  /* syntactic sugar to create and initialize a Map with a single call */
+  private Map<String, Object> make(String... params) {
+    Map<String, Object> ret = new HashMap<>();
+    for (String param : params) {
+      String[] p = param.split(":");
+      ret.put(p[0], p[1]);
     }
+    return ret;
+  }
 
-    /* syntactic sugar to allow fluent api */
-    private Map<String, Object> add(Map<String, Object> orig, String key, Object value) {
-        orig.put(key, value);
-        return orig;
-    }
+  /* syntactic sugar to allow fluent api */
+  private Map<String, Object> add(Map<String, Object> orig, String key, Object value) {
+    orig.put(key, value);
+    return orig;
+  }
 }
