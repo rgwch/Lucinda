@@ -191,11 +191,11 @@ class Autoscanner : AbstractVerticle() {
      */
     fun checkFile(file: Path) {
         log.entering("Autoscanner", "checkFile")
+        if(file.startsWith(".")){
+            return
+        }
         if (Files.isRegularFile(file) && (!Files.isHidden(file))) {
             val absolute = file.toFile().absolutePath
-            if (absolute.startsWith(".")) {
-                return
-            }
             log.info("checking ${absolute}")
             val id = makeID(file)
             val doc = indexManager.getDocument(id)
