@@ -147,7 +147,11 @@ class Autoscanner : AbstractVerticle() {
             override fun handle(future: Future<Int>) {
                 Files.walkFileTree(dir, object : SimpleFileVisitor<Path>() {
                     override fun visitFile(file: Path, attrs: BasicFileAttributes?): FileVisitResult {
-                        checkFile(file)
+                        try {
+                            checkFile(file)
+                        }catch(e: Exception){
+                            log.severe("Exception while checking ${file.toAbsolutePath()}, ${e.message}")
+                        }
                         return FileVisitResult.CONTINUE
                     }
 
@@ -168,7 +172,7 @@ class Autoscanner : AbstractVerticle() {
                 if (result.succeeded()) {
                     log.info("imported ${dir}")
                 } else {
-                    log.severe("import ${dir} failed")
+                    log.severe("import ${dir} failed (${result.cause().message})")
                 }
             }
         })
@@ -225,7 +229,9 @@ class Autoscanner : AbstractVerticle() {
             vertx.executeBlocking<Int>(FileImporter(file, fileMetadata), object : Handler<AsyncResult<Int>> {
                 override fun handle(result: AsyncResult<Int>) {
                     if (result.failed()) {
-                        vertx.eventBus().publish(Communicator.ADDR_ERROR, JsonObject().put("status", "error").put("message", "import ${file.toAbsolutePath()} failed." + result.cause().message))
+                        val errmsg="import ${file.toAbsolutePath()} failed." + result.cause().message
+                        log.severe(errmsg)
+                        vertx.eventBus().publish(Communicator.ADDR_ERROR, JsonObject().put("status", "error").put("message", errmsg))
                     }
                 }
             })
