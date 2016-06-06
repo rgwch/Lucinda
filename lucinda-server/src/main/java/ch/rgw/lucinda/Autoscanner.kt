@@ -191,59 +191,63 @@ class Autoscanner : AbstractVerticle() {
      */
     fun checkFile(file: Path) {
         log.entering("Autoscanner", "checkFile")
-        if(file.startsWith(".")){
-            return
-        }
-        if (Files.isRegularFile(file) && (!Files.isHidden(file))) {
-            val absolute = file.toFile().absolutePath
-            log.info("checking ${absolute}")
-            val id = makeID(file)
-            val doc = indexManager.getDocument(id)
-            if (doc == null) {
-                log.fine("did not find ${file}/${id} in index. Adding")
-                addFile(file)
+        if(!exclude(file)) {
+            if (Files.isRegularFile(file) && (!Files.isHidden(file))) {
+                val absolute = file.toFile().absolutePath
+                log.info("checking ${absolute}")
+                val id = makeID(file)
+                val doc = indexManager.getDocument(id)
+                if (doc == null) {
+                    log.fine("did not find ${file}/${id} in index. Adding")
+                    addFile(file)
+                }
             }
         }
         log.exiting("Autoscanner", "checkFile")
 
     }
 
+    private fun exclude(file: Path): Boolean {
+        if(file.fileName.startsWith(".") || Files.isHidden(file) || (Files.size(file)==0L)){
+            return true
+        }else{
+            return false;
+        }
+
+    }
 
     /**
      * Add an Item. If it is a directory, add it to the watch list. If it is a file, add it to the index
      */
     fun addFile(file: Path) {
-        if (Files.isHidden(file) || file.toString().startsWith(".")) {
-            return;
-        }
-        if (Files.size(file) == 0L) {
-            return
-        }
-        val filename=file.toFile().absolutePath
-        log.info("adding ${filename}")
-        if (Files.isDirectory(file, NOFOLLOW_LINKS)) {
-            val key = file.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY)
-            keys.put(key, file)
-        } else {
-            val fileMetadata = refiner.preProcess(filename, JsonObject()).put("_id",makeID(file))
-            vertx.executeBlocking<Int>(FileImporter(file, fileMetadata), object : Handler<AsyncResult<Int>> {
-                override fun handle(result: AsyncResult<Int>) {
-                    if (result.failed()) {
-                        val errmsg="import ${file.toAbsolutePath()} failed." + result.cause().message
-                        log.severe(errmsg)
-                        vertx.eventBus().publish(Communicator.ADDR_ERROR, JsonObject().put("status", "error").put("message", errmsg))
+        if(!exclude(file)) {
+            val filename = file.toFile().absolutePath
+            log.info("adding ${filename}")
+            if (Files.isDirectory(file, NOFOLLOW_LINKS)) {
+                val key = file.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY)
+                keys.put(key, file)
+            } else {
+                val fileMetadata = refiner.preProcess(filename, JsonObject()).put("_id", makeID(file))
+                vertx.executeBlocking<Int>(FileImporter(file, fileMetadata), object : Handler<AsyncResult<Int>> {
+                    override fun handle(result: AsyncResult<Int>) {
+                        if (result.failed()) {
+                            val errmsg = "import ${file.toAbsolutePath()} failed." + result.cause().message
+                            log.severe(errmsg)
+                            vertx.eventBus().publish(Communicator.ADDR_ERROR, JsonObject().put("status", "error").put("message", errmsg))
+                        }
                     }
-                }
-            })
+                })
+            }
         }
     }
 
     fun removeFile(file: Path) {
-        val absolute = file.toFile().absolutePath
-        log.info("removing ${absolute}")
-        val id = makeID(file)
-        indexManager.removeDocument(id)
-
+        if(!exclude(file)) {
+            val absolute = file.toFile().absolutePath
+            log.info("removing ${absolute}")
+            val id = makeID(file)
+            indexManager.removeDocument(id)
+        }
     }
 
 
