@@ -69,9 +69,9 @@ class FileImporter(val file: Path, val fileMetadata: JsonObject) : Handler<Futur
      * time, this method is called. So We'll retry in such cases after a while
      */
     override fun handle(future: Future<Int>) {
-        var retryCount=0
+        var retryCount = 0
         var errmsg = ""
-        while (retryCount<2) {
+        while (retryCount < 2) {
             log.fine("handle: ${file.fileName}")
             errmsg = process();
             if (errmsg.isEmpty()) {
@@ -110,55 +110,60 @@ class FileImporter(val file: Path, val fileMetadata: JsonObject) : Handler<Futur
             val doc = indexManager.addDocument(ByteArrayInputStream(payload), fileMetadata);
             val text = doc.getField("text").stringValue()
             if ( (text.length < 15) and (doc.get("content-type").equals("application/pdf"))) {
-                var failed = false;
-                // if we don't get much text out of a pdf, it's probably a scan containing only one or more images.
-                val basename = temppath + "/" + makeHash(filename)
-                log.info("Seems to be a PDF with only image(s). Trying OCR as ${basename}")
-                try {
-                    // This will throw an exception if the pdf is invalid.
-                    val document = PDDocument.load(filename);
-                    val list = document.getDocumentCatalog().getAllPages();
-                    var numImages = 0;
-                    list.forEach { page ->
-                        val pdResources = (page as? PDPage)?.getResources();
-                        val pageImages = pdResources?.xObjects
-                        val imageIter = pageImages?.keys?.iterator();
-                        imageIter?.forEach {
-                            val pdxObjectImage = pageImages?.get(it);
-                            if (pdxObjectImage is PDXObjectImage) {
-                                val imgName = basename + "_" + (++numImages).toString()
-                                pdxObjectImage.write2file(imgName);
-                                val sourcename = imgName + "." + pdxObjectImage.suffix
-                                val result = doOCR(sourcename, imgName)
-                                FileTool.deleteFile(sourcename)
-                                if (result) {
-                                    val plaintext = File(imgName + ".txt")
-                                    if (plaintext.exists() and plaintext.canRead() and (plaintext.length() > 10L)) {
-                                        val newtext = FileTool.readTextFile(plaintext)
-                                        doc.add(TextField("text", newtext, Field.Store.NO))
-                                        indexManager.updateDocument(doc)
-                                        plaintext.delete()
+                if (text == "unparseable") {
+                    log.info("unparseable text")
+                    return "";
+                } else {
+                    var failed = false;
+                    // if we don't get much text out of a pdf, it's probably a scan containing only one or more images.
+                    val basename = temppath + "/" + makeHash(filename)
+                    log.info("Seems to be a PDF with only image(s). Trying OCR as ${basename}")
+                    try {
+                        // This will throw an exception if the pdf is invalid.
+                        val document = PDDocument.load(filename);
+                        val list = document.getDocumentCatalog().getAllPages();
+                        var numImages = 0;
+                        list.forEach { page ->
+                            val pdResources = (page as? PDPage)?.getResources();
+                            val pageImages = pdResources?.xObjects
+                            val imageIter = pageImages?.keys?.iterator();
+                            imageIter?.forEach {
+                                val pdxObjectImage = pageImages?.get(it);
+                                if (pdxObjectImage is PDXObjectImage) {
+                                    val imgName = basename + "_" + (++numImages).toString()
+                                    pdxObjectImage.write2file(imgName);
+                                    val sourcename = imgName + "." + pdxObjectImage.suffix
+                                    val result = doOCR(sourcename, imgName)
+                                    FileTool.deleteFile(sourcename)
+                                    if (result) {
+                                        val plaintext = File(imgName + ".txt")
+                                        if (plaintext.exists() and plaintext.canRead() and (plaintext.length() > 10L)) {
+                                            val newtext = FileTool.readTextFile(plaintext)
+                                            doc.add(TextField("text", newtext, Field.Store.NO))
+                                            indexManager.updateDocument(doc)
+                                            plaintext.delete()
+                                        } else {
+                                            log.warning("no text content found in ${filename}")
+                                        }
                                     } else {
-                                        log.warning("no text content found in ${filename}")
+                                        failed = true
                                     }
-                                } else {
-                                    failed = true
                                 }
                             }
                         }
-                    }
-                    document.close()
-                    if (failed) {
-                        FileTool.copyFile(file.toFile(), File(failures, file.fileName.toString()), FileTool.BACKUP_IF_EXISTS)
-                        return ("import failed.")
-                    } else {
-                        return "";
-                    }
+                        document.close()
+                        if (failed) {
+                            FileTool.copyFile(file.toFile(), File(failures, file.fileName.toString()), FileTool.BACKUP_IF_EXISTS)
+                            return ("import failed.")
+                        } else {
+                            return "";
+                        }
 
-                } catch(ex: Exception) {
-                    ex.printStackTrace()
-                    log.severe("Fatal error in pdf file ${filename}: ${ex.message}")
-                    return ("Exception thrown: ${ex.message}")
+                    } catch(ex: Exception) {
+                        ex.printStackTrace()
+                        log.severe("Fatal error in pdf file ${filename}: ${ex.message}")
+                        return ("Exception thrown: ${ex.message}")
+                    }
                 }
             } else {
                 // no pdf or text too short

@@ -38,7 +38,7 @@ public class LuceneTest {
     FileTool.deltree(index.getAbsolutePath());
   }
 
-  @Test
+  @Test @Ignore
   public void indexDirect(){
     Document doc=new Document();
     doc.add(new StringField("AAA","Test Feld aaa", Field.Store.YES));
@@ -52,7 +52,7 @@ public class LuceneTest {
 
   }
 
-  @Test
+  @Test @Ignore
   public void add() throws IOException{
     FileInputStream fis=new FileInputStream("target/test-classes/user.cfg");
     indexManager.addDocument(fis,insert());
@@ -62,7 +62,7 @@ public class LuceneTest {
 
   }
 
-  @Test
+  @Test @Ignore
   public void update() throws IOException{
     FileInputStream fis=new FileInputStream("target/test-classes/user.cfg");
     indexManager.addDocument(fis,insert());
@@ -75,7 +75,7 @@ public class LuceneTest {
     assertEquals(1,indexManager.queryDocuments("CCC: Test*",100).size());
   }
 
-  @Test
+  @Test @Ignore
   public void delete()throws IOException{
     FileInputStream fis=new FileInputStream("target/test-classes/user.cfg");
     indexManager.addDocument(fis,insert());

@@ -143,7 +143,7 @@ class IndexManager(directory: String) {
         }
         doc.removeFields("parseDate")
         doc.add(StringField("parseDate", TimeTool().toString(TimeTool.DATE_COMPACT),Field.Store.YES))
-        doc.add(TextField("text", text, Field.Store.NO))
+        doc.add(TextField("text", if(text.isEmpty()) "unparseable" else text, Field.Store.NO))
         updateDocument(doc)
         return doc
     }

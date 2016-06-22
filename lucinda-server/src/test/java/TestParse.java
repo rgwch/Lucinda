@@ -37,7 +37,7 @@ public class TestParse {
 
     }
 
-    @Test @Ignore
+    @Test
     public void testParse() throws Exception {
         File file = new File("target/test-classes/test.odt");
         //System.out.print(file.getAbsolutePath());
@@ -55,5 +55,11 @@ public class TestParse {
             System.out.print(Json.encodePrettily(doc));
         }
         */
+        file=new File("target/test-classes/encrypted.pdf");
+        fis = new FileInputStream(file);
+        indexManager.addDocument(fis, new JsonObject().put("uri", file.getAbsolutePath()).put("_id","3"));
+        fis.close();
+        JsonArray rx = indexManager.queryDocuments("enc", 10);
+
     }
 }

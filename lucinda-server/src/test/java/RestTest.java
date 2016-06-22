@@ -104,7 +104,7 @@ public class RestTest {
         hcr.end(Json.encode(jo));
     }
 
-    @Test
+    @Test @Ignore
     public void testUpdate(TestContext ctx){
         byte[] cnt={1,2,3,4,5,6,7,8,9,10};
         JsonObject jo=new JsonObject()

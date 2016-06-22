@@ -99,7 +99,7 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
                                 ctx.response().end(Json.encode(JsonObject().put("status", "ok").put("_id", j.getString("_id"))))
                             } else {
                                 log.warning("failed to import ${j.getString("url")}; ${result.cause().message}")
-                                ctx.response().statusCode = 500
+                                ctx.response().statusCode = 406
                                 ctx.response().end(Json.encode(JsonObject().put("status", "fail").put("_id", j.getString("_id")).put("message", result.cause().message)))
                             }
                         }

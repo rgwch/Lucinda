@@ -4,6 +4,7 @@ import ch.rgw.io.FileTool;
 import io.vertx.core.json.JsonObject;
 import static org.junit.Assert.*;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 
 public class RefinerTest {
 
-    @Test
+    @Test @Ignore
     public void testRefiner() throws Exception {
         testFile("target/store/meier_hans_21.04.1970/testrnd.file");
         testFile("target/store/meier_hans_21.4.1970/testrnd.file");
