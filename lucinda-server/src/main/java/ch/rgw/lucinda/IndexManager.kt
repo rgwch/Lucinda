@@ -106,7 +106,14 @@ class IndexManager(directory: String) {
         val context = ParseContext()
         val parser = AutoDetectParser()
 
-        parser.parse(istream, handler, metadata, context)
+        try {
+            parser.parse(istream, handler, metadata, context)
+        }catch(ex: Exception){
+            // e.g. org.apache.tika.sax.WriteLimitReachedException
+            // In that case, Data up to the limit (100K) will be available and can be read.
+            // so, just write a log entry and continue
+            log.warning(ex.message)
+        }
 
         val text = handler.toString()
         val doc = Document()
