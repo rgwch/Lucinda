@@ -124,7 +124,7 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
                     dispatcher.indexAndStore(j, object : Handler<AsyncResult<Int>> {
                         override fun handle(result: AsyncResult<Int>) {
                             if (result.succeeded()) {
-                                log.info("indexed ${j.getString("title")}")
+                                log.info("added ${j.getString("title")}")
                                 ctx.response().putHeader("content-type", "application/json; charset=utf-8")
                                 ctx.response().statusCode = 201
                                 ctx.response().statusMessage = "content indexed and added"
