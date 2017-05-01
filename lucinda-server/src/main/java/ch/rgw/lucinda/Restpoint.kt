@@ -20,10 +20,12 @@ import io.vertx.core.AsyncResult
 import io.vertx.core.Future
 import io.vertx.core.Handler
 import io.vertx.core.buffer.Buffer
+import io.vertx.core.http.HttpMethod
 import io.vertx.core.http.HttpServerOptions
 import io.vertx.core.json.Json
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
+import io.vertx.ext.web.handler.CorsHandler
 import java.util.logging.Logger
 
 
@@ -42,6 +44,12 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
         super.start()
         val dispatcher = Dispatcher(cfg, vertx);
         val router = Router.router(vertx)
+
+
+        router.route().handler(CorsHandler.create("*").allowedMethod(HttpMethod.GET)
+                .allowedMethod(HttpMethod.PUT)
+                .allowedHeader("X-sid"));
+
 
         router.get("/api/${APIVERSION}/ping").handler { ctx ->
             ctx.response().end("pong")

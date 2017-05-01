@@ -6,9 +6,9 @@
 
     <groupId>ch.rgw</groupId>
     <artifactId>lucinda-server</artifactId>
-    <version>1.1.4-SNAPSHOT</version>
+    <version>1.1.5-SNAPSHOT</version>
     <properties>
-        <kotlin.version>1.0.2</kotlin.version>
+        <kotlin.version>1.1.2</kotlin.version>
         <lucene-version>6.0.0</lucene-version>
         <tika-version>1.12</tika-version>
         <vertx-version>3.2.1</vertx-version>
