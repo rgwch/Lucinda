@@ -26,6 +26,7 @@ import io.vertx.core.json.Json
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.CorsHandler
+import io.vertx.ext.web.handler.StaticHandler
 import java.util.logging.Logger
 
 
@@ -42,14 +43,15 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
 
     override fun start(future: Future<Void>) {
         super.start()
-        val dispatcher = Dispatcher(cfg, vertx);
+        val dispatcher = Dispatcher(cfg, vertx)
         val router = Router.router(vertx)
 
 
         router.route().handler(CorsHandler.create("*").allowedMethod(HttpMethod.GET)
                 .allowedMethod(HttpMethod.PUT)
-                .allowedHeader("X-sid"));
+                .allowedHeader("X-sid"))
 
+        router.route("/documents/*").handler(StaticHandler.create(cfg.get("fs_watch")))
 
         router.get("/api/${APIVERSION}/ping").handler { ctx ->
             ctx.response().end("pong")
@@ -84,7 +86,7 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
             val id = ctx.request().getParam("id")
             val bytes = Buffer.buffer(dispatcher.get(id))
             if(bytes==null){
-                ctx.response().setStatusCode(404).end();
+                ctx.response().setStatusCode(404).end()
             }else {
                 ctx.response().putHeader("content-type", "application/octet-stream").setStatusCode(200).end(bytes)
             }
