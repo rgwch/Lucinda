@@ -22,8 +22,8 @@ import io.vertx.core.json.JsonObject
 import org.apache.lucene.document.Field
 import org.apache.lucene.document.TextField
 import org.apache.pdfbox.pdmodel.PDDocument
-import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage
+import org.apache.pdfbox.pdmodel.PDPage
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.nio.file.Path
@@ -180,7 +180,7 @@ class FileImporter(val file: Path, val fileMetadata: JsonObject) : Handler<Futur
 
     /**
      * Try to OCR an image document. If tesseract doesn't return after TIMEOUT seconds,
-     * stopit
+     * stop it
      */
 
     val TIMEOUT = 300L;
