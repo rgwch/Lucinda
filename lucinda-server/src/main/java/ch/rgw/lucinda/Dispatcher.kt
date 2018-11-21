@@ -59,7 +59,7 @@ class Dispatcher(val cfg: Configuration, val vertx: Vertx) {
      * @param parm a JsonObject with the following properties:<ul>
      *     <li>lang - a 2 letter String describing the language to use for the indexer (recognizing of stop words, word stems and so on). This
      *     time, "de", "en", "fr", and "it" are supported. If another String is given, a default Analyzer will be used.
-     *     <li>payload - a byte array with the contents of the document. This well be removed after indexing</li>
+     *     <li>payload - a byte array with the contents of the document. This will be removed after indexing</li>
      *     <li>zero or more key-value pairs as metadata of the object to add</li>
      *     </ul>
      *
