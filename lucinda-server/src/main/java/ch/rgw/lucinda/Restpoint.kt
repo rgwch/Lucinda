@@ -39,7 +39,7 @@ import java.util.logging.Logger
  */
 class Restpoint(val cfg: Configuration) : AbstractVerticle() {
     val log = Logger.getLogger("Restpoint")
-    val APIVERSION = "1.0"
+    val APIVERSION = "2.0"
 
     override fun start(future: Future<Void>) {
         super.start()
@@ -53,14 +53,14 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
 
         router.route("/documents/*").handler(StaticHandler.create(cfg.get("fs_watch")))
 
-        router.get("/api/${APIVERSION}/ping").handler { ctx ->
-            ctx.response().end("pong")
+        router.get("/lucinda/${APIVERSION}/ping").handler { ctx ->
+            ctx.response().end("Welcome to Lucinda v 2.0.0")
             log.info("we've got a ping!")
         }
         /**
          * find files
          */
-        router.post("/api/${APIVERSION}/query").handler { ctx ->
+        router.post("/lucinda/${APIVERSION}/query").handler { ctx ->
             ctx.request().bodyHandler { buffer ->
                 val j = buffer.toString()
                 log.info("got REST " + j)
@@ -82,7 +82,7 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
         /**
          * Retrieve a file by _id
          */
-        router.get("/api/${APIVERSION}/get/:id").handler { ctx ->
+        router.get("/lucinda/${APIVERSION}/get/:id").handler { ctx ->
             val id = ctx.request().getParam("id")
             val bytes = Buffer.buffer(dispatcher.get(id))
             if(bytes==null){
@@ -95,7 +95,7 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
         /**
          * Index a file without adding it to the store
          */
-        router.post("/api/${APIVERSION}/index").handler { ctx ->
+        router.post("/lucinda/${APIVERSION}/index").handler { ctx ->
             ctx.request().bodyHandler { buffer ->
                 try {
                     val j = buffer.toJsonObject()
@@ -127,7 +127,7 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
         /**
          * Add a file t the index and to the store
          */
-        router.post("/api/${APIVERSION}/addfile").handler { ctx ->
+        router.post("/lucinda/${APIVERSION}/addfile").handler { ctx ->
             ctx.request().bodyHandler { buffer ->
                 try {
                     val j = buffer.toJsonObject()
@@ -155,7 +155,7 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
             }
         }
 
-        router.post("/api/${APIVERSION}/update").handler { ctx ->
+        router.post("/lucinda/${APIVERSION}/update").handler { ctx ->
             ctx.request().bodyHandler { buffer ->
                 try {
                     dispatcher.update(buffer.toJsonObject())
