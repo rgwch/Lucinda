@@ -170,6 +170,7 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
             ctx.request().bodyHandler { buffer ->
                 try {
                     dispatcher.update(buffer.toJsonObject())
+                    ctx.response().putHeader("content-type", "application/json; charset=utf-8")
                     ctx.response().statusCode = 202
                     ctx.response().statusMessage = "update ok"
                     ctx.response().end()
@@ -183,18 +184,20 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
 
         }
 
-        router.get("/lucinda/${APIVERSION}/remove/:id").handler{ctx->
-            val id=ctx.request().getParam("id")
+        router.get("/lucinda/${APIVERSION}/remove/:id").handler { ctx ->
+            val id = ctx.request().getParam("id")
             try {
                 indexManager.removeDocument(id)
-                ctx.response().statusCode=200
-                ctx.response().statusMessage="Document removed"
+                ctx.response().putHeader("content-type", "application/json; charset=utf-8")
+                ctx.response().statusCode = 200
+                ctx.response().statusMessage = "Document removed"
                 ctx.response().end(Json.encode(JsonObject().put("status", "ok")))
 
-            }catch(e: Exception){
-                log.warning("remove failed "+ e.message)
-                ctx.response().statusCode=500
-                ctx.response().end(Json.encode(JsonObject().put("status","fail")))
+            } catch (e: Exception) {
+                log.warning("remove failed " + e.message)
+                ctx.response().statusCode = 500
+                ctx.response().putHeader("content-type", "application/json; charset=utf-8")
+                ctx.response().end(Json.encode(JsonObject().put("status", "fail")))
             }
         }
 
