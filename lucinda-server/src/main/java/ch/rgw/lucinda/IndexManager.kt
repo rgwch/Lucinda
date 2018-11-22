@@ -138,7 +138,7 @@ class IndexManager(directory: String) {
         attributes.fieldNames().forEach {
             doc.add(when(it){
               "_id","uuid", "birthdate" -> StringField(it, attributes.getString(it), Field.Store.YES)
-              else -> TextField(it, attributes.getString(it),Field.Store.YES)
+              else -> TextField(it, attributes.getValue(it).toString(),Field.Store.YES)
             })
         }
         doc.removeFields("parseDate")
