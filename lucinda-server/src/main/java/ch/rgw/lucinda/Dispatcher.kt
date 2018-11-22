@@ -118,11 +118,15 @@ class Dispatcher(val cfg: Configuration, val vertx: Vertx) {
     fun get(id: String): ByteArray? {
         val doc: Document? = indexManager.getDocument(id)
         if (doc != null) {
-            val file = File(doc.get("url"))
-            if (file.exists() && file.canRead()) {
-                return FileTool.readFile(file)
-            } else {
-                throw FileNotFoundException(file.absolutePath)
+            val url = doc.get("url")
+            if (url != null) {
+                val file = File(doc.get("url"))
+                if (file.exists() && file.canRead()) {
+                    return FileTool.readFile(file)
+                } else {
+                    throw FileNotFoundException(file.absolutePath)
+
+                }
             }
         }
         return null;
@@ -132,7 +136,7 @@ class Dispatcher(val cfg: Configuration, val vertx: Vertx) {
         val doc: Document? = indexManager.getDocument(o.getString("_id"))
         if (doc != null) {
             o.map.forEach {
-                if(it.key!="_id" && it.key!="payload") {
+                if (it.key != "_id" && it.key != "payload") {
                     val f = doc.getField(it.key)
                     if (f != null) {
                         doc.removeField(it.key)
