@@ -45,7 +45,7 @@ class Dispatcher(val cfg: Configuration, val vertx: Vertx) {
         val concern = parms.getString("concern")
         val key = parms.getBinary("key")
         val dir = cfg.get("fs_import", "target/store") + (if (concern != null) {
-            File.separator + concern
+            File.separator + concern.substring(0,2)+File.separator+concern
         } else "")
         return File(dir, fname)
     }

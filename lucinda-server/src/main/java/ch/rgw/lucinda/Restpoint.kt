@@ -183,6 +183,21 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
 
         }
 
+        router.get("/lucinda/${APIVERSION}/remove/:id").handler{ctx->
+            val id=ctx.request().getParam("id")
+            try {
+                indexManager.removeDocument(id)
+                ctx.response().statusCode=200
+                ctx.response().statusMessage="Document removed"
+                ctx.response().end(Json.encode(JsonObject().put("status", "ok")))
+
+            }catch(e: Exception){
+                log.warning("remove failed "+ e.message)
+                ctx.response().statusCode=500
+                ctx.response().end(Json.encode(JsonObject().put("status","fail")))
+            }
+        }
+
         val hso = HttpServerOptions().setCompressionSupported(true).setIdleTimeout(0).setTcpKeepAlive(true)
         vertx.createHttpServer(hso)
                 .requestHandler { request -> router.accept(request) }
