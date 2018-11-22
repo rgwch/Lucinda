@@ -44,7 +44,7 @@ public class RestTest {
         vertx.close(ctx.asyncAssertSuccess());
     }
 
-    @Test
+    @Test @Ignore
     public void testPing(TestContext ctx) {
         Async async=ctx.async();
         http.getNow("/api/1.0/ping", response -> {
@@ -57,7 +57,7 @@ public class RestTest {
 
     }
 
-    @Test
+    @Test @Ignore
     public void testAddFile(TestContext ctx) throws Exception {
         File file = new File("target/test-classes/test.odt");
         //System.out.print(file.getAbsolutePath());
@@ -85,7 +85,7 @@ public class RestTest {
         hcr.end(Json.encode(jo));
     }
 
-    @Test
+    @Test @Ignore
     public void testIndexFile(TestContext ctx) throws Exception{
         File file = new File("target/test-classes/test.pdf");
         byte[] cnt= FileTool.readFile(file);
