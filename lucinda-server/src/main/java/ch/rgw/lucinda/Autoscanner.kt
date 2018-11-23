@@ -233,7 +233,7 @@ class Autoscanner : AbstractVerticle() {
                         if (result.failed()) {
                             val errmsg = "import ${file.toAbsolutePath()} failed." + result.cause().message
                             log.severe(errmsg)
-                            vertx.eventBus().publish(Communicator.ADDR_ERROR, JsonObject().put("status", "error").put("message", errmsg))
+                            // vertx.eventBus().publish(Communicator.ADDR_ERROR, JsonObject().put("status", "error").put("message", errmsg))
                         }
                     }
                 })

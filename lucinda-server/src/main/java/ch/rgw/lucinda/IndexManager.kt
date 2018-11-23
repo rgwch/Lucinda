@@ -66,7 +66,7 @@ class IndexManager(directory: String) {
     val writer: IndexWriter by lazy {
         log.info("opening index in create or append mode")
         val conf = IndexWriterConfig(analyzer).setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND)
-        conf.maxBufferedDeleteTerms = 1
+        // conf.maxBufferedDeleteTerms = 1
         val index = FSDirectory.open(FileSystems.getDefault().getPath(directory))
         IndexWriter(index, conf)
     }
@@ -138,7 +138,7 @@ class IndexManager(directory: String) {
         attributes.fieldNames().forEach {
             doc.add(when(it){
               "_id","uuid", "birthdate" -> StringField(it, attributes.getString(it), Field.Store.YES)
-              else -> TextField(it, attributes.getString(it),Field.Store.YES)
+              else -> TextField(it, attributes.getValue(it).toString(),Field.Store.YES)
             })
         }
         doc.removeFields("parseDate")
@@ -214,7 +214,7 @@ class IndexManager(directory: String) {
             if (result.totalHits > 1) {
                 log.severe("Lucene index corrupt: Duplicate _id: ${id}")
             }
-            if (result.totalHits == 0) {
+            if (result.totalHits == 0L) {
                 return null
             }
             val ret= searcher.doc(result.scoreDocs[0].doc)

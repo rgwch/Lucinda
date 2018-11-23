@@ -39,7 +39,7 @@ import java.util.logging.Logger
  */
 class Restpoint(val cfg: Configuration) : AbstractVerticle() {
     val log = Logger.getLogger("Restpoint")
-    val APIVERSION = "1.0"
+    val APIVERSION = "2.0"
 
     override fun start(future: Future<Void>) {
         super.start()
@@ -53,26 +53,26 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
 
         router.route("/documents/*").handler(StaticHandler.create(cfg.get("fs_watch")))
 
-        router.get("/api/${APIVERSION}/ping").handler { ctx ->
-            ctx.response().end("pong")
+        router.get("/lucinda/${APIVERSION}/ping").handler { ctx ->
+            ctx.response().end("Welcome to Lucinda v 2.0.0")
             log.info("we've got a ping!")
         }
         /**
          * find files
          */
-        router.post("/api/${APIVERSION}/query").handler { ctx ->
+        router.post("/lucinda/${APIVERSION}/query").handler { ctx ->
             ctx.request().bodyHandler { buffer ->
                 val j = buffer.toString()
                 log.info("got REST " + j)
                 try {
                     val result = dispatcher.find(JsonObject().put("query", j))
-                    if(result.isEmpty){
+                    if (result.isEmpty) {
                         ctx.response().setStatusCode(204).end()
-                    }else {
-                        val resp=JsonObject().put("status","ok").put("result",result)
+                    } else {
+                        val resp = JsonObject().put("status", "ok").put("result", result)
                         ctx.response().setStatusCode(200).putHeader("content-type", "application/json; charset=utf-8").end(Json.encode(resp))
                     }
-                } catch(ex: Exception) {
+                } catch (ex: Exception) {
                     ctx.response().setStatusCode(400).end(ex.message)
                 }
             }
@@ -82,20 +82,28 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
         /**
          * Retrieve a file by _id
          */
-        router.get("/api/${APIVERSION}/get/:id").handler { ctx ->
+        router.get("/lucinda/${APIVERSION}/get/:id").handler { ctx ->
             val id = ctx.request().getParam("id")
-            val bytes = Buffer.buffer(dispatcher.get(id))
-            if(bytes==null){
+            val contents = dispatcher.get(id)
+            if (contents != null) {
+                val bytes = Buffer.buffer(contents)
+                if (bytes == null) {
+                    ctx.response().setStatusCode(404).end()
+                } else {
+                    ctx.response().putHeader("content-type", "application/octet-stream").setStatusCode(200).end(bytes)
+                }
+            } else {
                 ctx.response().setStatusCode(404).end()
-            }else {
-                ctx.response().putHeader("content-type", "application/octet-stream").setStatusCode(200).end(bytes)
             }
         }
 
         /**
          * Index a file without adding it to the store
+         * request body must be a JSON object with a field 'payload' which contains the file to index as base64,
+         * and ansy number of keys for metadata.
+         * return: StatusCode 200, json: {status: "ok", _id: "some_uuid"}
          */
-        router.post("/api/${APIVERSION}/index").handler { ctx ->
+        router.post("/lucinda/${APIVERSION}/index").handler { ctx ->
             ctx.request().bodyHandler { buffer ->
                 try {
                     val j = buffer.toJsonObject()
@@ -115,7 +123,7 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
                         }
 
                     })
-                } catch(e: Exception) {
+                } catch (e: Exception) {
                     e.printStackTrace()
                     log.severe("Exception while handling request " + e.message)
                     ctx.response().setStatusCode(400).end("failed to import")
@@ -125,9 +133,12 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
         }
 
         /**
-         * Add a file t the index and to the store
+         * Index a file and add it to the store
+         * request body must be a JSON object with a field 'payload' which contains the file to index as base64,
+         * and ansy number of keys for metadata.
+         * return: StatusCode 200, json: {status: "ok", _id: "some_uuid"}
          */
-        router.post("/api/${APIVERSION}/addfile").handler { ctx ->
+        router.post("/lucinda/${APIVERSION}/addfile").handler { ctx ->
             ctx.request().bodyHandler { buffer ->
                 try {
                     val j = buffer.toJsonObject()
@@ -147,7 +158,7 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
 
                         }
                     })
-                } catch(e: Exception) {
+                } catch (e: Exception) {
                     e.printStackTrace()
                     log.severe("Exception while handling request " + e.message)
                     ctx.response().setStatusCode(400).end("failed to import")
@@ -155,14 +166,15 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
             }
         }
 
-        router.post("/api/${APIVERSION}/update").handler { ctx ->
+        router.post("/lucinda/${APIVERSION}/update").handler { ctx ->
             ctx.request().bodyHandler { buffer ->
                 try {
                     dispatcher.update(buffer.toJsonObject())
+                    ctx.response().putHeader("content-type", "application/json; charset=utf-8")
                     ctx.response().statusCode = 202
                     ctx.response().statusMessage = "update ok"
                     ctx.response().end()
-                } catch(e: Exception) {
+                } catch (e: Exception) {
                     log.warning("update failed ${buffer.toString()}; ${e.message}")
                     ctx.response().setStatusCode(417).end()
 
@@ -172,11 +184,27 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
 
         }
 
-        val hso=HttpServerOptions().setCompressionSupported(true).setIdleTimeout(0).setTcpKeepAlive(true)
+        router.get("/lucinda/${APIVERSION}/remove/:id").handler { ctx ->
+            val id = ctx.request().getParam("id")
+            try {
+                indexManager.removeDocument(id)
+                ctx.response().putHeader("content-type", "application/json; charset=utf-8")
+                ctx.response().statusCode = 200
+                ctx.response().statusMessage = "Document removed"
+                ctx.response().end(Json.encode(JsonObject().put("status", "ok")))
+
+            } catch (e: Exception) {
+                log.warning("remove failed " + e.message)
+                ctx.response().statusCode = 500
+                ctx.response().putHeader("content-type", "application/json; charset=utf-8")
+                ctx.response().end(Json.encode(JsonObject().put("status", "fail")))
+            }
+        }
+
+        val hso = HttpServerOptions().setCompressionSupported(true).setIdleTimeout(0).setTcpKeepAlive(true)
         vertx.createHttpServer(hso)
                 .requestHandler { request -> router.accept(request) }
-                .listen(cfg.get("rest_port", "2016").toInt()) {
-                    result ->
+                .listen(cfg.get("rest_port", "2016").toInt()) { result ->
                     if (result.succeeded()) {
                         future.complete()
                     } else {

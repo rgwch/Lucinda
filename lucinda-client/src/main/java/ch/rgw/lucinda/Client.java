@@ -1,13 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2016 by G. Weirich
- * <p/>
- * <p/>
+ * Copyright (c) 2016-2018 by G. Weirich
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * <p/>
- * <p/>
  * Contributors:
  * G. Weirich - initial implementation
  ******************************************************************************/
@@ -36,7 +32,7 @@ import java.util.logging.Logger;
  * Created by gerry on 10.05.16.
  */
 public class Client {
-  private String api = "/api/1.0/";
+  private String api = "/lucinda/2.0/";
   private Vertx vertx;
   private String prefix;
   private boolean eventBusConnected = false;
@@ -61,7 +57,7 @@ public class Client {
     http = vertx.createHttpClient(hop);
     HttpClientRequest htr = http.request(HttpMethod.GET, api + "ping", response -> {
       response.bodyHandler(buffer -> {
-        if (buffer.toString().equals("pong")) {
+        if (buffer.toString().startsWith("Welcome")) {
           handler.signal(make("status:connected"));
           log.info("Rest API ok");
           preferREST = true;
@@ -75,83 +71,6 @@ public class Client {
     htr.end();
   }
 
-
-  /**
-   * Connect to a lucinda server (Auto discover Server with distributed eventBus)
-   *
-   * @param prefix  The message prefix to use. This must macth the prefix of the desired server. If in doubt, use 'null'
-   * @param netmask The Network to use, e.g. 192.168.0.*
-   * @param handler The handler to call for lucinda related messages
-   */
-  public void connect(final String prefix, final String netmask, final Handler handler) {
-    this.prefix = prefix;
-    if (prefix == null) {
-      this.prefix = "ch.rgw.lucinda";
-    }
-    String ip = Util.matchIP(netmask);
-    log.info("trying IP " + ip);
-    if (!ip.isEmpty()) {
-      Config hazel = new Config();
-      NetworkConfig nc = hazel.getNetworkConfig();
-      nc.getInterfaces().setEnabled(true).addInterface(ip);
-      nc.setPublicAddress(ip);
-      vertxOptions.setClusterHost(ip);
-      vertxOptions.setClusterManager(new HazelcastClusterManager(hazel));
-    }
-    try {
-      Vertx.clusteredVertx(vertxOptions.setClustered(true), result -> {
-        if (result.succeeded()) {
-          log.info("Clustering succeded");
-          vertx = result.result();
-          vertx.eventBus().send(this.prefix + ".ping", new JsonObject(), msg -> {
-            if (msg.succeeded()) {
-              vertx.eventBus().consumer(this.prefix + ".error", err -> {
-                JsonObject errmsg = (JsonObject) err.body();
-                handler.signal(errmsg.getMap());
-              });
-              eventBusConnected = true;
-              JsonObject pong = (JsonObject) msg.result().body();
-              String server_ip = pong.getString("pong");
-              String api_version = pong.getString("rest");
-              if (api_version != null) {
-                api = "/api/" + api_version + "/";
-                HttpClientOptions hop = new HttpClientOptions().setDefaultHost(server_ip)
-                    .setDefaultPort(Integer.parseInt(pong.getString("port"))).setTryUseCompression(true)
-                    .setKeepAlive(true).setIdleTimeout(60);
-                http = vertx.createHttpClient(hop);
-                HttpClientRequest htr = http.request(HttpMethod.GET, api + "ping", response -> {
-                  response.bodyHandler(buffer -> {
-                    if (buffer.toString().equals("pong")) {
-                      handler.signal(make("status:REST ok"));
-                      log.info("Rest API ok");
-                      preferREST = true;
-                    }
-                  });
-                }).setTimeout(2000L).exceptionHandler(exception -> {
-                  log.severe("REST failure " + exception.getMessage());
-                  exception.printStackTrace();
-                  handler.signal(make("status:failure", "message:" + exception.getMessage()));
-                });
-                htr.end();
-              }
-              handler.signal(make("status:connected"));
-            } else {
-              log.warning("ping failed");
-              handler.signal(make("status:failure", "message:" + "ping fail " + msg.cause().getMessage()));
-            }
-          });
-
-
-        } else {
-          log.warning("Clustering failed ");
-          handler.signal(make("status:error", "message:" + "clustering fail " + result.cause().getMessage()));
-        }
-      });
-    } catch (Exception ex) {
-      ex.printStackTrace();
-      handler.signal(make("status:exception", "message:" + ex.getMessage()));
-    }
-  }
 
   /**
    * Search the index
