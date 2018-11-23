@@ -50,55 +50,36 @@ var ip: String = ""
 
 fun main(args: Array<String>) {
     var verticleID: String = ""
-    var vertx: Vertx? = null
-    var cmdline = CmdLineParser(switches = "client,ip,rescan,config,daemon")
+    var cmdline = CmdLineParser(switches = "rescan,config,daemon")
     if (!cmdline.parse(args)) {
         println(cmdline.errmsg)
         System.exit(-1)
     }
 
-    val client = cmdline.parsed.containsKey("client")
     if (cmdline.parsed.containsKey("config")) {
         config.merge(Configuration(cmdline.get("config")))
     }
 
-    val net = cmdline.get("ip")
-    ip = if (net.isEmpty()) {
-        ""
-    } else {
-        NetTool.getMatchingIP(net) ?: ""
-    }
-
-    val hazel = Config()
-    val vertxOptions = VertxOptions().setClustered(true)
+    val vertxOptions = VertxOptions()
             .setMaxEventLoopExecuteTime(5000000000L)
             .setBlockedThreadCheckInterval(2000L)
 
-    if (ip.isNotEmpty()) {
-        val network = hazel.networkConfig
-        network.interfaces.setEnabled(true).addInterface(ip)
-        network.publicAddress = ip
-        vertxOptions.setClusterHost(ip)
-    }
-    val mgr = HazelcastClusterManager(hazel)
 
-    Vertx.clusteredVertx(vertxOptions.setClusterManager(mgr)) { result ->
-        vertx = result.result()
-        if (cmdline.parsed.containsKey("config")) {
-            config.merge(Configuration(cmdline.get("config")))
+    val vertx = Vertx.vertx(vertxOptions);
+    if (cmdline.parsed.containsKey("config")) {
+        config.merge(Configuration(cmdline.get("config")))
+    } else {
+        config.merge(Configuration("default.cfg", "user.cfg"))
+    }
+
+    vertx.deployVerticle(Launcher(config)) {
+        if (it.succeeded()) {
+            verticleID = it.result()
         } else {
-            config.merge(Configuration("default.cfg", "user.cfg"))
-        }
-        if (client == false) {
-            vertx!!.deployVerticle(Launcher(config)) {
-                if (it.succeeded()) {
-                    verticleID = it.result()
-                } else {
-                    System.exit(-1);
-                }
-            }
+            System.exit(-1);
         }
     }
+
     Runtime.getRuntime().addShutdownHook(object : Thread() {
         override fun run() {
             println("Shutdown signal received")
@@ -110,17 +91,17 @@ fun main(args: Array<String>) {
 
 
     if (cmdline.parsed.containsKey("rescan")) {
-        vertx?.eventBus()?.send(baseaddr + Autoscanner.ADDR_RESCAN, "rescan")
+        vertx.eventBus()?.send(baseaddr + Autoscanner.ADDR_RESCAN, "rescan")
     }
     if (!cmdline.parsed.containsKey("daemon")) {
         println("Enter search term for queries or 'exit' to end program")
-        val caddr = baseaddr + Communicator.ADDR_FINDFILES
+        val caddr = baseaddr + ".find"
         while (true) {
             val input = readLine()
             when (input) {
                 "exit" -> System.exit(0)
                 "rescan" -> {
-                    vertx?.eventBus()?.send(baseaddr + Autoscanner.ADDR_RESCAN, "rescan")
+                    vertx.eventBus().send(baseaddr + Autoscanner.ADDR_RESCAN, "rescan")
                 }
                 else -> {
                     vertx?.eventBus()?.send<Any>(caddr, JsonObject().put("query", input).put("numhits", 1000)) { result ->
@@ -166,29 +147,19 @@ fun main(args: Array<String>) {
 
 class Launcher(val cfg: Configuration) : AbstractVerticle() {
     val log = Logger.getLogger("lucinda.launcher")
-    var communicatorID: String = ""
     var autoscannerID: String = ""
-    var restpointID:String=""
+    var restpointID: String = ""
 
     override fun start() {
         super.start()
-        if(cfg.get("msg_use","no")=="yes") {
-            vertx.deployVerticle(Communicator(cfg), DeploymentOptions().setWorker(true)) { handler ->
+
+        if (cfg.get("rest_use", "no") == "yes") {
+            vertx.deployVerticle(Restpoint(cfg), DeploymentOptions().setWorker(true)) { handler ->
                 if (handler.succeeded()) {
-                    log.log(Level.INFO, "Communicator launch successful " + handler.result())
-                    communicatorID = handler.result()
-                } else {
-                    log.log(Level.SEVERE, "Communicator launch failed " + handler.result())
-                }
-            }
-        }
-        if(cfg.get("rest_use","no")=="yes"){
-            vertx.deployVerticle(Restpoint(cfg), DeploymentOptions().setWorker(true)){ handler ->
-                if(handler.succeeded()){
                     log.info("Restpoint launch succeeded")
-                    restpointID=handler.result()
-                }else{
-                    log.severe("Restpoint launch failed "+handler.result())
+                    restpointID = handler.result()
+                } else {
+                    log.severe("Restpoint launch failed " + handler.result())
                 }
 
             }
@@ -219,10 +190,12 @@ class Launcher(val cfg: Configuration) : AbstractVerticle() {
 
     override fun stop() {
         super.stop()
+        /*
         if (communicatorID.isNotEmpty()) {
             vertx.undeploy(communicatorID)
         }
-        if(restpointID.isNotEmpty()){
+        */
+        if (restpointID.isNotEmpty()) {
             vertx.undeploy(restpointID)
         }
         if (autoscannerID.isNotEmpty()) {

@@ -20,8 +20,7 @@ Queries are accepted from the console or via Messages over the distributed Vert.
  * Edit user.cfg as needed (see below)
  * run java -jar Launcher
  * interact on the console with the program (see below)
- * communicate via [Vert.X distributed EventBus](http://vertx.io/docs/vertx-core/java/#event_bus) with the app. The client application can be on
- the same machine or on a different machine on the same network.
+ * communicate via REST interface
 
 ## Search terms
 
@@ -58,11 +57,11 @@ The following configuration items are supported (values here are the default val
  
 The language to use for the analyzer and tokenizer when importing new files
  
-### msg_prefix = ch.rgw.lucinda
- 
-Lucinda communicates via a messaging system through the LAN. If you use more than one Lucinda instance in the same LAN, they need different messages for the same tasks, to make
-  clear which system is meant. Set different message prefixes here to achieve this. 
-  
+### Use the REST interface
+
+rest_use=yes
+rest_port=2016  
+
 ### fs_basedir = 
   
 The base directory for all operations
@@ -89,24 +88,10 @@ files to retrieve text content. As of today, only Tesseract is tested.
 If you start the program from the command line, it will prompt for inputs. Try to copy some files into one of the watched directories and observe the console.
   Enter a query in the console, e.g. `lorem AND ipsum` and see the result.
   
-## Clustering
-  
-If you want a distributed environment, use the clustering feature. 
-  
-  * Run the server with the `--ip=1.2.3.*`  commandline option
-  
-  * Run the client(s) with the `--ip=1.2.3.* --client` commandline options
-  
-(where 1.2.3.* should be the real network IP-segment).
-
-You'll see terminal output of the clients and servers connecting to each other. Then, you can type a search query on
-  any client and get the respective answer from the server.
   
 ## Command line switches
 
  * --config=&lt;filename&gt;: Use that file as config (instead of default.cfg and user.cfg)
- * --client or -c run as client only (no index, no watch directory)
- * --ip=&lt;IPv4-Address&gt;: bind to that interface. The address can contain wildcards, such as: --ip=192.168.0.*
  * --daemon or -d: Run in background. Don't accept input
  * --rescan or -r: rescan all watch directories immediately after launch.
  
@@ -116,6 +101,5 @@ You'll see terminal output of the clients and servers connecting to each other. 
  * [Apache Lucene](http://lucene.apache.org)
  * [Apache Tika](http://tika.apache.org)
  * [Vert.x](http://vertx.io)
- * [Hazelcast](http://www.hazelcast.com)
  * [Tesseract](https://github.com/tesseract-ocr/tesseract)
  

@@ -93,39 +93,12 @@ public class IntegrationTest {
     }
 
     void level2(TestContext ctx) {
-        Async async = ctx.async();
-        vertx.deployVerticle(new Communicator(LauncherKt.getConfig()), new DeploymentOptions().setWorker(true), launch -> {
-            if (launch.succeeded()) {
-                vertx.eventBus().consumer(LauncherKt.getBaseaddr()+Communicator.ADDR_ERROR, message -> {
-                    fail(message.body().toString());
-                });
-                checkPing(ctx);
-                File file = new File("target/test-classes/test.pdf");
-                byte[] input = FileTool.readFile(file);
-                JsonObject parms = new JsonObject().put("source", file.getAbsolutePath())
-                        .put("payload", input).put("concern", "testperson_armeswesen_24.03.1951").put("lang", "de")
-                        .put("filename", file.getName());
-                Async async2=ctx.async();
-                vertx.eventBus().send(LauncherKt.getBaseaddr()+Communicator.ADDR_IMPORT, parms, insertResult -> {
-                    if (insertResult.succeeded()) {
-                        level3(ctx);
-
-                    } else {
-                        fail("file insert failed");
-                    }
-                    async2.complete();
-                });
-            } else {
-                fail("launch of Communicator failed");
-            }
-            async.complete();
-        });
     }
 
     void level3(TestContext ctx) {
         final JsonObject qbe = new JsonObject().put("query", "dolore").put("numhits", 10);
         Async async = ctx.async();
-        vertx.eventBus().send(LauncherKt.getBaseaddr()+Communicator.ADDR_FINDFILES, qbe, retrieve -> {
+        vertx.eventBus().send(LauncherKt.getBaseaddr()+".find", qbe, retrieve -> {
             if (retrieve.succeeded()) {
                 JsonObject res = (JsonObject) retrieve.result().body();
                 assertEquals(1,res.getJsonArray("result").size());
@@ -135,10 +108,10 @@ public class IntegrationTest {
                         .put("payload", input2).put("concern", "testperson_armeswesen_24.03.1951").put("lang", "de")
                         .put("filename", file2.getName());
                 Async async2=ctx.async();
-                vertx.eventBus().send(LauncherKt.getBaseaddr()+Communicator.ADDR_IMPORT, parms2, i2result -> {
+                vertx.eventBus().send(LauncherKt.getBaseaddr()+".import", parms2, i2result -> {
                     if (i2result.succeeded()) {
                         Async async6 = ctx.async();
-                        vertx.eventBus().send(LauncherKt.getBaseaddr()+Communicator.ADDR_FINDFILES, qbe, retr2 -> {
+                        vertx.eventBus().send(LauncherKt.getBaseaddr()+".find", qbe, retr2 -> {
                             if (retr2.succeeded()) {
                                 JsonObject endresult = (JsonObject) retr2.result().body();
                                 JsonArray found = endresult.getJsonArray("result");
@@ -177,7 +150,7 @@ public class IntegrationTest {
     void check_get(TestContext ctx, JsonObject obj){
         Async async=ctx.async();
         final long launch=System.currentTimeMillis();
-        vertx.eventBus().send(LauncherKt.getBaseaddr()+Communicator.ADDR_GETFILE,new JsonObject().put("_id", obj.getString("_id")), got ->{
+        vertx.eventBus().send(LauncherKt.getBaseaddr()+".get",new JsonObject().put("_id", obj.getString("_id")), got ->{
             assertTrue(got.succeeded());
             JsonObject result=(JsonObject)got.result().body();
             byte[] contents=result.getBinary("result");
@@ -190,7 +163,7 @@ public class IntegrationTest {
 
     void checkPing(TestContext ctx){
         Async async=ctx.async();
-        vertx.eventBus().send(LauncherKt.getBaseaddr()+Communicator.ADDR_PING,new JsonObject(),pong -> {
+        vertx.eventBus().send(LauncherKt.getBaseaddr()+".ping",new JsonObject(),pong -> {
             assertTrue(pong.succeeded());
             async.complete();
         });
