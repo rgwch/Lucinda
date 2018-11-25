@@ -68,17 +68,17 @@ The following configuration items are supported (values here are the default val
     fs_basedir = /some/path
   
   
-### The directory where the index should be kept. Make sure to backup this directory regularly
+### The directory where the index should be kept. 
 
     fs_indexdir = /some/path
   
+Make sure to backup this directory regularly  
   
 ### One or more directories to watch
 
-    watchdirs = &lt;comma separated list of directories&gt;
+    watchdirs = /some/path,/possibly/another/path,/and/so/on
   
- Lucinda watches these directories for added, changed or removed files. If a file is added, Lucinda will index it, but won't move it somewhere. If a file is
-  deleted, its entry in the indes will also be deleted. If a file is changed, the index will be updated.
+Lucinda watches these directories for added, changed or removed files. If a file is added, Lucinda will index it, but won't move it somewhere. If a file is deleted, its entry in the indes will also be deleted. If a file is changed, the index will be updated.
   
 ### Path to an ocr executable
 
