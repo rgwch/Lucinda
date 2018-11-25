@@ -70,7 +70,7 @@ The following configuration items are supported (values here are the default val
   
 ### The directory where the index should be kept. Make sure to backup this directory regularly
 
-   fs_indexdir = /some/path
+    fs_indexdir = /some/path
   
   
 ### One or more directories to watch
