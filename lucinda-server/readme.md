@@ -48,7 +48,7 @@ In short, you can use:
  
 ## Configuration
  
-On program launch, the program first looks for "default.cfg" in the class path and loads all values from that file. Then, ot looks for "user.cfg" and
+On program launch, the program first looks for "default.cfg" in the class path and loads all values from that file. Then, it looks for "user.cfg" and
 again loads all values. Thus, if a value with the same name exists in both, default.cfg and in user.cfg, the latter will win.
  
 The following configuration items are supported (values here are the default values)
@@ -59,8 +59,8 @@ The language to use for the analyzer and tokenizer when importing new files
  
 ### Use the REST interface
 
-rest_use=yes
-rest_port=2016  
+    rest_use=yes
+    rest_port=2016  
 
 ### fs_basedir = 
   
