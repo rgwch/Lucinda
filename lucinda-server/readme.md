@@ -53,31 +53,38 @@ again loads all values. Thus, if a value with the same name exists in both, defa
  
 The following configuration items are supported (values here are the default values)
  
-###  default_language = de  
+### The language to use for the analyzer and tokenizer when importing new files
+
+    default_language = de  
  
-The language to use for the analyzer and tokenizer when importing new files
  
 ### Use the REST interface
 
     rest_use=yes
     rest_port=2016  
 
-### fs_basedir = 
+### The base directory for all operations
+
+    fs_basedir = /some/path
   
-The base directory for all operations
   
-### fs_indexdir = 
+### The directory where the index should be kept. Make sure to backup this directory regularly
+
+   fs_indexdir = /some/path
   
-The directory where the index should be kept. Make sure to backup this directory regularly
   
-### watchdirs = &lt;comma separated list of directories&gt;
+### One or more directories to watch
+
+    watchdirs = &lt;comma separated list of directories&gt;
   
-One or more directories to watch for added, changed or removed files. If a file is added, Lucinda will index it, but won't move it somewhere. If a file is
+ Lucinda watches these directories for added, changed or removed files. If a file is added, Lucinda will index it, but won't move it somewhere. If a file is
   deleted, its entry in the indes will also be deleted. If a file is changed, the index will be updated.
   
-### ocr
+### Path to an ocr executable
 
-Path to an ocr executable, if any. If this parameter is given, Lucinda tries to run that program/script over image-only PDF 
+    ocr=tesseract
+
+If this parameter is given, Lucinda tries to run that program/script over image-only PDF 
 files to retrieve text content. As of today, only Tesseract is tested.
 
   
