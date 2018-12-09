@@ -48,36 +48,43 @@ In short, you can use:
  
 ## Configuration
  
-On program launch, the program first looks for "default.cfg" in the class path and loads all values from that file. Then, ot looks for "user.cfg" and
+On program launch, the program first looks for "default.cfg" in the class path and loads all values from that file. Then, it looks for "user.cfg" and
 again loads all values. Thus, if a value with the same name exists in both, default.cfg and in user.cfg, the latter will win.
  
 The following configuration items are supported (values here are the default values)
  
-###  default_language = de  
+### The language to use for the analyzer and tokenizer when importing new files
+
+    default_language = de  
  
-The language to use for the analyzer and tokenizer when importing new files
  
 ### Use the REST interface
 
-rest_use=yes
-rest_port=2016  
+    rest_use=yes
+    rest_port=2016  
 
-### fs_basedir = 
-  
-The base directory for all operations
-  
-### fs_indexdir = 
-  
-The directory where the index should be kept. Make sure to backup this directory regularly
-  
-### watchdirs = &lt;comma separated list of directories&gt;
-  
-One or more directories to watch for added, changed or removed files. If a file is added, Lucinda will index it, but won't move it somewhere. If a file is
-  deleted, its entry in the indes will also be deleted. If a file is changed, the index will be updated.
-  
-### ocr
+### The base directory for all operations
 
-Path to an ocr executable, if any. If this parameter is given, Lucinda tries to run that program/script over image-only PDF 
+    fs_basedir = /some/path
+  
+  
+### The directory where the index should be kept. 
+
+    fs_indexdir = /some/path
+  
+Make sure to backup this directory regularly  
+  
+### One or more directories to watch
+
+    watchdirs = /some/path,/possibly/another/path,/and/so/on
+  
+Lucinda watches these directories for added, changed or removed files. If a file is added, Lucinda will index it, but won't move it somewhere. If a file is deleted, its entry in the indes will also be deleted. If a file is changed, the index will be updated.
+  
+### Path to an ocr executable
+
+    ocr=tesseract
+
+If this parameter is given, Lucinda tries to run that program/script over image-only PDF 
 files to retrieve text content. As of today, only Tesseract is tested.
 
   
