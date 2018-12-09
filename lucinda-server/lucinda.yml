@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+
+  lucinda:
+    image:  rgwch/lucinda-server:2.0.2
+    volumes: 
+      - /srv/berichte:/home/lucinda/data
+    ports:
+      - 2016:2016
+    restart: always 
+    
