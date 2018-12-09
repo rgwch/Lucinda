@@ -1,4 +1,4 @@
 #! /bin/bash
 
-docker build -t rgwch/lucinda:2.0.2 .
+docker build -t rgwch/lucinda:`cat VERSION` .
 

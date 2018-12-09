@@ -51,7 +51,7 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
                 .allowedMethod(HttpMethod.PUT)
                 .allowedHeader("X-sid"))
 
-        router.route("/documents/*").handler(StaticHandler.create(cfg.get("fs_watch")))
+        // router.route("/documents/*").handler(StaticHandler.create(cfg.get("fs_watch")))
 
         router.get("/lucinda/${APIVERSION}/ping").handler { ctx ->
             ctx.response().end("Welcome to Lucinda v 2.0.0")
