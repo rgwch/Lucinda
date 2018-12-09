@@ -159,7 +159,7 @@ class Launcher(val cfg: Configuration) : AbstractVerticle() {
                     log.info("Restpoint launch succeeded")
                     restpointID = handler.result()
                 } else {
-                    log.severe("Restpoint launch failed " + handler.result())
+                    log.severe("Restpoint launch failed " + handler.cause())
                 }
 
             }
