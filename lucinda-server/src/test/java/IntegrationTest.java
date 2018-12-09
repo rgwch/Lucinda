@@ -23,6 +23,7 @@ import static org.junit.Assert.*;
 /**
  * Created by gerry on 28.03.16.
  */
+/*
 @RunWith(VertxUnitRunner.class)
 public class IntegrationTest {
     final static String BASEDIR="target/store";
@@ -169,3 +170,4 @@ public class IntegrationTest {
         });
     }
 }
+*/

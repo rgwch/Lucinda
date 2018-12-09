@@ -28,6 +28,7 @@ import java.io.IOException;
  * Created by gerry on 20.03.16.
  */
 
+/*
 public class TestParse {
 
     IndexManager indexManager = LauncherKt.getIndexManager();
@@ -50,11 +51,6 @@ public class TestParse {
         indexManager.addDocument(fis, new JsonObject().put("uri", file.getAbsolutePath()).put("_id","2"));
         fis.close();
         JsonArray res = indexManager.queryDocuments("lorem", 10);
-       /*
-        for (Object doc : res) {
-            System.out.print(Json.encodePrettily(doc));
-        }
-        */
         file=new File("target/test-classes/encrypted.pdf");
         fis = new FileInputStream(file);
         indexManager.addDocument(fis, new JsonObject().put("uri", file.getAbsolutePath()).put("_id","3"));
@@ -63,3 +59,4 @@ public class TestParse {
 
     }
 }
+*/

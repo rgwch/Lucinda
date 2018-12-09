@@ -35,6 +35,7 @@ import static org.junit.Assert.*;
 /**
  * Created by gerry on 25.03.16.
  */
+/*
 @RunWith(VertxUnitRunner.class)
 public class VertxTest {
 
@@ -126,3 +127,4 @@ public class VertxTest {
     }
 
 }
+*/

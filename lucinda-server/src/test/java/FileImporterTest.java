@@ -14,6 +14,7 @@ import java.util.Map;
 /**
  * Created by gerry on 16.05.16.
  */
+/*
 public class FileImporterTest {
     IndexManager indexManager = LauncherKt.getIndexManager();
 
@@ -40,3 +41,4 @@ public class FileImporterTest {
 
     }
 }
+*/

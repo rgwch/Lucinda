@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 /**
  * Created by gerry on 22.05.16.
  */
+/*
 @RunWith(VertxUnitRunner.class)
 public class RestTest {
     Vertx vertx;
@@ -150,3 +151,4 @@ public class RestTest {
 
     }
 }
+*/

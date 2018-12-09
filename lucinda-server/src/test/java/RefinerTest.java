@@ -16,6 +16,7 @@ import java.util.ArrayList;
  * Created by gerry on 27.04.16.
  */
 
+/*
 
 public class RefinerTest {
 
@@ -44,3 +45,4 @@ public class RefinerTest {
 
 
 }
+*/

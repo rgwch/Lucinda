@@ -18,6 +18,7 @@ import java.io.IOException;
 /**
  * Created by gerry on 09.05.16.
  */
+/*
 public class LuceneTest {
 
   static File index=new File("target/lucenetest/index");
@@ -95,3 +96,4 @@ public class LuceneTest {
     return jo;
   }
 }
+*/
