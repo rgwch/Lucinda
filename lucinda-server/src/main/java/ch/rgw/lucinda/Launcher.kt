@@ -177,11 +177,11 @@ class Launcher(val cfg: Configuration) : AbstractVerticle() {
 
                     vertx.eventBus().send<Any>(baseaddr + Autoscanner.ADDR_START, JsonObject().put("dirs", dirs)) { answer ->
                         if (answer.failed()) {
-                            log.severe("could not start Autoscanner " + answer.result())
+                            log.severe("could not start Autoscanner " + answer.cause())
                         }
                     }
                 } else {
-                    log.severe("Autoscanner launch failed " + handler2.result())
+                    log.severe("Autoscanner launch failed " + handler2.cause())
                 }
             }
         }
