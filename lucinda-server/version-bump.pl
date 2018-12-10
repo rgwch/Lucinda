@@ -9,7 +9,7 @@ $VERSION =~ s/^\s+|\s+$//g;
 
 
 bumpfile("Dockerfile","lucinda-server-.+\.jar","lucinda-server-$VERSION.jar");
-bumpfile("pom.xml","<version>.+</version>","<version>$VERSION</version>");
+bumpfile("pom.xml","<!-- * --><version>.+</version>","<!-- * --><version>$VERSION</version>");
 
 sub bumpfile{
     open(FILE, "<$_[0]") || die "cant open $_[0], $!";
