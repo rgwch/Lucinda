@@ -5,13 +5,10 @@ RUN apt-get update && apt-get install -y tesseract-ocr tesseract-ocr-deu tessera
     && mkdir /home/lucinda \
     && chown -R lucinda.lucinda /home/lucinda \
     && cd /home/lucinda \
-    && git clone https://github.com/rgwch/Lucinda 
-  
-WORKDIR /home/lucinda/Lucinda/lucinda-server
-
-RUN mvn package 
-
-RUN mv target/lucinda-server-2.0.4.jar /home/lucinda/lucinda.jar \
+    && git clone https://github.com/rgwch/Lucinda \
+    && cd lucinda-server \
+    && mvn package \
+    && mv target/lucinda-server-2.0.5.jar \
     && chmod +x /home/lucinda/lucinda.jar \
     && apt-get -y remove maven openjdk-8-jdk \
     && apt-get -y autoremove \
@@ -26,5 +23,5 @@ ADD lucinda.cfg /home/lucinda/lucinda.cfg
 WORKDIR /home/lucinda
 EXPOSE 2016
 
-CMD ["java","-jar","lucinda.jar","--config=lucinda.cfg","-d"]
+CMD ["java","-jar","lucinda.jar","--config=lucinda.cfg"]
 
