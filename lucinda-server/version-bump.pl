@@ -8,7 +8,7 @@ my $VERSION=$VER[0];
 $VERSION =~ s/^\s+|\s+$//g;
 
 
-bumpfile("Dockerfile","lucinda-server-.+\.jar","lucinda-server-$VERSION.jar");
+bumpfile("Dockerfile","lucinda-server-.+?\.jar ","lucinda-server-$VERSION.jar ");
 bumpfile("pom.xml","<!-- x --><version>.+</version>","<!-- x --><version>$VERSION</version>");
 
 sub bumpfile{

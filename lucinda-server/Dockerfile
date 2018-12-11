@@ -6,11 +6,11 @@ RUN apt-get update && apt-get install -y tesseract-ocr tesseract-ocr-deu tessera
     && chown -R lucinda.lucinda /home/lucinda \
     && cd /home/lucinda \
     && git clone https://github.com/rgwch/Lucinda \
-    && cd lucinda-server \
+    && cd Lucinda/lucinda-server \
     && mvn package \
-    && mv target/lucinda-server-2.0.5.jar \
+    && mv target/lucinda-server-2.0.5.jar /home/lucinda/lucinda.jar \
     && chmod +x /home/lucinda/lucinda.jar \
-    && apt-get -y remove maven openjdk-8-jdk \
+    && apt-get -y remove maven openjdk-8-jdk git \
     && apt-get -y autoremove \
     && rm -rf /root/.m2 \
     && rm -rf /home/lucinda/Lucinda \
