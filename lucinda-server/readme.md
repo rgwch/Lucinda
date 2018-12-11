@@ -8,19 +8,49 @@ Queries are accepted from the console or via Messages over the distributed Vert.
 
 ## Usage
 
-### 1. As a library
+### 1. Docker Container
+
+`docker run -p 2016:2016 -v /path/to/datadir:/var/lucinda rgwch/lucinda-server:latest`
+
+communicate via REST: `http://<hostname>:2016/lucinda/2.0/ping`
+
+
+### 2. As a library
 
  * Copy *default.cfg* to *user.cfg* in the same directory
  * Edit *user.cfg* according to your system.
- * Use the API of ch.rgw.lucinda.Dispatcher as entry point to the library functions
+ * Use the API of ch.rgw.lucinda. ch.rgw.lucinda.Dispatcher is the entry point to the library functions
 
-### 2. As a standalone program
+### 3. As a standalone program
  
  * Copy *default.cfg* to *user.cfg* in the same directory
  * Edit user.cfg as needed (see below)
  * run java -jar Launcher
  * interact on the console with the program (see below)
  * communicate via REST interface
+
+## API
+
+Base API: `http://<hostname>:<port>/lucinda/2.0/<request>`
+
+Where request is:
+
+* GET `ping` - return version informtion
+
+* POST `/query` , body is search term (see below) - Lucene query. returns list of hits
+
+* GET  `/get/<id>`, where id is a unique id for the document to retrieve. returns document contents
+
+* POST `/index`, body is a json object with at least a field 'payload' with te file contents bas64 encoded, and any number of 
+  metadata. - index a file. Don't store
+
+* POST `/addfile`, body is a json object with at least a field 'payload' and a field 'filename', along with
+  any application specific metadata. - add a file to the index and store it.
+
+* POST `/update` - update document
+
+* GET `remove/<id>` - remove document
+
 
 ## Search terms
 

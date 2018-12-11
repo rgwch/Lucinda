@@ -135,7 +135,7 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
         /**
          * Index a file and add it to the store
          * request body must be a JSON object with a field 'payload' which contains the file to index as base64,
-         * and ansy number of keys for metadata.
+         * and any number of keys for metadata.
          * return: StatusCode 200, json: {status: "ok", _id: "some_uuid"}
          */
         router.post("/lucinda/${APIVERSION}/addfile").handler { ctx ->

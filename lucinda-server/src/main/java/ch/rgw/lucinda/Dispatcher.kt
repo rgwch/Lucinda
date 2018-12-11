@@ -111,7 +111,7 @@ class Dispatcher(val cfg: Configuration, val vertx: Vertx) {
      */
     fun find(parm: JsonObject): JsonArray {
         val ret =
-                indexManager.queryDocuments(parm.getString("query"), parm.getInteger("numhits") ?: 100)
+                indexManager.queryDocuments(parm.getString("query"), parm.getInteger("numhits") ?: 500)
         return ret
     }
 
