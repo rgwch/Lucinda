@@ -64,7 +64,7 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
         router.post("/lucinda/${APIVERSION}/query").handler { ctx ->
             ctx.request().bodyHandler { buffer ->
                 val j = buffer.toString()
-                log.info("got REST " + j)
+                log.info("got REST query" + j)
                 try {
                     val result = dispatcher.find(JsonObject().put("query", j))
                     if (result.isEmpty) {
