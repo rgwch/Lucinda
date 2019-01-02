@@ -10,7 +10,7 @@ Queries are accepted from the console or via Messages over the distributed Vert.
 
 ### 1. Docker Container
 
-`docker run -p 2016:2016 -v /path/to/datadir:/var/lucinda rgwch/lucinda-server:latest`
+`docker run -p 2016:2016 -v /path/to/basedir:/var/lucinda/base -v /path/to/datadir:/var/lucinda/data rgwch/lucinda-server:latest`
 
 communicate via REST: `http://<hostname>:2016/lucinda/2.0/ping`
 

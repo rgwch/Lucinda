@@ -16,12 +16,9 @@ package ch.rgw.lucinda
 
 import ch.rgw.tools.CmdLineParser
 import ch.rgw.tools.Configuration
-import ch.rgw.tools.net.NetTool
-import com.hazelcast.config.Config
 import io.vertx.core.*
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
-import io.vertx.spi.cluster.hazelcast.HazelcastClusterManager
 import java.io.File
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -41,8 +38,12 @@ val indexManager: IndexManager  by lazy {
     IndexManager(indexdir.absolutePath)
 }
 
+val baseDir: File by lazy {
+    File(config.get("fs_basedir", "target/atore"))
+}
+
 val indexdir: File by lazy {
-    File(config.get("fs_indexdir", "target/store"))
+    File(baseDir,"index")
 }
 
 val baseaddr: String get() = config.get("msg_prefix", "ch.rgw.lucinda")

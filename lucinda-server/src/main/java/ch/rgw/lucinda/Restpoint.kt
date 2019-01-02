@@ -40,6 +40,7 @@ import java.util.logging.Logger
 class Restpoint(val cfg: Configuration) : AbstractVerticle() {
     val log = Logger.getLogger("Restpoint")
     val APIVERSION = "2.0"
+    val LUCINDAVERSION = "2.0.6"
 
     override fun start(future: Future<Void>) {
         super.start()
@@ -54,7 +55,7 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
         // router.route("/documents/*").handler(StaticHandler.create(cfg.get("fs_watch")))
 
         router.get("/lucinda/${APIVERSION}/ping").handler { ctx ->
-            ctx.response().end("Welcome to Lucinda v 2.0.0")
+            ctx.response().end("Welcome to Lucinda v "+LUCINDAVERSION)
             log.info("we've got a ping!")
         }
         /**

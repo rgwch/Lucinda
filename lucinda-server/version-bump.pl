@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+# USage: perl version-bump.pl <file with version number>
+
 use strict;
 use warnings;
 
@@ -10,6 +12,7 @@ $VERSION =~ s/^\s+|\s+$//g;
 
 bumpfile("Dockerfile","lucinda-server-.+?\.jar ","lucinda-server-$VERSION.jar ");
 bumpfile("pom.xml","<!-- x --><version>.+</version>","<!-- x --><version>$VERSION</version>");
+bumpfile("src/main/java/ch/rgw/lucinda/Restpoint.kt","val LUCINDAVERSION = \".+\"","val LUCINDAVERSION = \"$VERSION\"");
 
 sub bumpfile{
     open(FILE, "<$_[0]") || die "cant open $_[0], $!";
