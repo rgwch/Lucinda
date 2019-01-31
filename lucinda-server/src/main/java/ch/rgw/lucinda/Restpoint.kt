@@ -193,7 +193,7 @@ class Restpoint() : AbstractVerticle() {
         router.get("/lucinda/${APIVERSION}/remove/:id").handler { ctx ->
             val id = ctx.request().getParam("id")
             try {
-                indexManager.removeDocument(id)
+                dispatcher.delete(id)
                 ctx.response().putHeader("content-type", "application/json; charset=utf-8")
                 ctx.response().statusCode = 200
                 ctx.response().statusMessage = "Document removed"

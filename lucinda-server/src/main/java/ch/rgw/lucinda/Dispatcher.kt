@@ -117,7 +117,7 @@ class Dispatcher(val vertx: Vertx) {
         if (doc != null) {
             val url = doc.get("url")
             if (url != null) {
-                val file = File(doc.get("url"))
+                val file = File(url)
                 if (file.exists() && file.canRead()) {
                     return FileTool.readFile(file)
                 } else {
@@ -127,6 +127,21 @@ class Dispatcher(val vertx: Vertx) {
             }
         }
         return null;
+    }
+
+    fun delete(id: String): Boolean{
+        val doc: Document?= indexManager.getDocument(id)
+        if(doc!=null){
+            val url=doc.get("url")
+            if(url!=null){
+               val file=File(url)
+                if(file.exists() && file.canWrite()){
+                    file.delete()
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     fun update(o: JsonObject) {
