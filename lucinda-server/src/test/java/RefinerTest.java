@@ -1,5 +1,5 @@
 import ch.rgw.lucinda.*;
-import ch.rgw.crypt.UtilKt;
+import ch.rgw.tools.crypt.UtilKt;
 import ch.rgw.io.FileTool;
 import io.vertx.core.json.JsonObject;
 import static org.junit.Assert.*;

@@ -6,13 +6,13 @@
 
     <groupId>ch.rgw</groupId>
     <artifactId>lucinda-server</artifactId>
-    <!-- x --><version>2.0.7</version>
+    <!-- x --><version>2.1.0</version>
     <properties>
         <kotlin-version>1.2.41</kotlin-version>
         <lucene-version>7.2.0</lucene-version>
         <tika-version>1.12</tika-version>
         <vertx-version>3.5.4</vertx-version>
-        <rgwutility-version>3.3.6</rgwutility-version>
+        <rgwutility-version>4.2.7</rgwutility-version>
         <commons-version>3.6</commons-version>
         <junit-version>4.12</junit-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -78,8 +78,8 @@
             <version>${vertx-version}</version>
         </dependency>
         <dependency>
-            <groupId>ch.rgw</groupId>
-            <artifactId>utility</artifactId>
+            <groupId>rgwch</groupId>
+            <artifactId>rgw-toolbox</artifactId>
             <version>${rgwutility-version}</version>
         </dependency>
         <dependency>

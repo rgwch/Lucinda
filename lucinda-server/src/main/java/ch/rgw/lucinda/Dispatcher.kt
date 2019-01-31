@@ -14,7 +14,6 @@
 
 package ch.rgw.lucinda
 
-import ch.rgw.crypt.makeHash
 import ch.rgw.io.FileTool
 import ch.rgw.tools.Configuration
 import ch.rgw.tools.StringTool
@@ -26,17 +25,15 @@ import io.vertx.core.json.JsonObject
 import org.apache.lucene.document.Document
 import org.apache.lucene.document.Field
 import org.apache.lucene.document.TextField
-import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileNotFoundException
-import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.logging.Logger
 
 /**
  * Created by gerry on 22.03.16.
  */
-class Dispatcher(val cfg: Configuration, val vertx: Vertx) {
+class Dispatcher(val vertx: Vertx) {
     val log = Logger.getLogger("lucinda")
     val fs = vertx.fileSystem()
 
@@ -44,8 +41,8 @@ class Dispatcher(val cfg: Configuration, val vertx: Vertx) {
         val fname = parms.getString("filename")
         val concern = parms.getString("concern")
         // val key = parms.getBinary("key")
-        val dir = cfg.get("fs_import", "target/store") + (if (concern != null) {
-            File.separator + concern.substring(0,2)+File.separator+concern
+        val dir = docDir.absolutePath + (if (concern != null) {
+            File.separator + concern.substring(0, 2) + File.separator + concern
         } else "")
         return File(dir, fname)
     }
@@ -68,7 +65,7 @@ class Dispatcher(val cfg: Configuration, val vertx: Vertx) {
     fun addToIndex(parm: JsonObject, handler: Handler<AsyncResult<Int>>) {
         val payload = parm.getBinary("payload")
         requireNotNull(payload)
-        val uuid = StringTool.byteArraytoHex(ch.rgw.crypt.makeHash(payload))
+        val uuid = StringTool.byteArraytoHex(ch.rgw.tools.crypt.makeHash(payload))
         parm.put("uuid", uuid)
         val temp = File.createTempFile("__lucinda__", "_addToIndex_")
         temp.deleteOnExit()

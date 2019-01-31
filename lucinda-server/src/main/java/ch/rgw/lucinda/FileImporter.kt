@@ -14,7 +14,7 @@
 
 package ch.rgw.lucinda
 
-import ch.rgw.crypt.makeHash
+import ch.rgw.tools.crypt.makeHash
 import ch.rgw.io.FileTool
 import io.vertx.core.Future
 import io.vertx.core.Handler
@@ -22,8 +22,8 @@ import io.vertx.core.json.JsonObject
 import org.apache.lucene.document.Field
 import org.apache.lucene.document.TextField
 import org.apache.pdfbox.pdmodel.PDDocument
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage
 import org.apache.pdfbox.pdmodel.PDPage
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.nio.file.Path
@@ -37,30 +37,28 @@ import java.util.logging.Logger
 
 class FileImporter(val file: Path, val fileMetadata: JsonObject) : Handler<Future<Int>> {
     val temppath: String by lazy {
-        val checkDir = File(config.get("fs_basedir", "target/store"), "tempfiles")
-        if (checkDir.exists()) {
-            if (checkDir.isFile) {
+        if (tmpDir.exists()) {
+            if (tmpDir.isFile) {
                 log.severe("temporary directory exists but is a file")
             }
         } else {
-            if (!checkDir.mkdirs()) {
+            if (!tmpDir.mkdirs()) {
                 log.severe("Can't create tempdir")
             }
         }
-        checkDir.absolutePath
+        tmpDir.absolutePath
     }
     val failures: String by lazy {
-        val checkDir = File(config.get("fs_basedir", System.getenv("java.io.tmpdir")), "failures")
-        if (checkDir.exists()) {
-            if (checkDir.isFile) {
+        if (failuresDir.exists()) {
+            if (failuresDir.isFile) {
                 log.severe("failure directory exists but is a file")
             }
         } else {
-            if (!checkDir.mkdirs()) {
+            if (!failuresDir.mkdirs()) {
                 log.severe("Can't create failure directory")
             }
         }
-        checkDir.absolutePath
+        failuresDir.absolutePath
     }
 
 

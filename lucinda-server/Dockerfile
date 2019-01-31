@@ -1,27 +1,40 @@
-FROM openjdk:8-jdk-slim
+FROM openjdk:8-jdk-slim as build-stage
+LABEL MAINTAINER="weirich@elexis.ch" \
+      VERSION=2.1.0 \
+      DESCRIPTION="Lucene powered file indexing and storage"
 
-RUN apt-get update && apt-get install -y tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng maven git \
-    && useradd -d /home/lucinda lucinda \
-    && mkdir /home/lucinda \
-    && chown -R lucinda.lucinda /home/lucinda \
-    && cd /home/lucinda \
+RUN apt-get update && apt-get install -y maven git \
     && git clone https://github.com/rgwch/Lucinda \
     && cd Lucinda/lucinda-server \
     && mvn package \
-    && mv target/lucinda-server-2.0.7.jar /home/lucinda/lucinda.jar \
-    && chmod +x /home/lucinda/lucinda.jar \
-    && apt-get -y remove maven openjdk-8-jdk git \
-    && apt-get -y autoremove \
-    && rm -rf /root/.m2 \
-    && rm -rf /home/lucinda/Lucinda \
+    && mv target/lucinda-server-2.1.0.jar /lucinda.jar \
+    && chmod +x /lucinda.jar
+
+
+
+FROM java:8-jre-slim
+LABEL MAINTAINER="weirich@elexis.ch" \
+      VERSION=2.1.0 \
+      DESCRIPTION="Lucene powered file indexing and storage"
+
+
+VOLUME "/var/lucinda/home"
+VOLUME "/var/lucinda/docs"
+
+ENV LUCINDA_HOME /var/lucinda/home
+ENV LUCINDA_LANGUAGE de
+ENV LUCINDA_DOCUMENTS /var/lucinda/docs
+
+COPY --from=build-stage lucinda.jar .
+
+RUN apt-get update && apt-get install -y tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng \
     && apt-get clean \
     && mkdir /var/lucinda \
     && chown lucinda.lucinda /var/lucinda
 
 USER lucinda
-ADD lucinda.cfg /home/lucinda/lucinda.cfg
 WORKDIR /home/lucinda
 EXPOSE 2016
 
-CMD ["java","-jar","lucinda.jar","--config=lucinda.cfg"]
+CMD ["java","-jar","lucinda.jar"]
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 by G. Weirich
+ * Copyright (c) 2016-2019 by G. Weirich
  *
  *
  * All rights reserved. This program and the accompanying materials
@@ -31,20 +31,17 @@ import java.util.logging.Logger
 
 
 /**
- * Sommetimes, a REST Api is more convenient, than the EventBus. For example, if multicast is not easily possible, as in
- * VPN or Docker scenarios. REST is always available. Lucinde offers both interfaces.
- * Only the channel for async return messages is always EventBus this time.
- *
- * Created by gerry on 22.05.16.
+ * Since v. 2.0.6 Lucinda dropped EventBus Support and relies only on the REST interface for external
+ * connections. For internal communication, however, EventBus is still in use.
  */
-class Restpoint(val cfg: Configuration) : AbstractVerticle() {
+class Restpoint() : AbstractVerticle() {
     val log = Logger.getLogger("Restpoint")
     val APIVERSION = "2.0"
-    val LUCINDAVERSION = "2.0.7"
+    val LUCINDAVERSION = "2.1.0"
 
     override fun start(future: Future<Void>) {
         super.start()
-        val dispatcher = Dispatcher(cfg, vertx)
+        val dispatcher = Dispatcher(vertx)
         val router = Router.router(vertx)
 
 
@@ -52,7 +49,6 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
                 .allowedMethod(HttpMethod.PUT)
                 .allowedHeader("X-sid"))
 
-        // router.route("/documents/*").handler(StaticHandler.create(cfg.get("fs_watch")))
 
         router.get("/lucinda/${APIVERSION}/ping").handler { ctx ->
             ctx.response().end("Welcome to Lucinda v "+LUCINDAVERSION)
@@ -214,7 +210,7 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
         val hso = HttpServerOptions().setCompressionSupported(true).setIdleTimeout(0).setTcpKeepAlive(true)
         vertx.createHttpServer(hso)
                 .requestHandler { request -> router.accept(request) }
-                .listen(cfg.get("rest_port", "2016").toInt()) { result ->
+                .listen(restPort) { result ->
                     if (result.succeeded()) {
                         future.complete()
                     } else {

@@ -14,7 +14,7 @@
 
 package ch.rgw.lucinda
 
-import ch.rgw.crypt.makeHash
+import ch.rgw.tools.crypt.makeHash
 import ch.rgw.io.FileTool
 import ch.rgw.tools.BinConverter
 import ch.rgw.tools.TimeTool

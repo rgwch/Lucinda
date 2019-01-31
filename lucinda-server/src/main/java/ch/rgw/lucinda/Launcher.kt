@@ -16,7 +16,10 @@ package ch.rgw.lucinda
 
 import ch.rgw.tools.CmdLineParser
 import ch.rgw.tools.Configuration
-import io.vertx.core.*
+import io.vertx.core.AbstractVerticle
+import io.vertx.core.DeploymentOptions
+import io.vertx.core.Vertx
+import io.vertx.core.VertxOptions
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import java.io.File
@@ -26,26 +29,59 @@ import java.util.logging.Logger
  * Created by gerry on 20.03.16.
  */
 
-val config = Configuration()
+private val lucindacfg = Configuration()
+
 val indexManager: IndexManager  by lazy {
-    if (!indexdir.exists()) {
-        indexdir.mkdirs()
+    if (!indexDir.exists()) {
+        indexDir.mkdirs()
     }
-    IndexManager(indexdir.absolutePath)
+    IndexManager(indexDir.absolutePath)
+}
+
+val restPort = 2016
+/**
+ * get document directory
+ */
+val docDir: File by lazy {
+    if (System.getenv("LUCINDA_DOCUMENTS") != null) {
+        File(System.getenv("LUCINDA_DOCUMENTS"))
+    } else {
+        File(lucindacfg.get("docdir", "target/store"))
+    }
 }
 
 val baseDir: File by lazy {
-    if(System.getenv("LUCINDA_DOCUMENTS")!=null){
-        File(System.getenv("LUCINDA_DOCUMENTS"))
-    }else {
-        File(config.get("fs_basedir", "target/store"))
+    if (System.getenv("LUCINDA_HOME") != null) {
+        File(System.getenv("LUCINDA_HOME"))
+    } else {
+        File(lucindacfg.get("basedir", "target/store"))
     }
 }
 
-val indexdir: File by lazy {
+/**
+ * get index directory
+ */
+val indexDir: File by lazy {
     File(baseDir, "index")
 }
 
+/**
+ * get tempfile directory
+ */
+val tmpDir: File by lazy {
+    File(baseDir, "tempfiles")
+}
+
+/**
+ * get dir for failed imports
+ */
+val failuresDir: File by lazy {
+    File(baseDir, "failures")
+}
+
+val default_language: String by lazy {
+    System.getenv("LUCINDA_LANGUAGE ") ?: lucindacfg.get("default_language") ?: "de"
+}
 
 fun main(args: Array<String>) {
     var verticleID: String = ""
@@ -62,12 +98,12 @@ fun main(args: Array<String>) {
 
     val vertx = Vertx.vertx(vertxOptions);
     if (cmdline.parsed.containsKey("config")) {
-        config.merge(Configuration(cmdline.get("config")))
+        lucindacfg.merge(Configuration(cmdline.get("config")))
     } else {
-        config.merge(Configuration("default.cfg", "user.cfg"))
+        lucindacfg.merge(Configuration("default.cfg", "user.cfg"))
     }
 
-    vertx.deployVerticle(Launcher(config)) {
+    vertx.deployVerticle(Launcher()) {
         if (it.succeeded()) {
             verticleID = it.result()
         } else {
@@ -87,7 +123,10 @@ fun main(args: Array<String>) {
 }
 
 
-class Launcher(val cfg: Configuration) : AbstractVerticle() {
+/**
+ * Launch Autoscanner and Restpoint
+ */
+class Launcher() : AbstractVerticle() {
     val log = Logger.getLogger("lucinda.launcher")
     var autoscannerID: String = ""
     var restpointID: String = ""
@@ -95,48 +134,37 @@ class Launcher(val cfg: Configuration) : AbstractVerticle() {
     override fun start() {
         super.start()
 
-        if (cfg.get("rest_use", "no") == "yes") {
-            vertx.deployVerticle(Restpoint(cfg), DeploymentOptions().setWorker(true)) { handler ->
-                if (handler.succeeded()) {
-                    log.info("Restpoint launch succeeded")
-                    restpointID = handler.result()
-                } else {
-                    log.severe("Restpoint launch failed " + handler.cause())
-                }
-
+        vertx.deployVerticle(Restpoint(), DeploymentOptions().setWorker(true)) { handler ->
+            if (handler.succeeded()) {
+                log.info("Restpoint launch succeeded")
+                restpointID = handler.result()
+            } else {
+                log.severe("Restpoint launch failed " + handler.cause())
             }
-        }
-        val watchdirs = cfg.get("fs_watch")
-        if (watchdirs != null) {
-            vertx.deployVerticle(Autoscanner(), DeploymentOptions().setWorker(true)) { handler2 ->
-                if (handler2.succeeded()) {
-                    log.info("setup watch hook(s) for ${watchdirs}")
-                    autoscannerID = handler2.result()
-                    val dirs = JsonArray()
-                    watchdirs.split("\\s*,\\s*".toRegex()).forEach {
-                        dirs.add(it)
-                    }
 
-                    vertx.eventBus().send<Any>(Autoscanner.ADDR_START, JsonObject().put("dirs", dirs)) { answer ->
-                        if (answer.failed()) {
-                            log.severe("could not start Autoscanner " + answer.cause())
-                        }
-                    }
-                } else {
-                    log.severe("Autoscanner launch failed " + handler2.cause())
-                }
-            }
         }
 
+        vertx.deployVerticle(Autoscanner(), DeploymentOptions().setWorker(true)) { handler2 ->
+            if (handler2.succeeded()) {
+                log.info("setup watch hook(s) for ${docDir.absolutePath}")
+                autoscannerID = handler2.result()
+                val dirs = JsonArray()
+                dirs.add(docDir.absolutePath)
+
+                vertx.eventBus().send<Any>(Autoscanner.ADDR_START, JsonObject().put("dirs", dirs)) { answer ->
+                    if (answer.failed()) {
+                        log.severe("could not start Autoscanner " + answer.cause())
+                    }
+                }
+            } else {
+                log.severe("Autoscanner launch failed " + handler2.cause())
+            }
+        }
     }
+
 
     override fun stop() {
         super.stop()
-        /*
-        if (communicatorID.isNotEmpty()) {
-            vertx.undeploy(communicatorID)
-        }
-        */
         if (restpointID.isNotEmpty()) {
             vertx.undeploy(restpointID)
         }

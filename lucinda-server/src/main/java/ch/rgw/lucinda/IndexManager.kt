@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 by G. Weirich
+ * Copyright (c) 2016-2019 by G. Weirich
  *
  *
  * All rights reserved. This program and the accompanying materials
@@ -14,7 +14,7 @@
 
 package ch.rgw.lucinda
 
-import ch.rgw.crypt.makeHash
+import ch.rgw.tools.crypt.makeHash
 import ch.rgw.tools.TimeTool
 import com.rometools.utils.Strings
 import io.vertx.core.json.JsonArray
@@ -51,7 +51,7 @@ class IndexManager(directory: String) {
     //val dir: Path =
     val log = Logger.getLogger("lucinda.indexManager")
 
-    val analyzer = when (config.get("default_language", "de")) {
+    val analyzer = when (default_language) {
         "de" -> GermanAnalyzer()
         "fr" -> FrenchAnalyzer()
         "it" -> ItalianAnalyzer()
