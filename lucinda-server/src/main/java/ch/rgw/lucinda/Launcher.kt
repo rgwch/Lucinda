@@ -57,10 +57,6 @@ fun main(args: Array<String>) {
         System.exit(-1)
     }
 
-    if (cmdline.parsed.containsKey("config")) {
-        config.merge(Configuration(cmdline.get("config")))
-    }
-
     val vertxOptions = VertxOptions()
             .setMaxEventLoopExecuteTime(5000000000L)
             .setBlockedThreadCheckInterval(2000L)

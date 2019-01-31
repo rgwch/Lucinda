@@ -40,7 +40,7 @@ import java.util.logging.Logger
 class Restpoint(val cfg: Configuration) : AbstractVerticle() {
     val log = Logger.getLogger("Restpoint")
     val APIVERSION = "2.0"
-    val LUCINDAVERSION = "2.0.6"
+    val LUCINDAVERSION = "2.0.7"
 
     override fun start(future: Future<Void>) {
         super.start()
@@ -57,6 +57,15 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
         router.get("/lucinda/${APIVERSION}/ping").handler { ctx ->
             ctx.response().end("Welcome to Lucinda v "+LUCINDAVERSION)
             log.info("we've got a ping!")
+        }
+
+        /**
+        * Rescan document store
+        */
+        router.get("/lucinda/${APIVERSION}/rescan").handler { ctx->
+            ctx.response().end("Started rescan")
+            vertx.eventBus()?.send(baseaddr + Autoscanner.ADDR_RESCAN, "rescan")
+
         }
         /**
          * find files
