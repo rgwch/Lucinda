@@ -3,10 +3,14 @@ version: '3'
 services:
 
   lucinda:
-    image:  rgwch/lucinda-server:2.0.2
+    image:  rgwch/lucinda-server:2.1.0
     volumes: 
-      - /srv/berichte:/home/lucinda/data
+      - lucinda_home:/var/lucinda/home
+      - /path/to/documents:/var/lucinda/docs
     ports:
       - 2016:2016
     restart: always 
-    
+
+volumes:
+
+    lucinda_home:

@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y maven git \
 
 
 
-FROM java:8-jre-slim
+FROM openjdk:8-jre-slim
 LABEL MAINTAINER="weirich@elexis.ch" \
       VERSION=2.1.0 \
       DESCRIPTION="Lucene powered file indexing and storage"
@@ -28,13 +28,9 @@ ENV LUCINDA_DOCUMENTS /var/lucinda/docs
 COPY --from=build-stage lucinda.jar .
 
 RUN apt-get update && apt-get install -y tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng \
-    && apt-get clean \
-    && mkdir /var/lucinda \
-    && chown lucinda.lucinda /var/lucinda
+    && apt-get clean
 
-USER lucinda
-WORKDIR /home/lucinda
 EXPOSE 2016
 
-CMD ["java","-jar","lucinda.jar"]
+CMD ["java","-Xms512m","-Xmx8192m","-jar","lucinda.jar"]
 
