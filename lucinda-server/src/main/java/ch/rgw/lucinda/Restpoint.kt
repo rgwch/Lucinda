@@ -64,7 +64,7 @@ class Restpoint(val cfg: Configuration) : AbstractVerticle() {
         */
         router.get("/lucinda/${APIVERSION}/rescan").handler { ctx->
             ctx.response().end("Started rescan")
-            vertx.eventBus()?.send(baseaddr + Autoscanner.ADDR_RESCAN, "rescan")
+            vertx.eventBus()?.send(Autoscanner.ADDR_RESCAN, "rescan")
 
         }
         /**

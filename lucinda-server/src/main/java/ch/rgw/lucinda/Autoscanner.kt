@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 by G. Weirich
+ * Copyright (c) 2016-2019 by G. Weirich
  *
  *
  * All rights reserved. This program and the accompanying materials
@@ -52,12 +52,12 @@ class Autoscanner : AbstractVerticle() {
     override fun start() {
         super.start()
 
-        eb.consumer<Message<JsonObject>>(baseaddr + ADDR_START) { msg ->
+        eb.consumer<Message<JsonObject>>(ADDR_START) { msg ->
             val j = msg.body() as JsonObject
             log.fine("got start message ${Json.encodePrettily(j)}")
             register(j.getJsonArray("dirs"))
 
-            timer = vertx.setPeriodic(j.getLong("interval") ?: 500L) { h ->
+            timer = vertx.setPeriodic(j.getLong("interval") ?: 500L) { _ ->
                 try {
                     loop()
                 } catch(e: Exception) {
@@ -67,13 +67,13 @@ class Autoscanner : AbstractVerticle() {
             }
             msg.reply(JsonObject().put("status", "ok"))
         }
-        eb.consumer<Message<JsonObject>>(baseaddr + ADDR_STOP) {
+        eb.consumer<Message<JsonObject>>(ADDR_STOP) {
             log.fine("got stop message")
             if (timer > 0L) {
                 vertx.cancelTimer(timer)
             }
         }
-        eb.consumer<Message<String>>(baseaddr + ADDR_RESCAN) {
+        eb.consumer<Message<String>>(ADDR_RESCAN) {
             log.info("got rescan message")
             watchedDirs.forEach {
                 rescan(it)
@@ -261,10 +261,10 @@ class Autoscanner : AbstractVerticle() {
     }
 
     companion object {
-        const val ADDR_START = "start"
-        const val ADDR_STOP = "stop"
+        const val ADDR_START = "ch.rgw.lucinda.autoscanner.start"
+        const val ADDR_STOP = "ch.rgw.lucinda.autoscanner.stop"
         /** Full rescan or first scan of watch directories */
-        const val ADDR_RESCAN = "rescan"
+        const val ADDR_RESCAN = "ch.rgw.lucinda.autoscanner.rescan"
         var refiner: Refiner = DefaultRefiner()
         val log = Logger.getLogger("lucinda.autoscanner")
         val watchedDirs = ArrayList<Path>()

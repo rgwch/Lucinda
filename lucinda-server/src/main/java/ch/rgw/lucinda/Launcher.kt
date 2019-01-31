@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 by G. Weirich
+ * Copyright (c) 2016-2019 by G. Weirich
  *
  *
  * All rights reserved. This program and the accompanying materials
@@ -20,17 +20,13 @@ import io.vertx.core.*
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import java.io.File
-import java.util.logging.Level
 import java.util.logging.Logger
 
 /**
  * Created by gerry on 20.03.16.
  */
 
-val rootLog = Logger.getLogger("lucinda")
 val config = Configuration()
-
-
 val indexManager: IndexManager  by lazy {
     if (!indexdir.exists()) {
         indexdir.mkdirs()
@@ -39,19 +35,21 @@ val indexManager: IndexManager  by lazy {
 }
 
 val baseDir: File by lazy {
-    File(config.get("fs_basedir", "target/atore"))
+    if(System.getenv("LUCINDA_DOCUMENTS")!=null){
+        File(System.getenv("LUCINDA_DOCUMENTS"))
+    }else {
+        File(config.get("fs_basedir", "target/store"))
+    }
 }
 
 val indexdir: File by lazy {
-    File(baseDir,"index")
+    File(baseDir, "index")
 }
 
-val baseaddr: String get() = config.get("msg_prefix", "ch.rgw.lucinda")
-var ip: String = ""
 
 fun main(args: Array<String>) {
     var verticleID: String = ""
-    var cmdline = CmdLineParser(switches = "rescan,config,daemon")
+    var cmdline = CmdLineParser(switches = "rescan,config")
     if (!cmdline.parse(args)) {
         println(cmdline.errmsg)
         System.exit(-1)
@@ -86,59 +84,6 @@ fun main(args: Array<String>) {
         }
     })
 
-
-    if (cmdline.parsed.containsKey("rescan")) {
-        vertx.eventBus()?.send(baseaddr + Autoscanner.ADDR_RESCAN, "rescan")
-    }
-    if (!cmdline.parsed.containsKey("daemon")) {
-        println("Enter search term for queries or 'exit' to end program")
-        val caddr = baseaddr + ".find"
-        while (true) {
-            val input = readLine()
-            when (input) {
-                "exit" -> System.exit(0)
-                "rescan" -> {
-                    vertx.eventBus().send(baseaddr + Autoscanner.ADDR_RESCAN, "rescan")
-                }
-                else -> {
-                    vertx?.eventBus()?.send<Any>(caddr, JsonObject().put("query", input).put("numhits", 1000)) { result ->
-                        if (result.succeeded()) {
-                            val po: JsonObject = result.result().body() as JsonObject
-                            if (po.getString("status") == "ok") {
-                                val metadata = po.getJsonArray("result")
-                                metadata.forEach {
-                                    val url = (it as JsonObject).getString("url")
-                                    val title = it.getString("title")
-                                    val id = it.getString("_id")
-                                    println(if (url.isNullOrBlank()) {
-                                        if (title.isNullOrBlank()) {
-                                            id
-                                        } else {
-                                            title
-                                        }
-                                    } else {
-                                        url
-                                    })
-                                    if (rootLog.level == Level.FINEST) {
-                                        println("id: ${it.getString("_id")}, uuid: ${it.getString("uuid")}")
-                                    }
-                                    if (it.getString("deleted") == "true") {
-                                        println("*** deleted ***")
-                                    }
-                                }
-                                println("Query ok - ${metadata.size()} hits.\n")
-
-                            } else {
-                                println("error: " + po.getString("message"))
-                            }
-
-                        }
-                    }
-                }
-            }
-            Thread.sleep(100)
-        }
-    }
 }
 
 
@@ -172,7 +117,7 @@ class Launcher(val cfg: Configuration) : AbstractVerticle() {
                         dirs.add(it)
                     }
 
-                    vertx.eventBus().send<Any>(baseaddr + Autoscanner.ADDR_START, JsonObject().put("dirs", dirs)) { answer ->
+                    vertx.eventBus().send<Any>(Autoscanner.ADDR_START, JsonObject().put("dirs", dirs)) { answer ->
                         if (answer.failed()) {
                             log.severe("could not start Autoscanner " + answer.cause())
                         }
@@ -196,7 +141,7 @@ class Launcher(val cfg: Configuration) : AbstractVerticle() {
             vertx.undeploy(restpointID)
         }
         if (autoscannerID.isNotEmpty()) {
-            vertx.eventBus().send<Any>(baseaddr + Autoscanner.ADDR_STOP, "") {
+            vertx.eventBus().send<Any>(Autoscanner.ADDR_STOP, "") {
                 vertx.undeploy(autoscannerID)
             }
         }

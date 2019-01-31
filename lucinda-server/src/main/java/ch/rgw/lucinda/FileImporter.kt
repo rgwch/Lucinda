@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 by G. Weirich
+ * Copyright (c) 2016-2019 by G. Weirich
  *
  *
  * All rights reserved. This program and the accompanying materials
@@ -81,7 +81,7 @@ class FileImporter(val file: Path, val fileMetadata: JsonObject) : Handler<Futur
                 log.info("retrying ${file.toAbsolutePath()}")
                 try {
                     Thread.sleep(2000L)
-                } catch(ex: InterruptedException) {
+                } catch (ex: InterruptedException) {
                     /* never mind */
                 }
                 retryCount++
@@ -109,7 +109,7 @@ class FileImporter(val file: Path, val fileMetadata: JsonObject) : Handler<Futur
             }
             val doc = indexManager.addDocument(ByteArrayInputStream(payload), fileMetadata);
             val text = doc.getField("text").stringValue()
-            if ( (text.length < 15) and (doc.get("content-type").equals("application/pdf"))) {
+            if ((text.length < 15) and (doc.get("content-type").equals("application/pdf"))) {
                 if (text == "unparseable") {
                     log.info("unparseable text")
                     return "";
@@ -128,7 +128,7 @@ class FileImporter(val file: Path, val fileMetadata: JsonObject) : Handler<Futur
                             val pageImages = pdResources?.xObjects
                             val imageIter = pageImages?.keys?.iterator();
                             imageIter?.forEach {
-                                val pdxObjectImage = pageImages?.get(it);
+                                val pdxObjectImage = pageImages.get(it);
                                 if (pdxObjectImage is PDXObjectImage) {
                                     val imgName = basename + "_" + (++numImages).toString()
                                     pdxObjectImage.write2file(imgName);
@@ -159,7 +159,7 @@ class FileImporter(val file: Path, val fileMetadata: JsonObject) : Handler<Futur
                             return "";
                         }
 
-                    } catch(ex: Exception) {
+                    } catch (ex: Exception) {
                         ex.printStackTrace()
                         log.severe("Fatal error in pdf file ${filename}: ${ex.message}")
                         return ("Exception thrown: ${ex.message}")
@@ -171,7 +171,7 @@ class FileImporter(val file: Path, val fileMetadata: JsonObject) : Handler<Futur
             }
 
 
-        } catch(ex: Exception) {
+        } catch (ex: Exception) {
             ex.printStackTrace()
             log.severe("fatal error reading ${filename}")
             return ("read error ${ex.message}")

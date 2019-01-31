@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 by G. Weirich
+ * Copyright (c) 2016-2019 by G. Weirich
  *
  *
  * All rights reserved. This program and the accompanying materials
@@ -43,7 +43,7 @@ class Dispatcher(val cfg: Configuration, val vertx: Vertx) {
     fun makeDirPath(parms: JsonObject): File {
         val fname = parms.getString("filename")
         val concern = parms.getString("concern")
-        val key = parms.getBinary("key")
+        // val key = parms.getBinary("key")
         val dir = cfg.get("fs_import", "target/store") + (if (concern != null) {
             File.separator + concern.substring(0,2)+File.separator+concern
         } else "")
