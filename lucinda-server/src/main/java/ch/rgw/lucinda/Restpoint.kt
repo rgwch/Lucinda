@@ -51,7 +51,8 @@ class Restpoint() : AbstractVerticle() {
 
 
         router.get("/lucinda/${APIVERSION}/ping").handler { ctx ->
-            ctx.response().end("Welcome to Lucinda v "+LUCINDAVERSION)
+            ctx.response().setStatusCode(200).putHeader("content-type","text/plain")
+                    .end("Welcome to Lucinda v "+LUCINDAVERSION)
             log.info("we've got a ping!")
         }
 
@@ -59,7 +60,8 @@ class Restpoint() : AbstractVerticle() {
         * Rescan document store
         */
         router.get("/lucinda/${APIVERSION}/rescan").handler { ctx->
-            ctx.response().end("Started rescan")
+            ctx.response().setStatusCode(200).putHeader("content-type","text/plain; charset=utf-8")
+                    .end("Started rescan")
             vertx.eventBus()?.send(Autoscanner.ADDR_RESCAN, "rescan")
 
         }
