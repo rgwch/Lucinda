@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y maven git \
     && git clone https://github.com/rgwch/Lucinda \
     && cd Lucinda/lucinda-server \
     && mvn package \
-    && mv target/lucinda-server-2.1.0.jar /lucinda.jar \
+    && mv target/lucinda-server-2.1.1.jar /lucinda.jar \
     && chmod +x /lucinda.jar
 
 
@@ -27,8 +27,10 @@ ENV LUCINDA_DOCUMENTS /var/lucinda/docs
 
 COPY --from=build-stage lucinda.jar .
 
-RUN apt-get update && apt-get install -y tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng \
+RUN apt-get update
+    && apt-get install -y tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng \
     && apt-get clean
+    && chmod -R 777 /var/lucinda/docs
 
 EXPOSE 2016
 
