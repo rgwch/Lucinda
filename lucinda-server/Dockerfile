@@ -27,9 +27,9 @@ ENV LUCINDA_DOCUMENTS /var/lucinda/docs
 
 COPY --from=build-stage lucinda.jar .
 
-RUN apt-get update
+RUN apt-get update \
     && apt-get install -y tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng \
-    && apt-get clean
+    && apt-get clean \
     && chmod -R 777 /var/lucinda/docs
 
 EXPOSE 2016
