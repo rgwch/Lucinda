@@ -1,6 +1,6 @@
 FROM openjdk:8-jdk-slim as build-stage
 LABEL MAINTAINER="weirich@elexis.ch" \
-      VERSION=2.1.0 \
+      VERSION=2.1.1 \
       DESCRIPTION="Lucene powered file indexing and storage"
 
 RUN apt-get update && apt-get install -y maven git \
@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y maven git \
 
 FROM openjdk:8-jre-slim
 LABEL MAINTAINER="weirich@elexis.ch" \
-      VERSION=2.1.0 \
+      VERSION=2.1.1 \
       DESCRIPTION="Lucene powered file indexing and storage"
 
 
