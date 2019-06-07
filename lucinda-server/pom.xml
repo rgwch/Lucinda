@@ -6,7 +6,7 @@
 
     <groupId>ch.rgw</groupId>
     <artifactId>lucinda-server</artifactId>
-    <!-- x --><version>2.1.1</version>
+    <!-- x --><version>2.1.2</version>
     <properties>
         <kotlin-version>1.2.41</kotlin-version>
         <lucene-version>7.2.0</lucene-version>
@@ -25,6 +25,10 @@
         </repository>
     </repositories>
     <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14.jar</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-core</artifactId>
@@ -149,6 +153,12 @@
                                         <exclude>META-INF/*.SF</exclude>
                                         <exclude>META-INF/*.DSA</exclude>
                                         <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
+                                    <excludes>
+                                        <exclude>jdom-2.0.2.jar</exclude>
+                                        <exclude>ommons-logging-api-1.1.jar</exclude>
                                     </excludes>
                                 </filter>
                             </filters>

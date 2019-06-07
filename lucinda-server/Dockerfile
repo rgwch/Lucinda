@@ -1,20 +1,20 @@
 FROM openjdk:8-jdk-slim as build-stage
 LABEL MAINTAINER="weirich@elexis.ch" \
-      VERSION=2.1.1 \
+      VERSION=2.1.2 \
       DESCRIPTION="Lucene powered file indexing and storage"
 
 RUN apt-get update && apt-get install -y maven git \
     && git clone https://github.com/rgwch/Lucinda \
     && cd Lucinda/lucinda-server \
     && mvn package \
-    && mv target/lucinda-server-2.1.1.jar /lucinda.jar \
+    && mv target/lucinda-server-2.1.2.jar /lucinda.jar \
     && chmod +x /lucinda.jar
 
 
 
 FROM openjdk:8-jre-slim
 LABEL MAINTAINER="weirich@elexis.ch" \
-      VERSION=2.1.1 \
+      VERSION=2.1.2 \
       DESCRIPTION="Lucene powered file indexing and storage"
 
 

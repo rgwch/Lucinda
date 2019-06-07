@@ -107,6 +107,7 @@ fun main(args: Array<String>) {
         if (it.succeeded()) {
             verticleID = it.result()
         } else {
+            println(it.cause().message);
             System.exit(-1);
         }
     }
