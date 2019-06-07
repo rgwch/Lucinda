@@ -3,10 +3,16 @@ LABEL MAINTAINER="weirich@elexis.ch" \
       VERSION=2.1.2 \
       DESCRIPTION="Lucene powered file indexing and storage"
 
+
 RUN apt-get update && apt-get install -y maven git \
     && git clone https://github.com/rgwch/Lucinda \
     && cd Lucinda/lucinda-server \
-    && mvn package \
+    && mvn dependency:go-offline -B
+
+# avoid downloading half the internet on each build, so we created an intermediate container with all
+# dependencies
+
+RUN  mvn package \
     && mv target/lucinda-server-2.1.2.jar /lucinda.jar \
     && chmod +x /lucinda.jar
 
