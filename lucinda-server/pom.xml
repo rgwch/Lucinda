@@ -145,8 +145,8 @@
                                 <excludes>
                                     <exclude>io.crate:*</exclude>
                                     <exclude>org.bouncycastle:*</exclude>
-                                    <exclude>org.jdom:jdom-2.0.2</exclude>
-                                    <exclude>commons-logging-api-1.1.jar</exclude>
+                                    <exclude>org.jdom:jdom:2.0.2</exclude>
+                                    <exclude>commons-logging:commons-logging-api:1.1</exclude>
 
                                 </excludes>
                             </artifactSet>

@@ -131,11 +131,13 @@ class Launcher() : AbstractVerticle() {
     val log = Logger.getLogger("lucinda.launcher")
     var autoscannerID: String = ""
     var restpointID: String = ""
+    val opt=DeploymentOptions().setWorker(true)
+
 
     override fun start() {
         super.start()
 
-        vertx.deployVerticle(Restpoint(), DeploymentOptions().setWorker(true)) { handler ->
+        vertx.deployVerticle(Restpoint(), opt) { handler ->
             if (handler.succeeded()) {
                 log.info("Restpoint launch succeeded")
                 restpointID = handler.result()
@@ -145,7 +147,7 @@ class Launcher() : AbstractVerticle() {
 
         }
 
-        vertx.deployVerticle(Autoscanner(), DeploymentOptions().setWorker(true)) { handler2 ->
+        vertx.deployVerticle(Autoscanner(), opt.setMaxWorkerExecuteTime(120000000000L)) { handler2 ->
             if (handler2.succeeded()) {
                 log.info("setup watch hook(s) for ${docDir.absolutePath}")
                 autoscannerID = handler2.result()
