@@ -145,6 +145,9 @@
                                 <excludes>
                                     <exclude>io.crate:*</exclude>
                                     <exclude>org.bouncycastle:*</exclude>
+                                    <exclude>org.jdom:jdom-2.0.2</exclude>
+                                    <exclude>commons-logging-api-1.1.jar</exclude>
+
                                 </excludes>
                             </artifactSet>
                             <filters>
@@ -154,12 +157,6 @@
                                         <exclude>META-INF/*.SF</exclude>
                                         <exclude>META-INF/*.DSA</exclude>
                                         <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                                <filter>
-                                    <excludes>
-                                        <exclude>jdom-2.0.2.jar</exclude>
-                                        <exclude>ommons-logging-api-1.1.jar</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
