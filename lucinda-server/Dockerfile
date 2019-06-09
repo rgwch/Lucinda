@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk-slim as build-stage
+FROM openjdk:8-jdk as build-stage
 LABEL MAINTAINER="weirich@elexis.ch" \
       VERSION=2.1.2 \
       DESCRIPTION="Lucene powered file indexing and storage"
@@ -39,7 +39,7 @@ ENV LUCINDA_DOCUMENTS /var/lucinda/docs
 COPY --from=build-stage lucinda.jar .
 
 RUN apt-get update \
-    && apt-get install -y tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng \
+    && apt-get install -y tesseract-ocr tesseract-ocr-deu \
     && apt-get clean \
     && chmod -R 777 /var/lucinda/docs
 
