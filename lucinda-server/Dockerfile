@@ -5,17 +5,15 @@ LABEL MAINTAINER="weirich@elexis.ch" \
 
 RUN apt-get update && apt-get install -y maven
 
-WORKDIR /build
-
 # To avoid downloading half the internet on each build, we create an intermediate layer with all
 # maven dependencies.
 
 COPY pom.xml .
 RUN mvn dependency:go-offline
 
-
 COPY src/ /build/src/
 
+WORKDIR /build
 
 RUN  mvn package \
     && mv target/lucinda-server-2.1.4.jar /lucinda.jar \
