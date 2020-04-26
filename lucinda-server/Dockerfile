@@ -18,7 +18,7 @@ COPY src/ /build/src/
 
 
 RUN  mvn package \
-    && mv target/lucinda-server-2.1.4.jar \
+    && mv target/lucinda-server-2.1.4.jar /lucinda.jar \
     && chmod +x /lucinda.jar
 
 
