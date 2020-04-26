@@ -3,17 +3,20 @@ LABEL MAINTAINER="weirich@elexis.ch" \
       VERSION=2.1.4 \
       DESCRIPTION="Lucene powered file indexing and storage"
 
+WORKDIR /build
+COPY pom.xml .
+
 RUN apt-get update && apt-get install -y maven
+
 
 # To avoid downloading half the internet on each build, we create an intermediate layer with all
 # maven dependencies.
 
-COPY pom.xml .
 RUN mvn dependency:go-offline
+
 
 COPY src/ /build/src/
 
-WORKDIR /build
 
 RUN  mvn package \
     && mv target/lucinda-server-2.1.4.jar /lucinda.jar \
