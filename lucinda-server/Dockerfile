@@ -45,5 +45,5 @@ RUN apt-get update \
 
 EXPOSE 2016
 
-CMD ["java","-Xms512m","-Xmx4096m","-jar","lucinda.jar"]
+CMD ["java","-Xms512m","-Xmx8192m","-jar","lucinda.jar"]
 
