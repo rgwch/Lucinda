@@ -18,7 +18,7 @@ COPY src/ /build/src/
 
 
 RUN  mvn package \
-    && mv target/lucinda-server-2.1.2.jar /lucinda.jar \
+    && mv target/lucinda-server-2.1.3.jar \
     && chmod +x /lucinda.jar
 
 
@@ -45,5 +45,5 @@ RUN apt-get update \
 
 EXPOSE 2016
 
-CMD ["java","-Xms512m","-Xmx1024m","-jar","lucinda.jar"]
+CMD ["java","-Xms512m","-Xmx4096m","-jar","lucinda.jar"]
 

@@ -37,7 +37,7 @@ import java.util.logging.Logger
 class Restpoint() : AbstractVerticle() {
     val log = Logger.getLogger("Restpoint")
     val APIVERSION = "2.0"
-    val LUCINDAVERSION = "2.1.2"
+    val LUCINDAVERSION = "2.1.3"
 
     override fun start(future: Future<Void>) {
         super.start()
