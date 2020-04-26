@@ -1,6 +1,6 @@
 FROM openjdk:8-jdk as build-stage
 LABEL MAINTAINER="weirich@elexis.ch" \
-      VERSION=2.1.2 \
+      VERSION=2.1.3 \
       DESCRIPTION="Lucene powered file indexing and storage"
 
 RUN apt-get update && apt-get install -y maven
