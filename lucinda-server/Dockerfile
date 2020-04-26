@@ -25,7 +25,7 @@ RUN  mvn package \
 
 FROM openjdk:8-jre-slim
 LABEL MAINTAINER="weirich@elexis.ch" \
-      VERSION=2.1.3\
+      VERSION=2.1.4\
       DESCRIPTION="Lucene powered file indexing and storage"
 
 
