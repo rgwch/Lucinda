@@ -28,4 +28,64 @@ paths:
         200:
           description: rescan launched
 
-  
+  /query:
+    post:
+      summary: Send a Lucene query string
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string  
+      responses:
+        200:
+          description: query result
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/document"
+
+components:
+  schemas:
+    document:
+      description: a Lucene document
+      type: object
+      properties:
+        _id:
+          type: string
+          format: uuid
+        concern:
+          type: string  
+          example: Meier_Hans_22.04.1971
+        lastname:
+          type: string
+          example: Meier_Hans_22.04.1971
+        firstname: 
+          type: string
+          example: Hans
+        birthdate:
+          type: string
+          example: 19719422
+        lucinda_doctype:
+          type: string
+          anyOf:
+            - example: inbox
+            - example: omnivore
+        title:
+          type: string 
+          example: 2020-01-23_kardiologische_untersuchung.pdf
+        uuid:
+          type: string
+          format: uuid     
+        url:
+          type: string  
+          format: url
+          example: /var/lucindadocs/m/Meier_Hans_22.04.1971/2020-01-23_kardiologische_untersuchung.pdf
+
+          
+
+
+
+
