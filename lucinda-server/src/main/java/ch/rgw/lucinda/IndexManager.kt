@@ -113,6 +113,7 @@ class IndexManager(directory: String) {
             // In that case, Data up to the limit (100K) will be available and can be read.
             // so, just write a log entry and continue
             log.warning(ex.message)
+            throw(ex)
         }
 
         val text = handler.toString()
@@ -166,6 +167,8 @@ class IndexManager(directory: String) {
             val term = Term("_id", doc.get("_id"))
             writer.updateDocument(term, doc)
             searcherManager.maybeRefreshBlocking()
+            writer.flush()
+            writer.commit()
         }
     }
 
