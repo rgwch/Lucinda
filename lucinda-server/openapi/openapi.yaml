@@ -1,0 +1,31 @@
+openapi: 3.0.0
+info:
+  title: Lucinda Server
+  version: 2.1.3
+  description: A Lucinda based file indexer and storage engine
+
+servers: 
+  - url: localhost:2016/lucinda/2.0
+    description: local server API Version 2.0
+
+paths:
+  /ping:
+    get:
+      summary: isalive-test
+      responses:
+        200: 
+          description: Server is alive
+          content: 
+            text/plain:
+              schema: 
+                type: string
+                example: Welcome to Lucinda 2.1.3
+  /rescan:
+    get:
+      summary: rescan database
+      description: Rescans and reindexes all documents
+      responses:
+        200:
+          description: rescan launched
+
+  
