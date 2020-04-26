@@ -11,6 +11,7 @@ $VERSION =~ s/^\s+|\s+$//g;
 
 
 bumpfile("Dockerfile","lucinda-server-.+?\.jar ","lucinda-server-$VERSION.jar ");
+bumpfile("Dockerfile","VERSION=.+? ","VERSION=$VERSION ");
 bumpfile("pom.xml","<!-- x --><version>.+</version>","<!-- x --><version>$VERSION</version>");
 bumpfile("src/main/java/ch/rgw/lucinda/Restpoint.kt","val LUCINDAVERSION = \".+\"","val LUCINDAVERSION = \"$VERSION\"");
 

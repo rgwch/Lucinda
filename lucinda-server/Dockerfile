@@ -1,6 +1,6 @@
 FROM openjdk:8-jdk as build-stage
 LABEL MAINTAINER="weirich@elexis.ch" \
-      VERSION=2.1.3 \
+      VERSION=2.1.4 \
       DESCRIPTION="Lucene powered file indexing and storage"
 
 RUN apt-get update && apt-get install -y maven
@@ -18,14 +18,14 @@ COPY src/ /build/src/
 
 
 RUN  mvn package \
-    && mv target/lucinda-server-2.1.3.jar \
+    && mv target/lucinda-server-2.1.4.jar \
     && chmod +x /lucinda.jar
 
 
 
 FROM openjdk:8-jre-slim
 LABEL MAINTAINER="weirich@elexis.ch" \
-      VERSION=2.1.2 \
+      VERSION=2.1.3\
       DESCRIPTION="Lucene powered file indexing and storage"
 
 
