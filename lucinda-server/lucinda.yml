@@ -3,7 +3,7 @@ version: '3'
 services:
 
   lucinda:
-    image:  rgwch/lucinda-server:2.1.0
+    image:  rgwch/lucinda-server:2.1.4
     volumes: 
       - lucinda_home:/var/lucinda/home
       - /path/to/documents:/var/lucinda/docs
