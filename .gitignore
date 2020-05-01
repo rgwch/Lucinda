@@ -22,3 +22,5 @@
 **/target/
 **/dependency-reduced-pom.xml
 /lib/
+
+*.pdf
