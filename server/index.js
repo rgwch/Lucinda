@@ -23,16 +23,18 @@ app.post("/", async (req, res) => {
     const body = req.body
     try {
         await fs.writeFile(input, body)
+        console.log("received file")
         const proc = spawn("/usr/bin/ocrmypdf", [input, output])
 
         proc.on('error', err => {
-            console.log(err)
+            console.log("Error: "+err)
             res.sendStatus(500).send(err).end()
         })
         proc.on('exit', async (code, signal) => {
-            console.log("exit")
+            console.log("success exit")
             const cnt=await fs.readFile(output)
             res.send(cnt).status(200).end()
+            console.log("sent back")
         })
     } catch (err) { 
         console.log("Exception "+err)
