@@ -3,6 +3,7 @@ const { spawn } = require('child_process')
 const fs = require('fs').promises
 const path = require('path')
 const {version}= require('./package.json')
+const fetch=require('node-fetch')
 
 const app = express()
 
@@ -38,5 +39,6 @@ app.post("/", async (req, res) => {
         res.sendStatus(500)
     }
 })
-
-app.listen(process.env.PORT || 9997)
+const port=process.env.PORT || 9997
+console.log("Lucinda server up and listening at "+port)
+app.listen(port)
