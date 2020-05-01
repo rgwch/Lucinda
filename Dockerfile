@@ -60,5 +60,5 @@ RUN npm install
 EXPOSE 9997
 
 #CMD ["supervisord", "--nodaemon"]
-CMD ["node","index,js"]
+CMD ["node","index.js"]
 
