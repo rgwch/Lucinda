@@ -4,12 +4,18 @@
   "description": "A document sorage system based on solr, tika and ocrmypdf",
   "main": "index.js",
   "scripts": {
+    "start": "NODE_ENV=debug node src/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "rgwch",
   "license": "ISC",
   "dependencies": {
+    "config": "^3.3.1",
     "express": "^4.17.1",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.0",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "jest": "^26.0.0-alpha.0"
   }
 }
