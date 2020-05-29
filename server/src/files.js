@@ -11,6 +11,11 @@ const solr = require('solr-client').createClient({
     core: scfg.core
 })
 
+/**
+ * Create a unique idenitifier for a file path position 
+ * @param {*} app 
+ * @param {*} filepath 
+ */
 const makeFileID = (app, filepath) => {
     const base = app._basepath
     if (filepath.startsWith("file://")) {
@@ -29,6 +34,10 @@ const addFile = (file) => {
     files.push(file)
 }
 
+/**
+ * Check all files in the store. For  every file, check if t's already indexed by solr. 
+ * If not, file it for indexing.
+ */
 const checkStore = () => {
     return new Promise((resolve, reject) => {
         const base = app._basepath
@@ -59,6 +68,9 @@ const checkStore = () => {
     })
 }
 
+/**
+ * Cobtinously watch the store for changes. If such changes happen, update the solr index
+ */
 const watchDirs = () => {
     let storage = app._basepath
     watcher.watch(storage, {
