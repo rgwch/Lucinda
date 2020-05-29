@@ -5,6 +5,8 @@ const config = require('config')
 const scfg = config.get("solr")
 const app = require('./index')
 const log = require('./logger')
+const { Worker } = require('worker_threads')
+
 const solr = require('solr-client').createClient({
     host: "localhost",
     port: scfg.port,
@@ -29,17 +31,34 @@ const addFile = (file) => {
     files.push(file)
 }
 
+let timer
+let busy = false
+const loop = () => {
+    if (!busy) {
+        busy = true
+        if (files.length > 0) {
+            const job = files.pop()
+            const worker = new Worker('./src/worker.js', { workerData: job })
+            worker.on('exit', () => {
+                busy = false
+            })
+        } else {
+            clearInterval(timer)
+        }
+    }
+}
+
 const checkStore = () => {
     return new Promise((resolve, reject) => {
         const base = app._basepath
         const emitter = walker(base)
         emitter.on('file', async (filename, stat) => {
             const q = solr.createQuery().q({ id: makeFileID(app, filename) })
-            solr.search(q,(err, obj) => {
+            solr.search(q, (err, obj) => {
                 if (err) {
                     log.error(err)
                 } else {
-                    if (obj.response.numkFound == 0) {
+                    if (obj.response.numFound == 0) {
                         addFile(filename)
                     } else {
                         log.debug(obj[0].id)
@@ -48,6 +67,7 @@ const checkStore = () => {
             })
         })
         emitter.on('end', () => {
+            timer = setInterval(loop, 1000)
             resolve(true)
         })
         emitter.on('error', () => {
@@ -58,6 +78,7 @@ const checkStore = () => {
         })
     })
 }
+
 
 const watchDirs = () => {
     let storage = app._basepath
