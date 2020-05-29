@@ -6,7 +6,7 @@
   "scripts": {
     "start": "NODE_ENV=debug node src/",
     "test": "npm run mocha",
-    "mocha": "mocha test//unit --recursive --timeout 10000 --exit"
+    "mocha": "mocha test/unit --recursive --timeout 100000 --exit"
   },
   "author": "rgwch",
   "license": "ISC",
@@ -21,6 +21,6 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "mocha": "^7.1.2"
+    "mocha": "^7.2.0"
   }
 }

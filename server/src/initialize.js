@@ -6,32 +6,19 @@ const log = require('./logger')
 const { checkSchema } = require('./solr')
 const { checkStore, watchDirs } = require('./files')
 
-module.exports = () => {
-    let base = config.get('documentRoot')
-    if (base.startsWith('~/')) {
-        base = base.substring(2)
+
+module.exports = function () {
+  return checkSchema(app).then(() => {
+    return checkStore(app)
+  }).then(ok => {
+    if (config.get("watch") == true) {
+      watchDirs()
     }
-    if (!base.startsWith("/")) {
-        base = path.join(process.env.HOME, base)
-    }
-    app._basepath = base
-    fs.mkdir(base, { recursive: true }, err => {
-        if (err) {
-            if (err.code != "EEXIST") {
-                throw (err)
-            }
-            log.debug(err)
-        }
-    })
-    return checkSchema(app).then(() => {
-        return checkStore(app)
-    }).then(ok => {
-        if (config.get("watch") == true) {
-            watchDirs()
-        }
-        return true
-    }).catch(err => {
-        log.error("Error in itializer: " + err)
-        throw (err)
-    })
+    return true
+  }).catch(err => {
+    log.error("Error in itializer: " + err)
+    throw (err)
+  })
 }
+
+

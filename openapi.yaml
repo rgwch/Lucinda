@@ -1,0 +1,46 @@
+openapi: 3.0.2
+info:
+  title: Lucinda server
+  version: "3.0"
+
+paths:
+  /info:
+    get:
+      responses:
+        200:
+          description: The server is alive
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /createJob:
+    post:
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: array
+      responses:
+        202:
+          description: Lucinda filed the document for import
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobid:
+                    type: string
+  /fetch/{jobid}:
+    get:
+      responses:
+        200:
+          description: The Job is finished. Result is in the body
+          content:
+            application/octet-stream:
+              schema:
+                type: array
+        204:
+          description: The Job is not yet finished. Try again later
+        404:
+          description: No job wih given jobid exists
