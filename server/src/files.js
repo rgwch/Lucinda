@@ -4,8 +4,10 @@ const watcher = require('chokidar')
 const config = require('config')
 const scfg = config.get("solr")
 const log = require('./logger')
-const path=require('path')
-const { Worker } = require('worker_threads')
+const path = require('path')
+const fs = require('fs')
+const { Worker, parentPort, workerData } = require('worker_threads')
+const { toSolr } = require('./solr')
 
 const solr = require('solr-client').createClient({
   host: "localhost",
@@ -56,7 +58,7 @@ const files = []
 const addFile = (file) => {
   files.push(file)
   if (!timer) {
-    timer = setInterval(loop())
+    timer = setInterval(loop(), 10000)
   }
 }
 
@@ -69,8 +71,11 @@ const loop = () => {
     if (files.length > 0) {
       const job = files.pop()
       const worker = new Worker('./src/importer.js', { workerData: job })
-      worker.on('message', outfile => {
+      worker.on('message', async outfile => {
         log.info("imported " + outfile)
+        const buffer = fs.readFileSync(outfile)
+        const result = await toSolr(buffer)
+        console.log(result)
       })
       worker.on('exit', () => {
         busy = false

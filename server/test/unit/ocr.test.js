@@ -6,7 +6,7 @@ const ocr = require('../../src/importer')
 
 
 
-describe('ocr', () => {
+xdescribe('ocr', () => {
   before(()=>{
     fs.unlink(path.join(__dirname,"../ocrresult.pdf"),err=>{})
   })

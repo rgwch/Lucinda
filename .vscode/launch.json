@@ -10,6 +10,7 @@
         "name": "Mocha Tests",
         "cwd": "${workspaceFolder}/server",
         "program": "${workspaceFolder}/server/node_modules/mocha/bin/_mocha",
+        "outputCapture": "std",
         "args": [
           "--timeout",
           "999999",
@@ -39,6 +40,7 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/server/src/index.js",
+            "outputCapture": "std",
             "cwd": "${workspaceFolder}/server"
         }
     ]
