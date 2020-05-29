@@ -3,6 +3,7 @@
     "listen-address": "localhost",
     "listen-port": 9997,
     "watch": false,
+    "ocr": "/usr/bin/tesseract",
     "solr": {
         "host": "http://localhost",
         "port": 8983,
