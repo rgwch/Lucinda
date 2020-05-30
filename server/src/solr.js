@@ -24,7 +24,8 @@ const sendCommand = async (api, body) => {
       headers: { "content-type": "application/json" }, method: "post", body: JSON.stringify(body)
     })
     if (result.status != 200) {
-      console.log(result.statusText)
+      // console.log(result.statusText)
+      throw ("Error sending Command " + result.status + ", " + result.statusText)
     }
     return await result.json()
   } catch (err) {
@@ -89,14 +90,14 @@ const checkSchema = async () => {
 }
 
 const toSolr = async contents => {
-  const api=makeSolrURL()+"/update?json.command=false"
-  const result=await sendCommand(api,contents)
+  const api = makeSolrURL() + "/update?commit=true&json.command=false"
+  const result = await sendCommand(api, contents)
   return result
 }
 
-const find =async term =>{
-  const api=makeSolrURL()+"/query"
-  const result=await sendCommand(api,{query:term})
+const find = async term => {
+  const api = makeSolrURL() + "/query"
+  const result = await sendCommand(api, { query: term })
   return result
 }
 module.exports = { checkSchema, toSolr, find }

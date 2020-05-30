@@ -6,7 +6,7 @@ const winston=require('winston')
 */
 
 const logger=winston.createLogger({
-    level:'info',
+    level:'debug',
 
     format: winston.format.combine(
       winston.format.colorize(),
@@ -19,5 +19,6 @@ const logger=winston.createLogger({
   })
 
   logger.info("Lucinda Server: logger created")
+  logger.debug("Debug level active ")
   
 module.exports=logger

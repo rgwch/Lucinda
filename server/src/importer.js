@@ -42,7 +42,9 @@ async function doImport(filename, metadata = {}) {
   }
   log.info("received job " + filename)
   let buffer = await fs.readFile(filename)
+  log.debug("loaded file")
   const meta = await getMetadata(buffer)
+  log.debug("Metadata: "+JSON.stringify(meta))
   if (meta && meta["Content-Type"]) {
     if (meta["Content-Type"] == "application/pdf") {
       const numchar = meta["pdf:charsPerPage"]
@@ -56,11 +58,13 @@ async function doImport(filename, metadata = {}) {
   }
   const solrdoc = makeMetadata(meta, metadata, filename)
   solrdoc.contents = await getTextContents(buffer)
+
   const stored=await toSolr(solrdoc)
   return stored
 }
 
 function makeMetadata(computed, received, filename) {
+  log.debug("Creating Metadata for %s",filename)
   const meta = Object.assign({}, computed, received)
   meta["Lucinda:ImportedAt"] = new Date().toISOString()
   meta.id = makeFileID(filename)
@@ -129,6 +133,7 @@ async function getMetadata(buffer) {
 }
 
 async function getTextContents(buffer) {
+  log.debug("Getting Text content ",buffer.length)
   const contents = await fetch(getContentsURL(), {
     method: "PUT",
     body: buffer
@@ -136,7 +141,9 @@ async function getTextContents(buffer) {
   if (contents.status != 200) {
     throw new Error("Could not retrieve file contents")
   }
-  return (await contents.text()).trim()
+  const cnt=await contents.text()
+  log.debug("found "+cnt)
+  return cnt.trim()
 }
 
 function createVersion(fn) {

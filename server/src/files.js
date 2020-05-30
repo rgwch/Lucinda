@@ -94,7 +94,7 @@ const checkStore = () => {
       if(res.response.numFound == 0){
         addFile(filename)
       }else{
-        log.info(res.response.docs[0].id)
+        log.debug("checkstore skipping existing file "+res.response.docs[0].id)
       }      
     })
     emitter.on('end', () => {
