@@ -6,13 +6,13 @@ if (!cfg.has('solr')) {
 if (!cfg.has('tika')) {
   throw new Error("Tika is not defined in the config")
 }
-
 const log = require('./logger')
 const { spawn } = require('child_process')
 const fs = require('fs').promises
 const path = require('path')
 const { versionsPath, makeFileID, basePath } = require('./files')
 const fetch = require('node-fetch')
+const { toSolr } = require('./solr')
 
 const getTikaURL = tika => `${tika.host}:${tika.port}/`
 const getMetaURL = () => getTikaURL(cfg.get("tika")) + "meta"
@@ -47,16 +47,16 @@ async function doImport(filename, metadata = {}) {
     if (meta["Content-Type"] == "application/pdf") {
       const numchar = meta["pdf:charsPerPage"]
       if ((Array.isArray(numchar) && parseInt(numchar[0]) < 100) || (parseInt(numchar) < 100)) {
-        const dest = await doOCR(buffer, filename)
+        const dest = await doOCR(filename)
         if (dest) {
           buffer = await fs.readFile(filename)
         }
       }
     }
   }
-  solrdoc = makeMetadata(meta, metadata, filename)
+  const solrdoc = makeMetadata(meta, metadata, filename)
   solrdoc.contents = await getTextContents(buffer)
-
+  const stored=await toSolr(solrdoc)
 
 }
 
@@ -69,9 +69,9 @@ function makeMetadata(computed, received, filename) {
     meta.concern = path.basename(base)
   }
   meta.loc = filename
-  const storage=basePath()
-  if(meta.loc.startsWith(storage)){
-    meta.loc=meta.loc.substring(storage.length+1)
+  const storage = basePath()
+  if (meta.loc.startsWith(storage)) {
+    meta.loc = meta.loc.substring(storage.length + 1)
   }
   if (!meta.title) {
     const ext = path.extname(meta.loc)
@@ -88,7 +88,7 @@ function makeMetadata(computed, received, filename) {
  */
 function doOCR(source) {
   return new Promise((resolve, reject) => {
-    const dest = versionsPath() + path.sep + createVersion(archive)
+    const dest = versionsPath() + path.sep + createVersion(source)
     const proc = spawn(cfg.get("ocr"), [source, dest])
     proc.stdout.on('data', txt => { log.info("info: " + txt.toString()) })
     proc.stderr.on('data', txt => { log.error("err: " + txt.toString()) })
@@ -136,21 +136,17 @@ async function getTextContents(buffer) {
   if (contents.status != 200) {
     throw new Error("Could not retrieve file contents")
   }
-  return await contents.text().trim()
+  return (await contents.text()).trim()
 }
 
 function createVersion(fn) {
   const dat = new Date()
   const ext = path.extname(fn)
   const base = path.basename(fn, ext)
-  const st = base + "-" + dat.getFullYear() + "-" + dat.getMonth() + "-" + dat.getDay() + ext
+  const concern = path.basename(path.dirname(fn))
+  const st = concern + "_" + base + "_" + dat.getFullYear() + "-" + (dat.getMonth() + 1) + "-" + dat.getDate() + ext
   return st
 }
 
-function doOCR(source, dest) {
-  return new Promise((resolve, reject) => {
 
-  })
-}
-
-module.exports = { doImport, makeMetadata }
+module.exports = { doImport, makeMetadata, createVersion }

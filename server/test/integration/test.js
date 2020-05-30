@@ -5,6 +5,11 @@ const importer = require('../../src/importer')
 
 
 const dir = path.join(__dirname, "../")
-fs.copyFile(dir + "lorem.pdf.image", dir + "lorem.pdf").then(res => {
-  importer.doImport(dir + "pdf_image_test.pdf")
+/*
+fs.copyFile(dir + "lorem.pdf.text", dir + "lorem.pdf").then(res => {
+  importer.doImport(dir + "lorem.pdf")
+})
+*/
+fs.copyFile(dir + "lorem.pdf.image", dir + "lorem2.pdf").then(res => {
+  importer.doImport(dir + "lorem2.pdf")
 })

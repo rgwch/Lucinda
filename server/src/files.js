@@ -2,18 +2,12 @@ const crypt = require('crypto')
 const walker = require('walkdir')
 const watcher = require('chokidar')
 const config = require('config')
-const scfg = config.get("solr")
 const log = require('./logger')
 const path = require('path')
 const fs = require('fs')
 const { Worker, parentPort, workerData } = require('worker_threads')
 const { toSolr } = require('./solr')
 
-const solr = require('solr-client').createClient({
-  host: "localhost",
-  port: scfg.port,
-  core: scfg.core
-})
 
 const ensureDir = base => {
   if (base.startsWith('~/')) {

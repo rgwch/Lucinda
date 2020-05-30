@@ -1,6 +1,13 @@
 const config = require('config')
 const log = require('./logger')
 const fetch = require('node-fetch')
+const scfg = config.get('solr')
+const solr = require('solr-client').createClient({
+  host: scfg.host,
+  port: scfg.port,
+  core: scfg.core
+})
+
 
 const makeSolrURL = () => {
   if (!config.has("solr")) {
@@ -11,14 +18,6 @@ const makeSolrURL = () => {
   return solr.host + ":" + solr.port + "/solr/" + solr.core
 }
 
-const makeTikaURL = () => {
-  if (!config.has("tika")) {
-    log.error("FATAL: Tika is not defined in cinfiguration!")
-    throw new Error("Tika not defined")
-  }
-  const tika = config.get("tika")
-  return tika.host + ":" + tika.port + "/tika"
-}
 const sendCommand = async (api, body) => {
   try {
     const result = await fetch(api, {
@@ -27,6 +26,7 @@ const sendCommand = async (api, body) => {
     if (result.status != 200) {
       console.log(result.statusText)
     }
+    return await result.json()
   } catch (err) {
     console.log(err)
   }
@@ -89,21 +89,14 @@ const checkSchema = async app => {
 }
 
 const toSolr = async contents => {
-  const tika = makeTikaURL()
-  const headers = {
-    "content-type": "application/octet-stream"
-  }
-  const result = await fetch(tika, {
-    method: "PUT",
-    body: contents
-  })
-  if (result.status == 200) {
-    // const meta = await result.text()
-    const text=await result.text();
-    return text
-  } else {
-    throw new Error("Tika failed " + result.status + ", " + result.statusText)
-  }
+  const api=makeSolrURL()+"/update?json.command=false"
+  const result=await sendCommand(api,contents)
+  return result
 }
 
-module.exports = { checkSchema, toSolr }
+const find =async query =>{
+  const api=makeSolrURL()+"/select?q="+query
+  const result=await sendCommand(api,query)
+  return result
+}
+module.exports = { checkSchema, toSolr, find }
