@@ -53,7 +53,7 @@ const createCore = async () => {
 }
 
 
-const checkSchema = async app => {
+const checkSchema = async () => {
   const fields = config.get("fields")
   const solr = makeSolrURL()
   const api = solr + "/schema"
@@ -81,7 +81,7 @@ const checkSchema = async app => {
     if (res.status == 404) {
       console.log("schema not found")
       await createCore(solr)
-      await checkSchema(app)
+      await checkSchema()
     } else {
       throw new Error("could not retrieve schema " + res.statusText)
     }
@@ -94,9 +94,9 @@ const toSolr = async contents => {
   return result
 }
 
-const find =async query =>{
-  const api=makeSolrURL()+"/select?q="+query
-  const result=await sendCommand(api,query)
+const find =async term =>{
+  const api=makeSolrURL()+"/query"
+  const result=await sendCommand(api,{query:term})
   return result
 }
 module.exports = { checkSchema, toSolr, find }

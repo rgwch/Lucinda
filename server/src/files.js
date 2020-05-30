@@ -6,7 +6,7 @@ const log = require('./logger')
 const path = require('path')
 const fs = require('fs')
 const { Worker, parentPort, workerData } = require('worker_threads')
-const { toSolr } = require('./solr')
+const { toSolr,find } = require('./solr')
 
 
 const ensureDir = base => {
@@ -66,10 +66,8 @@ const loop = () => {
       const job = files.pop()
       const worker = new Worker('./src/importer.js', { workerData: job })
       worker.on('message', async outfile => {
-        log.info("imported " + outfile)
-        const buffer = fs.readFileSync(outfile)
-        const result = await toSolr(buffer)
-        console.log(result)
+        log.info("imported " + JSON.stringify(outfile))
+        console.log(outfile)
       })
       worker.on('exit', () => {
         busy = false
@@ -92,18 +90,12 @@ const checkStore = () => {
     const base = basePath()
     const emitter = walker(base)
     emitter.on('file', async (filename, stat) => {
-      const q = solr.createQuery().q({ id: makeFileID(filename) })
-      solr.search(q, (err, obj) => {
-        if (err) {
-          log.error(err)
-        } else {
-          if (obj.response.numFound == 0) {
-            addFile(filename)
-          } else {
-            log.debug(obj[0].id)
-          }
-        }
-      })
+      const res=await find("id:"+makeFileID(filename))
+      if(res.response.numFound == 0){
+        addFile(filename)
+      }else{
+        log.info(res.response.docs[0].id)
+      }      
     })
     emitter.on('end', () => {
       timer = setInterval(loop, 1000)

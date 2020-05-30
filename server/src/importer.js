@@ -57,7 +57,7 @@ async function doImport(filename, metadata = {}) {
   const solrdoc = makeMetadata(meta, metadata, filename)
   solrdoc.contents = await getTextContents(buffer)
   const stored=await toSolr(solrdoc)
-
+  return stored
 }
 
 function makeMetadata(computed, received, filename) {
