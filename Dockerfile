@@ -8,6 +8,7 @@ ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 ENV DEBIAN_FRONTEND=noninteractive
 ENV NODE_VER=node-v12.16.3-linux-x64
+ENV NODE_ENV=production
 
 RUN apt-get update && apt-get -y upgrade && apt-get install -y git \
   build-essential autoconf automake libtool \
@@ -36,15 +37,14 @@ RUN wget https://nodejs.org/dist/v12.16.3/${NODE_VER}.tar.xz && \
   tar -xf ${NODE_VER}.tar.xz && \
   ln -s /opt/${NODE_VER}/bin/node /usr/bin/node && \
   ln -s /opt/${NODE_VER}/bin/npm /usr/bin/npm && \
-  ln -s /root/.local/bin/ocrmypdf /usr/bin/ocrmypdf &&\
+  ln -s /root/.local/bin/ocrmypdf /usr/bin/ocrmypdf && \
   mkdir /opt/server
 
-WORKDIR /opt/server
-COPY package*.json .
+COPY package*.json ./
 RUN npm ci --only=production
-COPY server/* .
+COPY . .
 
 EXPOSE 9997
 
-CMD ["node","index.js"]
+CMD ["node","src/index.js"]
 

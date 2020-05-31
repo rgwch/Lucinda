@@ -9,7 +9,7 @@
       "request": "launch",
       "name": "Mocha Tests",
       "cwd": "${workspaceFolder}/server",
-      "program": "${workspaceFolder}/server/node_modules/mocha/bin/_mocha",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "outputCapture": "std",
       "args": [
         "--timeout",

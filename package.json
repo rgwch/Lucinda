@@ -15,7 +15,6 @@
     "config": "^3.3.1",
     "express": "^4.17.1",
     "node-fetch": "^2.6.0",
-    "solr-client": "^0.7.1",
     "walkdir": "^0.4.1",
     "winston": "^3.2.1"
   },

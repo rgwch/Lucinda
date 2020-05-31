@@ -2,12 +2,6 @@ const config = require('config')
 const log = require('./logger')
 const fetch = require('node-fetch')
 const scfg = config.get('solr')
-const solr = require('solr-client').createClient({
-  host: scfg.host,
-  port: scfg.port,
-  core: scfg.core
-})
-
 
 const makeSolrURL = () => {
   if (!config.has("solr")) {
