@@ -5,7 +5,10 @@ const path = require('path')
 const { version } = require('../package.json')
 const config = require('config')
 const init = require('./initialize')
+const { basePath } = require('./files')
+const { find, remove } = require('./solr')
 const log = require('./logger')
+const API = "/lucinda/3.0"
 
 log.info(`Lucinda Server v.${version} initializing at ${new Date().toString()}`)
 const app = express()
@@ -28,35 +31,46 @@ function serve() {
     type: "*/json"
   }))
 
-  app.get("/", (req, res) => {
+  app.get(API + "/", (req, res) => {
     res.json({
       "status": `Lucinda Server v.${version} ok`,
-      "usage": "POST application/octet-stream with pdf contents and receive application/octet-stream with scan result."
     })
   })
 
-  app.post("/", async (req, res) => {
-    const input = path.join(__dirname, "input.pdf")
-    const output = path.join(__dirname, "output.pdf")
-    const body = req.body
-    try {
-      await fs.writeFile(input, body)
-      console.log("received file")
-      const proc = spawn("/usr/bin/ocrmypdf", [input, output])
+  app.get(API + "/get/:id", async (req, res) => {
+    const meta = await find("id:" + req.params.id)
+    log.debug(meta)
+    if (meta.response.numFound == 0) {
+      res.status(404).end()
+    } else if (meta.response.numFound > 1) {
+      log.error("Document id not unique ", req.params.id)
+      res.status(500).end()
+    } else {
+      const doc = meta.response.docs[0]
+      const loc = path.join(basePath(), doc.loc)
+      res.sendFile(loc)
+    }
+  })
 
-      proc.on('error', err => {
-        console.log("Error: " + err)
-        res.sendStatus(500).send(err).end()
-      })
-      proc.on('exit', async (code, signal) => {
-        console.log("success exit")
-        const cnt = await fs.readFile(output)
-        res.send(cnt).status(200).end()
-        console.log("sent back")
-      })
+  app.get(API + "/query/:expression", async (req, res) => {
+    try {
+      const meta = await find(req.params.expression)
+      res.json(meta.response.docs)
     } catch (err) {
-      console.log("Exception " + err)
-      res.sendStatus(500)
+      log.error("Query error " + req.params.exoression + ": " + err)
+      res.status(400).end()
+    }
+  })
+
+  app.get(API + "/removeindex/:id", async (req, res) => {
+    try{
+      const result=await remove(req.params.id)
+      log.debug(result)
+      if(result.responseHeader.status==0){
+        res.status(200).end()
+      }
+    }catch(err){
+      res.status(403)
     }
   })
   const port = process.env.LUCINDA_PORT || (config.has("listen-port") ? config.get("listen-port") : 9997)

@@ -110,4 +110,5 @@ const remove = async id => {
   })
   return result
 }
-module.exports = { checkSchema, toSolr, find, remove }
+
+module.exports = { checkSchema, toSolr, find, remove}
