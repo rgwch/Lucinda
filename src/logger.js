@@ -6,7 +6,7 @@ const winston = require('winston')
 */
 
 const logger = winston.createLogger({
-  level: 'debug',
+  level: (process.env.NODE_ENV="debug" ? 'debug' : 'warn'),
 
   format: winston.format.combine(
     winston.format.colorize(),

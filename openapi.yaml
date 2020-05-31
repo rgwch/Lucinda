@@ -6,6 +6,7 @@ info:
 paths:
   /lucinda/3.0/ping:
     get:
+      description: Test if the server is working
       responses:
         200:
           description: The server is alive
@@ -14,8 +15,8 @@ paths:
               schema:
                 type: string
   /lucinda/3.0/get/{id}:
-    description: retrieve the document with the given id
     get:
+      description: retrieve the document with the given id
       parameters:
         - name: id
           in: path
@@ -35,8 +36,8 @@ paths:
           description: The requested document was not found
                   
   /lucinda/3.0/query/{expression}:
-    description: Query the database with a lucene query expression
     get:
+      description: Query the database with a lucene query expression
       parameters:
         - name: querystring
           in: path
@@ -44,34 +45,30 @@ paths:
           schema: 
             type: string
       responses:
-
-  /createJob:
-    post:
-      requestBody:
-        content:
-          application/octet-stream:
-            schema:
-              type: array
-      responses:
-        202:
-          description: Lucinda filed the document for import
+        200:
+          description: ok, body contains a list (wich might be empty)
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  jobid:
-                    type: string
-  /fetch/{jobid}:
-    get:
-      responses:
-        200:
-          description: The Job is finished. Result is in the body
-          content:
-            application/octet-stream:
-              schema:
                 type: array
-        204:
-          description: The Job is not yet finished. Try again later
+
+        400:
+          description: Bad query expression  
+  /lucinda/3.0/removeindex/{id}:
+    get:
+      description: remove the document with the given ID from the index (not from the file system!)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200: 
+          description: The document was removed from the index
+        403:
+          description: Removal not allowed  
         404:
-          description: No job wih given jobid exists
+          description: No document with that index was found
+
+  

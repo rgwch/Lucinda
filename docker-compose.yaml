@@ -1,0 +1,42 @@
+version: "3"
+
+networks:
+  bridge:
+      driver: bridge
+      
+services:
+  solr:
+    image: solr
+    container_name: elx_solr
+    volumes:
+      - ${SOLR_DATA:-solrdata}:/var/solr
+    ports:
+      - ${SOLR_PORT:-8983}:8983
+    command:
+      - solr-precreate
+      - gettingstarted
+    restart: "no"
+    networks:
+      - bridge
+
+  tika:
+    image: apache/tika:1.23
+    container_name: elx_tika
+    ports:
+      - ${TIKA_PORT:-9998}:9998
+    networks:
+      - bridge  
+
+  lucinda:
+    depends_on: 
+      - solr
+      - tika
+    image: rgwch/lucinda:3.0
+    container_name: elx_lucinda
+    ports:
+      - ${LUCINDA_PORT:-9997}:9997
+    networks:
+      - bridge  
+
+volumes:
+  solrdata:
