@@ -100,4 +100,14 @@ const find = async term => {
   const result = await sendCommand(api, { query: term })
   return result
 }
-module.exports = { checkSchema, toSolr, find }
+
+const remove = async id => {
+  const api = makeSolrURL() + "/update"
+  const result = await sendCommand(api, {
+    delete: {
+      query: "id:" + id
+    }
+  })
+  return result
+}
+module.exports = { checkSchema, toSolr, find, remove }

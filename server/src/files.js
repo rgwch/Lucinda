@@ -6,7 +6,7 @@ const log = require('./logger')
 const path = require('path')
 const fs = require('fs')
 const { Worker, parentPort, workerData } = require('worker_threads')
-const { toSolr, find } = require('./solr')
+const { find, remove } = require('./solr')
 
 
 const ensureDir = base => {
@@ -126,23 +126,17 @@ const watchDirs = () => {
     followSymlinks: false
   })
     .on('add', async fp => {
-      try {
-        await service.create({ contents: "file://" + fp }, { inPlace: true })
-        log.info("added " + fp)
-      } catch (err) {
-        log.error("Error adding " + fp + ", " + err)
-      }
+      addFile(fp)
+      log.info("added " + fp)
     })
     .on('change', async fp => {
-      try {
-        await service.update({ contents: "file://" + fp })
-      } catch (err) {
-        log.error("Error updating " + fp + ", " + err)
-      }
+      addFile(fp)
+      log.info("updated " + fp)
     })
     .on('unlink', async fp => {
       try {
-        await service.remove(api.makeFileID(fp))
+        await remove(makeFileID(fp))
+        log.info("removed " + fp)
       } catch (err) {
         log.error("Error removing " + fp + ", " + err)
       }

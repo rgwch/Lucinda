@@ -1,0 +1,207 @@
+{
+  "documentRoot": "lucinda-docs",
+  "versionsStore": "lucinda-attic",
+  "listen-address": "localhost",
+  "listen-port": 9997,
+  "watch": false,
+  "ocr": "/usr/local/bin/ocrmypdf",
+  "tika": {
+    "host": "http://localhost",
+    "port": 9998
+  },
+  "solr": {
+    "host": "http://localhost",
+    "port": 8983,
+    "core": "lucindadata",
+    "idfield": "id"
+  },
+  "fields": [
+    {
+      "name": "_nest_path_",
+      "type": "_nest_path_"
+    },
+    {
+      "name": "_root_",
+      "type": "string",
+      "docValues": false,
+      "indexed": true,
+      "stored": false
+    },
+    {
+      "name": "score",
+      "type": "plongs"
+    },
+    {
+      "name": "Character_Count",
+      "type": "plongs"
+    },
+    {
+      "name": "Content-Encoding",
+      "type": "text_general"
+    },
+    {
+      "name": "Content-Language",
+      "type": "text_general"
+    },
+    {
+      "name": "Content-type",
+      "type": "text_general"
+    },
+    {
+      "name": "Creation-Date",
+      "type": "pdates"
+    },
+    {
+      "name": "Edit-Time",
+      "type": "text_general"
+    },
+    {
+      "name": "Last-Modified",
+      "type": "pdates"
+    },
+    {
+      "name": "Last-Save-Date",
+      "type": "pdates"
+    },
+    {
+      "name": "Word-Count",
+      "type": "plongs"
+    },
+    {
+      "name": "X-Parsed-By",
+      "type": "text_general"
+    },
+    {
+      "name": "_text_",
+      "type": "text_general",
+      "multiValued": true,
+      "stored": false,
+      "indexed": true
+    },
+    {
+      "name": "_version_",
+      "type": "plong",
+      "indexed": false,
+      "stored": false
+    },
+    {
+      "name": "addressee",
+      "type": "text_general",
+      "indexed": true,
+      "stored": true
+    },
+    {
+      "name": "author",
+      "type": "text_general",
+      "indexed": true,
+      "stored": true
+    },
+    {
+      "name": "category",
+      "type": "text_general",
+      "indexed": true,
+      "stored": true
+    },
+    {
+      "name": "concern",
+      "type": "text_general",
+      "multiValued": false,
+      "indexed": true,
+      "stored": true
+    },
+    {
+      "name": "contents",
+      "type": "text_general",
+      "uninvertible": false,
+      "indexed": true,
+      "multiValued": false,
+      "stored": false
+    },
+    {
+      "name": "date",
+      "type": "pdates"
+    },
+    {
+      "name": "dc_title",
+      "type": "text_general"
+    },
+    {
+      "name": "dcterms_created",
+      "type": "pdates"
+    },
+    {
+      "name": "dcterms_modified",
+      "type": "pdates"
+    },
+    {
+      "name": "deleted",
+      "type": "string",
+      "uninvertible": false,
+      "multiValued": false,
+      "indexed": true,
+      "stored": true
+    },
+    {
+      "name": "description",
+      "type": "text_general"
+    },
+    {
+      "name": "filename",
+      "type": "text_general",
+      "multiValued": false,
+      "indexed": false,
+      "stored": true
+    },
+    {
+      "name": "generator",
+      "type": "text_general",
+      "multiValued": false
+    },
+    {
+      "name": "id",
+      "type": "string",
+      "multiValued": false,
+      "required": true,
+      "stored": true,
+      "indexed": true
+    },
+    {
+      "name": "language",
+      "type": "text_general"
+    },
+    {
+      "name": "lastupdate",
+      "type": "plongs"
+    },
+    {
+      "name": "loc",
+      "type": "string",
+      "indexed": false,
+      "stored": true
+    },
+    {
+      "name": "name",
+      "type": "text_general",
+      "indexed": true,
+      "stored": true
+    },
+    {
+      "name": "subject",
+      "type": "text_general"
+    },
+    {
+      "name": "template",
+      "type": "string"
+    },
+    {
+      "name": "title",
+      "type": "text_general",
+      "indexed": true,
+      "stored": true
+    },
+    {
+      "name": "url",
+      "type": "string"
+    }
+  ]
+}
