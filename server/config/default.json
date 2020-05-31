@@ -3,7 +3,7 @@
   "versionsStore": "lucinda-attic",
   "listen-address": "localhost",
   "listen-port": 9997,
-  "watch": false,
+  "watch": true,
   "ocr": "/usr/bin/ocrmypdf",
   "tika": {
     "host": "http://localhost",

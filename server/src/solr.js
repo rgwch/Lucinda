@@ -102,7 +102,7 @@ const find = async term => {
 }
 
 const remove = async id => {
-  const api = makeSolrURL() + "/update"
+  const api = makeSolrURL() + "/update?commit=true"
   const result = await sendCommand(api, {
     delete: {
       query: "id:" + id

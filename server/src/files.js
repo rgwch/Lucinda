@@ -30,6 +30,11 @@ const ensureDir = base => {
 const basePath = () => ensureDir(config.get('documentRoot'))
 const versionsPath = () => ensureDir(config.get("versionsStore"))
 
+const wait = ms => {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms)
+  })
+}
 
 /**
  * Create a unique idenitifier for a file path position 
@@ -59,6 +64,7 @@ const addFile = (file) => {
 
 let timer = undefined
 let busy = false
+let pending = 0
 const joblist = () => {
   log.debug("entering joblist; busy=" + busy)
   if (!busy) {
@@ -95,15 +101,21 @@ const checkStore = () => {
     const emitter = walker(base)
     emitter.on('file', async (filename, stat) => {
       if (!path.basename(filename).startsWith(".")) {
+        pending++
         const res = await find("id:" + makeFileID(filename))
         if (res.response.numFound == 0) {
           addFile(filename)
         } else {
           log.debug("checkstore skipping existing file " + res.response.docs[0].loc)
         }
+        pending--
       }
     })
-    emitter.on('end', () => {
+    emitter.on('end', async () => {
+      while (pending > 0) {
+        log.debug("checkstore pending operations: " + pending)
+        await wait(500)
+      }
       log.debug("Checkstore finished")
       resolve(true)
     })
@@ -123,7 +135,9 @@ const watchDirs = () => {
   let storage = basePath()
   watcher.watch(storage, {
     ignored: /(^|[\/\\])\../,
-    followSymlinks: false
+    followSymlinks: false,
+    ignoreInitial: true,
+    awaitWriteFinish: true
   })
     .on('add', async fp => {
       addFile(fp)
