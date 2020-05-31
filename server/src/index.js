@@ -13,7 +13,7 @@ const app = express()
 init().then(() => {
   serve()
 }).catch(err => {
-  log.error("Could not start")
+  log.error("Could not start: " + err)
 })
 
 function serve() {
