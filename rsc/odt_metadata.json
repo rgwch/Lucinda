@@ -1,0 +1,8 @@
+{
+  "Content-Type": "application/vnd.oasis.opendocument.text",
+  "X-Parsed-By": [
+    "org.apache.tika.parser.DefaultParser",
+    "org.apache.tika.parser.odf.OpenDocumentParser"
+  ],
+  "language": "de"
+}
