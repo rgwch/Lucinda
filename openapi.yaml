@@ -4,7 +4,7 @@ info:
   version: "3.0"
 
 paths:
-  /info:
+  /lucinda/3.0/ping:
     get:
       responses:
         200:
@@ -13,6 +13,37 @@ paths:
             text/plain:
               schema:
                 type: string
+  /lucinda/3.0/get/{id}:
+    description: retrieve the document with the given id
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        200:
+          description: The requested document in binary form
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: byte
+        404:
+          description: The requested document was not found
+                  
+  /lucinda/3.0/query/{expression}:
+    description: Query the database with a lucene query expression
+    get:
+      parameters:
+        - name: querystring
+          in: path
+          required: true
+          schema: 
+            type: string
+      responses:
 
   /createJob:
     post:
