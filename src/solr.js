@@ -3,6 +3,12 @@ const log = require('./logger')
 const fetch = require('node-fetch')
 const scfg = config.get('solr')
 
+const wait = ms => {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms)
+  })
+}
+
 const makeSolrURL = () => {
   if (!config.has("solr")) {
     log.error("FATAL: Solr is not defined in configuration!")
@@ -74,8 +80,13 @@ const checkSchema = async () => {
     // console.log(schema)
   } else {
     if (res.status == 404) {
-      console.log("schema not found")
+      log.error("schema not found")
       await createCore(solr)
+      await checkSchema()
+    } else if (res.status == 503) { // service unavailable
+      log.warn("Solr is not yet available. Wait 30 seconds")
+      await wait(30000)
+      await (createCore(solr))
       await checkSchema()
     } else {
       throw new Error("could not retrieve schema " + res.statusText)
@@ -105,4 +116,4 @@ const remove = async id => {
   return result
 }
 
-module.exports = { checkSchema, toSolr, find, remove}
+module.exports = { checkSchema, toSolr, find, remove, wait }

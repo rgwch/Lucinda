@@ -1,0 +1,11 @@
+{
+  "documentRoot": "LUCINDA_DOCBASE",
+  "versionsStore": "LUCINDA_ATTIC",
+  "listen-port": "LUCINDA_PORT",
+  "tika":{
+    "port": "TIKA_PORT"
+  },
+  "solr":{
+    "port": "SOLR_PORT"
+  }
+}

@@ -6,7 +6,7 @@ const log = require('./logger')
 const path = require('path')
 const fs = require('fs')
 const { Worker, parentPort, workerData } = require('worker_threads')
-const { find, remove } = require('./solr')
+const { find, remove, wait } = require('./solr')
 
 
 const ensureDir = base => {
@@ -30,11 +30,6 @@ const ensureDir = base => {
 const basePath = () => ensureDir(config.get('documentRoot'))
 const versionsPath = () => ensureDir(config.get("versionsStore"))
 
-const wait = ms => {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms)
-  })
-}
 
 /**
  * Create a unique idenitifier for a file path position 

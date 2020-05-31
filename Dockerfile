@@ -8,7 +8,7 @@ ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 ENV DEBIAN_FRONTEND=noninteractive
 ENV NODE_VER=node-v12.16.3-linux-x64
-ENV NODE_ENV=production
+ENV NODE_ENV=dockered
 
 RUN apt-get update && apt-get -y upgrade && apt-get install -y git \
   build-essential autoconf automake libtool \
