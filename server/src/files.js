@@ -6,7 +6,7 @@ const log = require('./logger')
 const path = require('path')
 const fs = require('fs')
 const { Worker, parentPort, workerData } = require('worker_threads')
-const { toSolr,find } = require('./solr')
+const { toSolr, find } = require('./solr')
 
 
 const ensureDir = base => {
@@ -52,30 +52,34 @@ const files = []
 const addFile = (file) => {
   files.push(file)
   if (!timer) {
-    timer = setInterval(loop(), 10000)
+    timer = setInterval(joblist, 10000)
   }
 }
 
 
-let timer
+let timer = undefined
 let busy = false
-const loop = () => {
+const joblist = () => {
+  log.debug("entering joblist; busy=" + busy)
   if (!busy) {
     busy = true
     if (files.length > 0) {
       const job = files.pop()
+      log.debug("processing file: " + job)
       const worker = new Worker('./src/importer.js', { workerData: job })
       worker.on('message', async outfile => {
         log.info("imported " + JSON.stringify(outfile))
-        console.log(outfile)
       })
       worker.on('exit', () => {
+        log.info("Worker exited")
         busy = false
       })
       worker.on('error', err => {
         log.error(err + ", " + job)
+        busy = false
       })
     } else {
+      log.debug("Joblist is empty")
       busy = false
       if (timer) {
         clearInterval(timer)
@@ -90,15 +94,17 @@ const checkStore = () => {
     const base = basePath()
     const emitter = walker(base)
     emitter.on('file', async (filename, stat) => {
-      const res=await find("id:"+makeFileID(filename))
-      if(res.response.numFound == 0){
-        addFile(filename)
-      }else{
-        log.debug("checkstore skipping existing file "+res.response.docs[0].id)
-      }      
+      if (!path.basename(filename).startsWith(".")) {
+        const res = await find("id:" + makeFileID(filename))
+        if (res.response.numFound == 0) {
+          addFile(filename)
+        } else {
+          log.debug("checkstore skipping existing file " + res.response.docs[0].loc)
+        }
+      }
     })
     emitter.on('end', () => {
-      timer = setInterval(loop, 1000)
+      log.debug("Checkstore finished")
       resolve(true)
     })
     emitter.on('error', () => {

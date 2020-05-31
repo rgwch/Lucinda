@@ -4,7 +4,7 @@
   "description": "A document sorage system based on solr, tika and ocrmypdf",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=debug node src/",
+    "start": "node src/",
     "test": "npm run mocha",
     "mocha": "mocha test/unit --recursive --timeout 100000 --exit"
   },
