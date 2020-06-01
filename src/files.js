@@ -52,7 +52,7 @@ const files = []
 const addFile = (file) => {
   files.push(file)
   if (!timer) {
-    timer = setInterval(joblist, 10000)
+    timer = setInterval(joblist, 5000)
   }
 }
 
