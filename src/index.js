@@ -62,14 +62,22 @@ function serve() {
     }
   })
 
+  app.post(API + "/add", async (req, res) => {
+    const file = await req.json()
+  })
+
+  app.put(API + "/update/{id}", async (req, res) => {
+
+  })
+
   app.get(API + "/removeindex/:id", async (req, res) => {
-    try{
-      const result=await remove(req.params.id)
+    try {
+      const result = await remove(req.params.id)
       log.debug(result)
-      if(result.responseHeader.status==0){
+      if (result.responseHeader.status == 0) {
         res.status(200).end()
       }
-    }catch(err){
+    } catch (err) {
       res.status(403)
     }
   })

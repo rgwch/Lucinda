@@ -3,8 +3,10 @@ info:
   title: Lucinda server
   version: "3.0"
 
+servers:
+  - url: http://localhost:9997/lucinda/3.0
 paths:
-  /lucinda/3.0/ping:
+  /ping:
     get:
       description: Test if the server is working
       responses:
@@ -14,7 +16,7 @@ paths:
             text/plain:
               schema:
                 type: string
-  /lucinda/3.0/get/{id}:
+  /get/{id}:
     get:
       description: retrieve the document with the given id
       parameters:
@@ -34,15 +36,15 @@ paths:
                 format: byte
         404:
           description: The requested document was not found
-                  
-  /lucinda/3.0/query/{expression}:
+
+  /query/{expression}:
     get:
       description: Query the database with a lucene query expression
       parameters:
         - name: querystring
           in: path
           required: true
-          schema: 
+          schema:
             type: string
       responses:
         200:
@@ -53,8 +55,21 @@ paths:
                 type: array
 
         400:
-          description: Bad query expression  
-  /lucinda/3.0/removeindex/{id}:
+          description: Bad query expression
+
+  /add:
+    post:
+      description: Indexes and immports a new document
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#components/schemas/newDocument"
+      responses:
+        201:
+          description: The new entry has been created
+
+  /removeindex/{id}:
     get:
       description: remove the document with the given ID from the index (not from the file system!)
       parameters:
@@ -64,11 +79,24 @@ paths:
           schema:
             type: string
       responses:
-        200: 
-          description: The document was removed from the index
+        204:
+          description: The document was removed from the index or the document didn't exist.
         403:
-          description: Removal not allowed  
+          description: Removal not allowed
         404:
           description: No document with that index was found
 
-  
+components:
+  schemas:
+    newDocument:
+      type: object
+      properties:
+        title:
+          type: string
+        concern:
+          type: string
+        filename:
+          type: string
+        contents:
+          type: string
+          format: byte
