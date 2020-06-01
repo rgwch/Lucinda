@@ -1,4 +1,4 @@
-![](rsc/lucinda.gif)
+![](rsc/lucindalogo.png)
 # Lucinda
 
 (The name is short for "lucene powered file indexa")
