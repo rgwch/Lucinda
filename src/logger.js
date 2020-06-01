@@ -26,8 +26,5 @@ const logger = winston.createLogger({
   ]
 })
 
-logger.info("Lucinda Server: logger created")
-logger.debug("Debug level active ")
-logger.info("Environment is " + process.env.NODE_ENV)
 
 module.exports = logger

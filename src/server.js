@@ -3,6 +3,7 @@ const log = require('./logger')
 const { version } = require('../package.json')
 const API = "/lucinda/3.0"
 const config = require('config')
+const {find} =require('./solr')
 
 log.info(`Lucinda Server v.${version} initializing at ${new Date().toString()}`)
 const server = express()
@@ -42,7 +43,7 @@ server.get(API + "/get/:id", async (req, res) => {
 server.get(API + "/query/:expression", async (req, res) => {
   try {
     const meta = await find(req.params.expression)
-    res.json(meta.response.docs)
+    res.json(meta.response)
   } catch (err) {
     log.error("Query error " + req.params.exoression + ": " + err)
     res.status(400).end()
