@@ -6,7 +6,7 @@ info:
 servers:
   - url: http://localhost:9997/lucinda/3.0
 paths:
-  /ping:
+  /:
     get:
       description: Test if the server is working
       responses:
