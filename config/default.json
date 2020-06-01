@@ -2,7 +2,7 @@
   "documentRoot": "lucinda-docs",
   "versionsStore": "lucinda-attic",
   "listen-address": "localhost",
-  "listen-port": 9998,
+  "listen-port": 9997,
   "watch": true,
   "preferredLanguage": "deu",
   "ocr": "/usr/bin/ocrmypdf",

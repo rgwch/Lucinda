@@ -43,28 +43,35 @@ async function doImport(filename, metadata = {}) {
   log.info("received job " + filename)
   let buffer = await fs.readFile(filename)
   log.debug("loaded file")
-  const meta = await getMetadata(buffer)
-  log.debug("Metadata: "+JSON.stringify(meta))
-  if (meta && meta["Content-Type"]) {
-    if (meta["Content-Type"] == "application/pdf") {
-      const numchar = meta["pdf:charsPerPage"]
-      if ((Array.isArray(numchar) && parseInt(numchar[0]) < 100) || (parseInt(numchar) < 100)) {
-        const dest = await doOCR(filename)
-        if (dest) {
-          buffer = await fs.readFile(filename)
+  try {
+    const meta = await getMetadata(buffer)
+    log.debug("Metadata: " + JSON.stringify(meta))
+    if (meta && meta["Content-Type"]) {
+      if (meta["Content-Type"] == "application/pdf") {
+        const numchar = meta["pdf:charsPerPage"]
+        if ((Array.isArray(numchar) && parseInt(numchar[0]) < 100) || (parseInt(numchar) < 100)) {
+          const dest = await doOCR(filename)
+          if (dest) {
+            buffer = await fs.readFile(filename)
+          }
         }
       }
     }
-  }
-  const solrdoc = makeMetadata(meta, metadata, filename)
-  solrdoc.contents = await getTextContents(buffer)
 
-  const stored=await toSolr(solrdoc)
-  return stored
+    const solrdoc = makeMetadata(meta, metadata, filename)
+    solrdoc.contents = await getTextContents(buffer)
+
+    const stored = await toSolr(solrdoc)
+    return stored
+  } catch (err) {
+    log.error("could not import " + filename + ", reason: " + err)
+    return undefined
+  }
+
 }
 
 function makeMetadata(computed, received, filename) {
-  log.debug("Creating Metadata for %s",filename)
+  log.debug("Creating Metadata for %s", filename)
   const meta = Object.assign({}, computed, received)
   meta["Lucinda:ImportedAt"] = new Date().toISOString()
   meta.id = makeFileID(filename)
@@ -127,13 +134,13 @@ async function getMetadata(buffer) {
     body: buffer
   })
   if (meta.status != 200) {
-    throw new Error("Could not retrieve metadata")
+    throw new Error("Could not retrieve metadata "+meta.status+", "+meta.statusText)
   }
   return await meta.json();
 }
 
 async function getTextContents(buffer) {
-  log.debug("Getting Text content ",buffer.length)
+  log.debug("Getting Text content ", buffer.length)
   const contents = await fetch(getContentsURL(), {
     method: "PUT",
     body: buffer
@@ -141,8 +148,8 @@ async function getTextContents(buffer) {
   if (contents.status != 200) {
     throw new Error("Could not retrieve file contents")
   }
-  const cnt=await contents.text()
-  log.debug("found "+cnt)
+  const cnt = await contents.text()
+  log.debug("found " + cnt)
   return cnt.trim()
 }
 

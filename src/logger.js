@@ -8,7 +8,7 @@ const winston = require('winston')
 let level
 switch(process.env.NODE_ENV){
   case "debug": level="debug"; break;
-  case "dockered": level="error"; break;
+  case "dockered": level="info"; break;
   case "production": level="warn"; break;
   default: level="info"
 }
