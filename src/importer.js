@@ -93,7 +93,7 @@ function makeMetadata(computed, received, filename) {
 function doOCR(source) {
   return new Promise((resolve, reject) => {
     const dest = versionsPath() + path.sep + createVersion(source)
-    const proc = spawn(cfg.get("ocr"), [source, dest])
+    const proc = spawn(cfg.get("ocr"), [,"-l", cfg.get("preferredLanguage"), source, dest])
     proc.stdout.on('data', txt => { log.info("info: " + txt.toString()) })
     proc.stderr.on('data', txt => { log.error("err: " + txt.toString()) })
     proc.on('error', err => {
