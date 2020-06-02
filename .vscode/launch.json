@@ -8,14 +8,13 @@
       "type": "node",
       "request": "launch",
       "name": "Mocha Tests",
-      "cwd": "${workspaceFolder}/server",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "outputCapture": "std",
       "args": [
         "--timeout",
         "999999",
         "--colors",
-        "${workspaceFolder}/server/test/unit"
+        "${workspaceFolder}/test/unit"
       ],
       "internalConsoleOptions": "openOnSessionStart",
       "skipFiles": [
@@ -26,8 +25,8 @@
       "type": "node",
       "request": "launch",
       "name": "Test",
-      "cwd": "${workspaceFolder}/server",
-      "program": "${workspaceFolder}/server/test/integration/test.js",
+      "cwd": "${workspaceFolder}",
+      "program": "${workspaceFolder}/test/integration/test.js",
       "outputCapture": "std",
       "skipFiles": [
         "<node_internals>/**"
@@ -40,9 +39,10 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "${workspaceFolder}/server/src/index.js",
+      "program": "${workspaceFolder}/src/index.js",
+      "env": {"NODE_ENV": "debug"},
       "outputCapture": "std",
-      "cwd": "${workspaceFolder}/server"
+      "cwd": "${workspaceFolder}"
     }
   ]
 }

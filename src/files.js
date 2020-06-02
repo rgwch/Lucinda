@@ -52,7 +52,7 @@ const files = []
 const addFile = (file) => {
   files.push(file)
   if (!timer) {
-    timer = setInterval(joblist, 5000)
+    timer = setInterval(joblist, 500)
   }
 }
 
@@ -98,10 +98,14 @@ const checkStore = () => {
       if (!path.basename(filename).startsWith(".")) {
         pending++
         const res = await find("id:" + makeFileID(filename))
-        if (res.response.numFound == 0) {
-          addFile(filename)
-        } else {
-          log.debug("checkstore skipping existing file " + res.response.docs[0].loc)
+        if (res && res.response) {
+          if (res.response.numFound == 0) {
+            addFile(filename)
+          } else {
+            log.debug("checkstore skipping existing file " + res.response.docs[0].loc)
+          }
+        }else{
+          log.error("empty response from query id ")
         }
         pending--
       }
@@ -109,7 +113,7 @@ const checkStore = () => {
     emitter.on('end', async () => {
       while (pending > 0) {
         log.debug("checkstore pending operations: " + pending)
-        await wait(500)
+        await wait(1000)
       }
       log.debug("Checkstore finished")
       resolve(true)

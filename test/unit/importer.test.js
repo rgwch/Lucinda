@@ -1,6 +1,4 @@
-const { makeMetadata, createVersion } = require('../../src/importer')
-const { basePath } = require('../../src/files')
-const cfg = require('config')
+/*
 require('chai').should()
 
 const sample = {
@@ -34,7 +32,11 @@ const sample = {
   "xmpTPg:NPages": "2"
 }
 
-describe("importer", () => {
+xdescribe("importer", () => {
+  const { makeMetadata, createVersion } = require('../../src/importer')
+  const { basePath } = require('../../src/files')
+  const cfg = require('config')
+
   it("generates metadata", () => {
     const meta = makeMetadata(sample, {
       "origin": "Spitäler Schaffhausen"
@@ -45,11 +47,12 @@ describe("importer", () => {
     meta.title.should.equal("2020-05-02_Kurzbericht KSSH")
     meta.loc.should.equal("t/Testperson_Armeswesen_23.07.1955/2020-05-02_Kurzbericht KSSH.pdf")
   })
-  it("creates versions of files for storage",()=>{
-    const fn=basePath() + "/t/Testperson_Armeswesen_23.07.1955/2020-05-02_Kurzbericht KSSH.pdf"
-    const v1=createVersion(fn)
-    const date=new Date()
-    const vs=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()
-    v1.should.equal("Testperson_Armeswesen_23.07.1955_2020-05-02_Kurzbericht KSSH_"+vs+".pdf")
+  it("creates versions of files for storage", () => {
+    const fn = basePath() + "/t/Testperson_Armeswesen_23.07.1955/2020-05-02_Kurzbericht KSSH.pdf"
+    const v1 = createVersion(fn)
+    const date = new Date()
+    const vs = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+    v1.should.equal("Testperson_Armeswesen_23.07.1955_2020-05-02_Kurzbericht KSSH_" + vs + ".pdf")
   })
 })
+*/

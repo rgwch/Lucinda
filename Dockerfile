@@ -23,6 +23,7 @@ RUN apt-get update && apt-get -y upgrade && apt-get install -y git \
   python3-pkg-resources \
   python3-reportlab \
   qpdf \
+  img2pdf \
   tesseract-ocr tesseract-ocr-deu tesseract-ocr-fra tesseract-ocr-ita \
   zlib1g-dev wget
 

@@ -30,6 +30,10 @@ const sendCommand = async (api, body) => {
     return await result.json()
   } catch (err) {
     console.log(err)
+    return {
+      "status": "error", 
+      err,api,body
+    }
   }
 }
 

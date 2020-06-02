@@ -1,5 +1,6 @@
 const { parentPort, workerData } = require('worker_threads')
 const cfg = require('config')
+const { DateTime } = require('luxon')
 if (!cfg.has('solr')) {
   throw new Error("Solr is not defined in the config")
 }
@@ -7,7 +8,7 @@ if (!cfg.has('tika')) {
   throw new Error("Tika is not defined in the config")
 }
 const log = require('./logger')
-const { spawn } = require('child_process')
+const { doOCR } = require('./ocr')
 const fs = require('fs').promises
 const path = require('path')
 const { versionsPath, makeFileID, basePath } = require('./files')
@@ -41,21 +42,18 @@ async function doImport(filename, metadata = {}) {
     return undefined
   }
   log.info("received job " + filename)
+  if(shouldConvert(filename)){
+    
+  }
+
   let buffer = await fs.readFile(filename)
   log.debug("loaded file")
   try {
     const meta = await getMetadata(buffer)
     log.debug("Metadata: " + JSON.stringify(meta))
-    if (meta && meta["Content-Type"]) {
-      if (meta["Content-Type"] == "application/pdf") {
-        const numchar = meta["pdf:charsPerPage"]
-        if ((Array.isArray(numchar) && parseInt(numchar[0]) < 100) || (parseInt(numchar) < 100)) {
-          const dest = await doOCR(filename)
-          if (dest) {
-            buffer = await fs.readFile(filename)
-          }
-        }
-      }
+    if (shouldOCR(meta)) {
+      const dest = await doOCR(filename)
+      buffer = await fs.readFile(dest)
     }
 
     const solrdoc = makeMetadata(meta, metadata, filename)
@@ -70,6 +68,48 @@ async function doImport(filename, metadata = {}) {
 
 }
 
+function shouldConvert(filename) {
+  const supported = ["tiff", "tif", "png", "jpg", "jpeg", "gif", "bmp", "eps", "pcx", "pcd", "psd"]
+  for (const fmt in supported) {
+    if (filename.endsWith(fmt)) {
+      return true
+    }
+  }
+  return false;
+}
+
+function hasMeta(metadata, propertyname, property) {
+  if (metadata) {
+    if (metadata[propertyname]) {
+      if (typeof (metadata[propertyname]) == 'string') {
+        return metadata[propertyname].includes(property)
+      }
+    }
+  }
+}
+function shouldOCR(meta) {
+  if (!hasMeta, "Content-Type", "pdf") {
+    return false
+  }
+  if (hasMeta(meta, "xmp_CreatorTool", "ocrmypdf")) {
+    return false
+  }
+  const numchar = meta["pdf:charsPerPage"]
+  if (numchar) {
+    if (Array, isArray(numchar)) {
+      if (parseInt(numchar[0]) > 500) {
+        return false;
+      }
+    } else {
+      if (typeof (numchar == 'number')) {
+        if (parseInt(numchar) > 500) {
+          return false
+        }
+      }
+    }
+  }
+  return true
+}
 function makeMetadata(computed, received, filename) {
   log.debug("Creating Metadata for %s", filename)
   const meta = Object.assign({}, computed, received)
@@ -79,60 +119,30 @@ function makeMetadata(computed, received, filename) {
     const base = path.dirname(filename)
     meta.concern = path.basename(base)
   }
+  const pers = meta.concern.match(/(\w+)_(\w+)_(\d\d\.\d\d\.\d\d\d\d)/)
+  if (pers) {
+    meta.lastname = pers[1]
+    meta.firstname = pers[2]
+    const bd = DateTime.fromFormat(pers[3], "dd.LL.yyyy")
+    meta.birthdate = bd.toISODate()
+  }
+
   meta.loc = filename
   const storage = basePath()
   if (meta.loc.startsWith(storage)) {
     meta.loc = meta.loc.substring(storage.length + 1)
   }
-  if (!meta.title) {
+  if (!meta.title || meta.title.toLowerCase() == "untitled") {
     const ext = path.extname(meta.loc)
     const base = path.basename(meta.loc, ext)
     meta.title = base
   }
+  meta.dc_title = meta.title
+  meta.pdf_docinfo_title = meta.title
+
   return meta
 }
 
-/**
- * If a file is a PDF with image data only: Try to OCR and convert to PDF with Text overlay.
- * If successful: Replace original file and put original to the attic.
- * @param {*} source 
- */
-function doOCR(source) {
-  return new Promise((resolve, reject) => {
-    const dest = versionsPath() + path.sep + createVersion(source)
-    const proc = spawn(cfg.get("ocr"), ["-l", cfg.get("preferredLanguage"), "--skip-text", source, dest])
-    proc.stdout.on('data', txt => { log.info("info: " + txt.toString()) })
-    // ocrmypdf pipes all messages to stderr!
-    proc.stderr.on('data', txt => {
-      const text = txt.toString()
-      if (text.trim().startsWith("ERROR")) {
-        log.error(text.trim())
-        reject(text)
-      } else {
-        log.info(text.trim())
-      }
-    })
-    proc.on('error', err => {
-      log.error("Processing error " + err)
-      reject(err)
-    })
-    proc.on('exit', async (code, signal) => {
-      if (code == 0) {
-        log.info("success")
-        const stat = await fs.stat(dest)
-        if (stat.isFile() && stat.size) {
-          const buf = await fs.readFile(source)
-          await fs.copyFile(dest, source)
-          await fs.unlink(dest)
-          await fs.writeFile(dest, buf)
-        }
-        resolve(dest)
-      } else {
-        reject("OCR ended with error code " + code)
-      }
-    })
-  })
-}
 
 async function getMetadata(buffer) {
   const meta = await fetch(getMetaURL(), {

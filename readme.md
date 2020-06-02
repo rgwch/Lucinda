@@ -6,7 +6,7 @@ A program to index, store and retrieve files in many formats.
 (The name is short for "lucene powered file indexa")
 Version 3.0 is a complete rewrite, using now [Solr](https://lucene.apache.org/solr/) in place of the earlier "handmade" Lucene-handlers.
 
-## Features
+i## Features
 
 * Indexes a directory recursively in-place. Adds Text layers to image-only documents (e.g. from scanners), making them searchable and indexable.
 * watches that directory and indexes new or modified files in-place.
