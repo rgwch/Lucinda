@@ -100,9 +100,18 @@ function makeMetadata(computed, received, filename) {
 function doOCR(source) {
   return new Promise((resolve, reject) => {
     const dest = versionsPath() + path.sep + createVersion(source)
-    const proc = spawn(cfg.get("ocr"), ["-l", cfg.get("preferredLanguage"), source, dest])
+    const proc = spawn(cfg.get("ocr"), ["-l", cfg.get("preferredLanguage"), "--skip-text", source, dest])
     proc.stdout.on('data', txt => { log.info("info: " + txt.toString()) })
-    proc.stderr.on('data', txt => { log.warn("err: " + txt.toString()) })
+    // ocrmypdf pipes all messages to stderr!
+    proc.stderr.on('data', txt => {
+      const text = txt.toString()
+      if (text.trim().startsWith("ERROR")) {
+        log.error(text.trim())
+        reject(text)
+      } else {
+        log.info(text.trim())
+      }
+    })
     proc.on('error', err => {
       log.error("Processing error " + err)
       reject(err)
@@ -134,7 +143,7 @@ async function getMetadata(buffer) {
     body: buffer
   })
   if (meta.status != 200) {
-    throw new Error("Could not retrieve metadata "+meta.status+", "+meta.statusText)
+    throw new Error("Could not retrieve metadata " + meta.status + ", " + meta.statusText)
   }
   return await meta.json();
 }
