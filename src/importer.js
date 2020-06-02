@@ -8,7 +8,7 @@ if (!cfg.has('tika')) {
   throw new Error("Tika is not defined in the config")
 }
 const log = require('./logger')
-const { doOCR } = require('./ocr')
+const { doOCR, doConvert } = require('./ocr')
 const fs = require('fs').promises
 const path = require('path')
 const { versionsPath, makeFileID, basePath } = require('./files')
@@ -42,8 +42,16 @@ async function doImport(filename, metadata = {}) {
     return undefined
   }
   log.info("received job " + filename)
-  if(shouldConvert(filename)){
-    
+  if (shouldConvert(filename)) {
+    try {
+      const dest = await doConvert(filename)
+      if (dest) {
+        log.warn("created converted file " + dest)
+        filename = dest
+      }
+    } catch (err) {
+      log.error("could not convert " + filename + ": " + err)
+    }
   }
 
   let buffer = await fs.readFile(filename)
@@ -71,7 +79,7 @@ async function doImport(filename, metadata = {}) {
 function shouldConvert(filename) {
   const supported = ["tiff", "tif", "png", "jpg", "jpeg", "gif", "bmp", "eps", "pcx", "pcd", "psd"]
   for (const fmt in supported) {
-    if (filename.endsWith(fmt)) {
+    if (filename.toLowerCase().endsWith(fmt)) {
       return true
     }
   }
@@ -96,15 +104,13 @@ function shouldOCR(meta) {
   }
   const numchar = meta["pdf:charsPerPage"]
   if (numchar) {
-    if (Array, isArray(numchar)) {
-      if (parseInt(numchar[0]) > 500) {
+    if (Array.isArray(numchar)) {
+      if (parseInt(numchar[0]) > 100) {
         return false;
       }
     } else {
-      if (typeof (numchar == 'number')) {
-        if (parseInt(numchar) > 500) {
-          return false
-        }
+      if (parseInt(numchar) > 100) {
+        return false
       }
     }
   }
