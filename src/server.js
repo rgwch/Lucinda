@@ -1,3 +1,8 @@
+/**************************************************************
+ * Copyright (c) 2020 G. Weirich                              *
+ * Licensed under the Apache license, version 2.0 see LICENSE *
+ **************************************************************/
+
 const express = require('express')
 const log = require('./logger')
 const { version } = require('../package.json')

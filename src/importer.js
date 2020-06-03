@@ -1,4 +1,9 @@
-const { parentPort, workerData } = require('worker_threads')
+/**************************************************************
+ * Copyright (c) 2020 G. Weirich                              *
+ * Licensed under the Apache license, version 2.0 see LICENSE *
+ **************************************************************/
+
+const { parentPort, workerData, isMainThread } = require('worker_threads')
 const cfg = require('config')
 const { DateTime } = require('luxon')
 if (!cfg.has('solr')) {
@@ -20,13 +25,25 @@ const getMetaURL = () => getTikaURL(cfg.get("tika")) + "meta"
 const getContentsURL = () => getTikaURL(cfg.get("tika")) + "tika"
 const getSolrURL = solr => `${solr.host}:${solr.port}/`
 
-
-if (workerData) {
+/**
+ * If we're called as a workerThread, run an import session. 
+ * (We might be called by a test session as well, then we would be in the MainThread.)
+ */
+if (!isMainThread) {
   doImport(workerData).then(result => {
     parentPort.postMessage(result)
   })
 }
 
+/**
+ * Import a file from the filesystem. Will try to extract metadata and text contents. If the
+ * file is an image or a pdf containing no text, trys to OCR the image and write a searchable 
+ * PDF/A with text layer from it. 
+ * @param {string} filename full filepath
+ * @param {any} metadata any predefined metadata
+ * @returns filepath of the processed file or undefined, if the file xould not be processed or contained no text.
+ * 
+ */
 async function doImport(filename, metadata = {}) {
   try {
     const hasTika = await fetch(getTikaURL(cfg.get("tika")))
@@ -76,6 +93,10 @@ async function doImport(filename, metadata = {}) {
 
 }
 
+/*
+ * Text if the file is an image file that should be converted to pdf first
+ * @param {string} filename 
+ */
 function shouldConvert(filename) {
   const supported = ["tiff", "tif", "png", "jpg", "jpeg", "gif", "bmp", "eps", "pcx", "pcd", "psd"]
   for (const fmt of supported) {
@@ -86,6 +107,13 @@ function shouldConvert(filename) {
   return false;
 }
 
+/**
+ * Test if the metadata contain an entry which containts the given property
+ * @param {any} metadata 
+ * @param {any} propertyname property to check
+ * @param {string} property  string wich should be contained in the property value
+ * @returns true if the 'propertyname' exists and has at least a part which is equal to 'property'.
+ */
 function hasMeta(metadata, propertyname, property) {
   if (metadata) {
     if (metadata[propertyname]) {
@@ -95,6 +123,12 @@ function hasMeta(metadata, propertyname, property) {
     }
   }
 }
+
+/**
+ * check the metadata to tell if the file is a PDF without text content.
+ * @param {any} meta the metadata as returned my Tika.
+ * @returns true if the file is a pdf with less than 100 characters on the (first) page.
+ */
 function shouldOCR(meta) {
   if (!hasMeta(meta,"Content-Type", "pdf")) {
     return false
@@ -116,6 +150,23 @@ function shouldOCR(meta) {
   }
   return true
 }
+
+/**
+ * create the Lucinda specific metadata from (1) the data received from Tika, (2) any user-supplied metadata and (3) the filepath
+ * The directory in which the file resides, is the "concern" of the file. This helps with structuring the filebase, e.g. to
+ * add files with other tools such as scanners or mail apps.
+ * If the concern matches the pattern lastname_firstname_birthdate, it's seen as a persons document store and  name and firstname
+ * are added as individual fields in the metadata.
+ * Title of the document is taken from the existing metadata, or from the filename. dc_title and pdf_docinfo_title are always
+ * matched the title.
+ * The property 'loc' is set to the filepath inside the docbase. 
+ * If a file is stored in /srv/lucindadocs/pats/d/Doe_John_2001_04_05/some_document.pdf, and the Lucinda docbaseis /srv/lucindadocs, 
+ * then the 'loc' property is set to /pats/d/Doe_John_2001_04_05/some_document.pdf.
+ * 
+ * @param {any} computed Metadata from tika
+ * @param {any} received Metadata from the caller
+ * @param {string} filename full filepath
+ */
 function makeMetadata(computed, received, filename) {
   log.debug("Creating Metadata for %s", filename)
   const meta = Object.assign({}, computed, received)
@@ -149,7 +200,11 @@ function makeMetadata(computed, received, filename) {
   return meta
 }
 
-
+/**
+ * Fetch the metadata of a document by calling Tika
+ * @param {binary} buffer the binary contents of the file
+ * @throws error if the call to Tika didn't succeed
+ */
 async function getMetadata(buffer) {
   const meta = await fetch(getMetaURL(), {
     headers: {
@@ -164,6 +219,12 @@ async function getMetadata(buffer) {
   return await meta.json();
 }
 
+/**
+ * Fetch the text contetns of a document by calling Tika
+ * @param {binary} buffer the binary contents of the file
+ * @returns the contents as text (which might be "", if no contetns was found)
+ * @throws error, if the call to Tika didn't succeed
+ */
 async function getTextContents(buffer) {
   log.debug("Getting Text content ", buffer.length)
   const contents = await fetch(getContentsURL(), {
@@ -178,6 +239,11 @@ async function getTextContents(buffer) {
   return cnt.trim()
 }
 
+/**
+ * Create a name of the original file which contains the current date - used to store different versions of a file.
+ * @param {string} fn full filepath
+ * @returns modified filename only (without path)
+ */
 function createVersion(fn) {
   const dat = new Date()
   const ext = path.extname(fn)

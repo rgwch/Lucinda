@@ -7,6 +7,10 @@ Version 3.0 is a complete rewrite, using now [Solr](https://lucene.apache.org/so
 
 (The name is short for "lucene powered file indexa")
 
+### Why not use Solr directly?
+
+While Solr does a great job indexing and retrieving documents, it does not take care about the document files themselves. For an in-house document store it is often preferred to have the document management system handle adding, modifying and removing files as well. Lucinda adds this capability to Solr.
+
 ## Features
 
 * Indexes a directory recursively in-place. Adds Text layers to image-only documents (e.g. from scanners), making them searchable and indexable. Resulting documents are stored as [PDF/A](https://en.wikipedia.org/wiki/PDF/A).
@@ -89,3 +93,8 @@ Lucinda uses the following programs:
 * Indexing and retrieval by sophisticated query technique: [Apache Lucene](https://lucene.apache.org)
 * Management of the index: [Apache Solr](https://lucene.apache.org/solr/)
 * OCR of PDFs without text layer: [OCRmyPDF](https://github.com/jbarlow83/OCRmyPDF) and [Tesseract](https://tesseract-ocr.github.io)
+
+## License
+
+This program is copyright (c) 2020 by G. Weirich and may be used and distributed according to the terms and conditions as stated
+in the [Apache license, version 2.0](http://www.apache.org/licenses/LICENSE-2.0).

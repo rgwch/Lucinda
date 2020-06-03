@@ -1,3 +1,8 @@
+/**************************************************************
+ * Copyright (c) 2020 G. Weirich                              *
+ * Licensed under the Apache license, version 2.0 see LICENSE *
+ **************************************************************/
+
 const config = require('config')
 const log = require('./logger')
 const fetch = require('node-fetch')
@@ -18,6 +23,13 @@ const makeSolrURL = () => {
   return solr.host + ":" + solr.port + "/solr/" + solr.core
 }
 
+/**
+ * Send a command to the Solr server. Specifies json as acceptable answer format.
+ * @param {string} api address to call
+ * @param {any} body request body
+ * @returns the JSON Result from the server
+ * @throws error if the call did not succeed.
+ */
 const sendCommand = async (api, body) => {
   try {
     const result = await fetch(api, {
@@ -37,6 +49,9 @@ const sendCommand = async (api, body) => {
   }
 }
 
+/**
+ * check if the configured core exists. If not, rename the 'gettingstarted' core to the configured name.
+ */
 const createCore = async () => {
   const solr = config.get('solr')
   const api = solr.host + ":" + solr.port + "/solr/admin/cores?action="
@@ -58,6 +73,9 @@ const createCore = async () => {
 }
 
 
+/**
+ * Check if the correct lucinda schema is installed in the Solr core. If not, create or correct it.
+ */
 const checkSchema = async () => {
   const fields = config.get("fields")
   const solr = makeSolrURL()
@@ -98,18 +116,31 @@ const checkSchema = async () => {
   }
 }
 
+/**
+ * Add a document to Solr
+ * @param {any} contents the JSON Document to index. the property contents should contain the text contents and will
+ * not be stored.
+ */
 const toSolr = async contents => {
   const api = makeSolrURL() + "/update?commit=true&json.command=false"
   const result = await sendCommand(api, contents)
   return result
 }
 
+/**
+ * Apply a query to Solr
+ * @param {string} term 
+ */
 const find = async term => {
   const api = makeSolrURL() + "/query"
   const result = await sendCommand(api, { query: term })
   return result
 }
 
+/**
+ * Remove a document from the Solr index
+ * @param {*} id 
+ */
 const remove = async id => {
   const api = makeSolrURL() + "/update?commit=true"
   const result = await sendCommand(api, {

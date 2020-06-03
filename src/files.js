@@ -1,14 +1,25 @@
+/**************************************************************
+ * Copyright (c) 2020 G. Weirich                              *
+ * Licensed under the Apache license, version 2.0 see LICENSE *
+ **************************************************************/
+
+
+
 const crypt = require('crypto')
 const walker = require('walkdir')
 const watcher = require('chokidar')
 const config = require('config')
 const log = require('./logger')
 const path = require('path')
-const fs = require('fs')
+const fs = require('fs').promises
 const { Worker, parentPort, workerData } = require('worker_threads')
 const { find, remove, wait } = require('./solr')
 
-
+/**
+ * Make sure the configured directory exists and is writeable.
+ * @param {string} base - the directory to create. Will be cretaed recursively.
+ * @throws error if directory can not be created or is not reeadable and writeable
+ */
 const ensureDir = base => {
   if (base.startsWith('~/')) {
     base = base.substring(2)
@@ -16,14 +27,17 @@ const ensureDir = base => {
   if (!base.startsWith("/")) {
     base = path.join(process.env.HOME, base)
   }
-  fs.mkdir(base, { recursive: true }, err => {
-    if (err) {
-      if (err.code != "EEXIST") {
-        throw (err)
-      }
-      log.debug(err)
+  try {
+    await fs.mkdir(base, { recursive: true })
+    await fs.access(base, fs.constants.W_OK | fs.constants.R_OK)
+
+  } catch (err) {
+    if (err.code != "EEXIST") {
+      log.error(err)
+      throw (err)
     }
-  })
+    log.debug(err)
+  }
   return base
 }
 
@@ -33,7 +47,7 @@ const versionsPath = () => ensureDir(config.get("versionsStore"))
 
 /**
  * Create a unique idenitifier for a file path position 
- * @param {*} filepath 
+ * @param {string} filepath 
  */
 const makeFileID = (filepath) => {
   const base = basePath()
@@ -90,6 +104,9 @@ const joblist = () => {
   }
 }
 
+/**
+ * Walk the file store and check for every file, if it exists already in the solr index. If not, add it.
+ */
 const checkStore = () => {
   return new Promise((resolve, reject) => {
     const base = basePath()
@@ -104,7 +121,7 @@ const checkStore = () => {
           } else {
             log.debug("checkstore skipping existing file " + res.response.docs[0].loc)
           }
-        }else{
+        } else {
           log.error("empty response from query id ")
         }
         pending--

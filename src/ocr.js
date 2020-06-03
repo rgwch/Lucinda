@@ -1,9 +1,19 @@
+/**************************************************************
+ * Copyright (c) 2020 G. Weirich                              *
+ * Licensed under the Apache license, version 2.0 see LICENSE *
+ **************************************************************/
+
 const { spawn } = require('child_process')
 const fs=require('fs')
 const path=require('path')
 const cfg=require('config')
 const log=require('./logger')
 
+/**
+ * Convert an image file to a pdf (without text). Uses img2pdf for that task.
+ * Thus, img2pdf must be installed and on the path available
+ * @param {string} input the input file. full filepath
+ */
 function doConvert(input){
   return new Promise((resolve,reject)=>{
     const dir=path.dirname(input)
@@ -25,8 +35,9 @@ function doConvert(input){
 
 /**
  * If a file is a PDF with image data only: Try to OCR and convert to PDF with Text overlay.
- * If successful: Replace original file and put original to the attic.
- * @param {*} source 
+ * If successful: Replace original file.
+ * Uses ocrmypdf, which must be configured.
+ * @param {string} source filepath
  * @returns the filepath of the newly written pdf/a or undefined, if no file was written
  */
 function doOCR(source) {
