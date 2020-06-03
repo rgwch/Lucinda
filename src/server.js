@@ -10,7 +10,7 @@ const config = require('config')
 const { find } = require('./solr')
 const fs = require('fs')
 const path = require('path')
-const { basePath } = require('./files')
+const { basePath, addFile } = require('./files')
 const API = "/lucinda/3.0"
 
 log.info(`Lucinda Server v.${version} initializing at ${new Date().toString()}`)
@@ -21,11 +21,14 @@ server.use(express.raw({
   limit: "50mb",
   type: "application/octet-stream"
 }))
+
 server.use(express.json({
   inflate: true,
   limit: "50mb",
-  type: "*/json"
+  type: "/json"
 }))
+
+
 
 server.get(API + "/", (req, res) => {
   res.json({
@@ -63,7 +66,7 @@ server.get(API + "/query/:expression", async (req, res) => {
  */
 server.post(API + "/add", async (req, res) => {
   const { metadata, payload } = req.body
-  if (metadata.filepath) {
+  if (metadata && metadata.filepath) {
     const fpath = path.join(basePath(), metadata.filepath)
     const dir = path.dirname(fpath)
     fs.mkdir(dir, { recursive: true }, err => {
@@ -73,15 +76,18 @@ server.post(API + "/add", async (req, res) => {
       fs.writeFile(fpath, payload, err => {
         if (!err) {
           log.info("written file " + fpath)
+          addFile(fpath, metadata)
         } else {
           log.error("could not write file " + err)
         }
       })
     })
-
+    res.status(202).end()
+  }else{
+    res.status(400).end()
   }
-  res.status(202).end()
 
+  
 })
 
 server.put(API + "/update/{id}", async (req, res) => {

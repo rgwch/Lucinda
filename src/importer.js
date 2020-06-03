@@ -6,12 +6,7 @@
 const { parentPort, workerData, isMainThread } = require('worker_threads')
 const cfg = require('config')
 const { DateTime } = require('luxon')
-if (!cfg.has('solr')) {
-  throw new Error("Solr is not defined in the config")
-}
-if (!cfg.has('tika')) {
-  throw new Error("Tika is not defined in the config")
-}
+
 const log = require('./logger')
 const { doOCR, doConvert } = require('./ocr')
 const fs = require('fs').promises
@@ -45,19 +40,7 @@ if (!isMainThread) {
  * 
  */
 async function doImport(filename, metadata = {}) {
-  try {
-    const hasTika = await fetch(getTikaURL(cfg.get("tika")))
-    if (hasTika.status !== 200) {
-      throw new Error("Could not access Tika")
-    }
-    const hasSolr = await fetch(getSolrURL(cfg.get("solr")))
-    if (hasSolr.status !== 200) {
-      throw new Error("Could not access Solr")
-    }
-  } catch (ex) {
-    log.error("Please launch Solr and Tika first.\n==>" + ex)
-    return undefined
-  }
+ 
   log.info("received job " + filename)
   if (shouldConvert(filename)) {
     try {

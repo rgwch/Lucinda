@@ -66,8 +66,16 @@ paths:
             schema:
               $ref: "#components/schemas/newDocument"
       responses:
-        201:
-          description: The new entry has been created
+        202:
+          description: The new entry has been accepted and is scheduled for storage and indexing
+        400:  
+          description: There was an error in the request
+        401:
+          description: This client is not allowed to create content
+    get:
+      responses:
+        405:
+          description: Only post is allowed
 
   /removeindex/{id}:
     get:
@@ -96,6 +104,8 @@ components:
         concern:
           type: string
         filename:
+          type: string
+        filepath:
           type: string
         contents:
           type: string

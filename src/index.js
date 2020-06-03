@@ -7,6 +7,7 @@ const log = require('./logger')
 const cfg = require('config')
 const { checkSchema } = require('./solr')
 const { checkStore, watchDirs } = require('./files')
+const fetch = require('node-fetch')
 
 log.info("Lucinda Server: logger created")
 log.debug("Debug level active ")
@@ -24,6 +25,31 @@ log.info("preferred language is " + cfg.get("preferredLanguage"))
  * * Third, Setup the dir watcher, if configured
  * * Fourth: launch the REST server
  */
+
+try {
+  const tika = cfg.get("tika")
+  const solr = cfg.get("solr")
+
+  fetch(`${tika.host}:${tika.port}`).then(hasTika => {
+    if (hasTika.status !== 200) {
+      throw new Error("Could not access Tika")
+    }
+  }).catch(err => {
+    log.error("Please launch Solr and Tika first.\n==>" + err)
+    log.error("Caught " + err)
+
+  })
+  fetch(`${solr.host}:${solr.port}`).then(hasSolr => {
+    if (hasSolr.status !== 200) {
+      throw new Error("Could not access Solr")
+    }
+  }).catch(err => {
+    log.error("Please launch Solr and Tika first.\n==>" + err)
+  })
+} catch (ex) {
+  log.error("Solr and Tika must be defined in the config")
+  process.exit(1)
+}
 checkSchema()
   .then(() => {
     return checkStore()
