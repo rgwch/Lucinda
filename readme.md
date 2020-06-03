@@ -1,20 +1,21 @@
 ![](rsc/lucindalogo.png)
 # Lucinda
 
-A program to index, store and retrieve files in many formats.
+A service to index, store and retrieve files in many formats. Lucinda is meant for install on a server and access over a LAN, but of course it's also possible to install it locally.
 
-(The name is short for "lucene powered file indexa")
 Version 3.0 is a complete rewrite, using now [Solr](https://lucene.apache.org/solr/) in place of the earlier "handmade" Lucene-handlers.
 
-i## Features
+(The name is short for "lucene powered file indexa")
 
-* Indexes a directory recursively in-place. Adds Text layers to image-only documents (e.g. from scanners), making them searchable and indexable.
+## Features
+
+* Indexes a directory recursively in-place. Adds Text layers to image-only documents (e.g. from scanners), making them searchable and indexable. Resulting documents are stored as [PDF/A](https://en.wikipedia.org/wiki/PDF/A).
 * watches that directory and indexes new or modified files in-place.
 * Retrieves documents with flexible queries.
 
 ## Install
 
-It's recommended to use docker-compose. The docker-compose.yaml takes care of prestarting solr and tika and connecting everything. So, if you have docker-compose installed, Lucinda's install is a matter of:
+It's recommended to use docker-compose. The docker-compose.yaml takes care of prestarting solr and tika and connecting everything uniformly in many operating systems, such as macOS, Linux (including Armbian and Raspbian on single chip computers), or Windows. So, if you have [Docker](https://www.docker.com/get-started) and [docker-compose](https://docs.docker.com/compose/) ready, Lucinda's install is a just matter of downloading the [docker-compose.yaml](https://raw.githubusercontent.com/rgwch/Lucinda/lucinda3/docker-compose.yaml) file and entering:
 
 `docker-compose up -d`
 
@@ -48,7 +49,7 @@ Subsequent starts will be quite fast. Lucinda wil still check the whole docbase 
 
 ## Fine Tuning
 
-As usual with Docker compositions, much confguration happens via environment variables. One example was shown in the install section for the configuration of the document store. There are three possibilities to change such variables:
+As usual with Docker compositions, much of the confguration happens via environment variables. One example was shown in the install section for the configuration of the document store. There are three possibilities to change such variables:
 
 * Change them directly in the docker-compose.yaml. As a convention, Environement variables are in CAPITAL_LETTERS.
 * Set them manually. In Linux and macOS, this means usually one or more `export VAR=value` commands before launching docker-compose. In Windows, the commands are similarly `SET VAR=value`.
@@ -62,6 +63,8 @@ Wichever you chose, following variables can possibly be modified:
 * LUCINDA_DOCBASE - we saw this before. Default: A Docker volume called 'lucindadocs'.
 * LUCINDA_ATTIC - Whenever Lucinda detects a new version of an already indexed file, it copies the old version with a date suffix at the name to the location denoted by this var. Default: A docker container called 'lucindamoved'.
 * LUCINDA_PORT - the port Lucinde should listen on. Default 9997. Change as you like.
+
+**important**: 
 
 ## Backup
 
