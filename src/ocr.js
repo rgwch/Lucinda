@@ -4,33 +4,36 @@
  **************************************************************/
 
 const { spawn } = require('child_process')
-const fs=require('fs')
-const path=require('path')
-const cfg=require('config')
-const log=require('./logger')
+const fs = require('fs')
+const path = require('path')
+const cfg = require('config')
+const log = require('./logger')
+const { createVersion } = require('./files')
 
 /**
  * Convert an image file to a pdf (without text). Uses img2pdf for that task.
  * Thus, img2pdf must be installed and on the path available
  * @param {string} input the input file. full filepath
  */
-function doConvert(input){
-  return new Promise((resolve,reject)=>{
-    const dir=path.dirname(input)
-    const ext=path.extname(input)
-    const base=path.basename(input,ext)
-    const dest=path.join(dir,base+".pdf")
-    const outStream=fs.createWriteStream(dest)
-    const proc=spawn("img2pdf",[input])
-    proc.on('error',err=>{
+function doConvert(input) {
+  return new Promise((resolve, reject) => {
+    const dir = path.dirname(input)
+    const ext = path.extname(input)
+    const base = path.basename(input, ext)
+    const dest = path.join(dir, base + ".pdf")
+    const outStream = fs.createWriteStream(dest)
+    const proc = spawn("img2pdf", [input])
+    proc.on('error', err => {
       reject(err)
     })
-    proc.on('exit',code=>{
+    proc.on('exit', code => {
       outStream.close()
+      const oldfile = createVersion(input)
+      log.info("moving " + input + " to " + oldfile)
       resolve(dest)
     })
     proc.stdout.pipe(outStream)
-  })  
+  })
 }
 
 /**

@@ -3,17 +3,16 @@
  * Licensed under the Apache license, version 2.0 see LICENSE *
  **************************************************************/
 
-
-
 const crypt = require('crypto')
 const walker = require('walkdir')
 const watcher = require('chokidar')
 const config = require('config')
 const log = require('./logger')
 const path = require('path')
-const fs = require('fs').promises
+const fs = require('fs')
 const { Worker, parentPort, workerData } = require('worker_threads')
 const { find, remove, wait } = require('./solr')
+const scaninterval = 1000
 
 /**
  * Make sure the configured directory exists and is writeable.
@@ -28,8 +27,8 @@ const ensureDir = base => {
     base = path.join(process.env.HOME, base)
   }
   try {
-    await fs.mkdir(base, { recursive: true })
-    await fs.access(base, fs.constants.W_OK | fs.constants.R_OK)
+    fs.mkdirSync(base, { recursive: true })
+    fs.accessSync(base, fs.constants.W_OK | fs.constants.R_OK)
 
   } catch (err) {
     if (err.code != "EEXIST") {
@@ -63,10 +62,10 @@ const makeFileID = (filepath) => {
 }
 
 const files = []
-const addFile = (file) => {
-  files.push(file)
+const addFile = (filename, metadata = {}) => {
+  files.push({ filename, metadata })
   if (!timer) {
-    timer = setInterval(joblist, 500)
+    timer = setInterval(joblist, scaninterval)
   }
 }
 
@@ -174,10 +173,38 @@ const watchDirs = () => {
     .on('error', err => { log.error(err) })
 
 }
+/**
+ * Create a name of the original file which contains the current date - used to store different versions of a file.
+ * @param {string} fn full filepath
+ * @returns the full path of the newly saved file
+ */
+function createVersion(fn) {
+  const dat = new Date()
+  const ext = path.extname(fn)
+  const base = path.basename(fn, ext)
+  const concern = path.basename(path.dirname(fn))
+  const st = concern + "_" + base + "_" + dat.getFullYear() + "-" + (dat.getMonth() + 1) + "-" + dat.getDate() + ext
+  const store = path.join(versionsPath(), st)
+  fs.readFile(fn, (err, buffer) => {
+    if (err) {
+      log.error(err)
+      throw (err)
+    }
+    fs.writeFile(store, buffer, err => {
+      if (err) {
+        log.error(err)
+      }
+    })
+  })
+  return store
+}
+
 module.exports = {
   makeFileID,
   checkStore,
   watchDirs,
   basePath,
-  versionsPath
+  versionsPath,
+  createVersion,
+  addFile
 }

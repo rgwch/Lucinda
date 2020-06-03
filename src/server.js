@@ -6,9 +6,12 @@
 const express = require('express')
 const log = require('./logger')
 const { version } = require('../package.json')
-const API = "/lucinda/3.0"
 const config = require('config')
-const {find} =require('./solr')
+const { find } = require('./solr')
+const fs = require('fs')
+const path = require('path')
+const { basePath } = require('./files')
+const API = "/lucinda/3.0"
 
 log.info(`Lucinda Server v.${version} initializing at ${new Date().toString()}`)
 const server = express()
@@ -55,8 +58,30 @@ server.get(API + "/query/:expression", async (req, res) => {
   }
 })
 
+/**
+ * Add a new file to the storage and the index
+ */
 server.post(API + "/add", async (req, res) => {
-  const file = await req.json()
+  const { metadata, payload } = req.body
+  if (metadata.filepath) {
+    const fpath = path.join(basePath(), metadata.filepath)
+    const dir = path.dirname(fpath)
+    fs.mkdir(dir, { recursive: true }, err => {
+      if (err) {
+        log.warn(err)
+      }
+      fs.writeFile(fpath, payload, err => {
+        if (!err) {
+          log.info("written file " + fpath)
+        } else {
+          log.error("could not write file " + err)
+        }
+      })
+    })
+
+  }
+  res.status(202).end()
+
 })
 
 server.put(API + "/update/{id}", async (req, res) => {
@@ -79,4 +104,4 @@ const port = process.env.LUCINDA_PORT || (config.has("listen-port") ? config.get
 console.log("Lucinda server up and listening at " + port)
 server.listen(port)
 
-module.exports=server
+module.exports = server

@@ -29,7 +29,7 @@ checkSchema()
     return checkStore()
   })
   .then(() => {
-    if (config.get("watch") == true) {
+    if (cfg.get("watch") == true) {
       watchDirs()
     }
     require('./server')

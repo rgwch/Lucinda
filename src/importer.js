@@ -30,7 +30,7 @@ const getSolrURL = solr => `${solr.host}:${solr.port}/`
  * (We might be called by a test session as well, then we would be in the MainThread.)
  */
 if (!isMainThread) {
-  doImport(workerData).then(result => {
+  doImport(workerData.filename,workerData.metadata).then(result => {
     parentPort.postMessage(result)
   })
 }
@@ -239,19 +239,6 @@ async function getTextContents(buffer) {
   return cnt.trim()
 }
 
-/**
- * Create a name of the original file which contains the current date - used to store different versions of a file.
- * @param {string} fn full filepath
- * @returns modified filename only (without path)
- */
-function createVersion(fn) {
-  const dat = new Date()
-  const ext = path.extname(fn)
-  const base = path.basename(fn, ext)
-  const concern = path.basename(path.dirname(fn))
-  const st = concern + "_" + base + "_" + dat.getFullYear() + "-" + (dat.getMonth() + 1) + "-" + dat.getDate() + ext
-  return st
-}
 
 
-module.exports = { doImport, makeMetadata, createVersion }
+module.exports = { doImport, makeMetadata}

@@ -20,7 +20,7 @@ describe('ocr', () => {
     const result = await doConvert(path.join(__dirname, "../lorempng.png"))
     result.should.be.ok
   })
-  it("converts a png to pdf and ocrs it", async () => {
+  xit("converts a png to pdf and ocrs it", async () => {
     const result = await doImport(path.join(__dirname, "../lorempng.png"))
     result.should.be.ok
   })
