@@ -7,7 +7,8 @@ WORKDIR /opt
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 ENV DEBIAN_FRONTEND=noninteractive
-ENV NODE_VER=node-v12.16.3-linux-x64
+ENV NODE_VER=12.18.0
+ENV NODE_VARIANT=node-v${NODE_VER}-linux-x64
 ENV NODE_ENV=dockered
 
 RUN apt-get update && apt-get -y upgrade && apt-get install -y git \
@@ -34,12 +35,11 @@ RUN git clone https://github.com/agl/jbig2enc && \
   cd jbig2enc && \
   ./autogen.sh && ./configure && make && make install
 
-RUN wget https://nodejs.org/dist/v12.16.3/${NODE_VER}.tar.xz && \
-  tar -xf ${NODE_VER}.tar.xz && \
-  ln -s /opt/${NODE_VER}/bin/node /usr/bin/node && \
-  ln -s /opt/${NODE_VER}/bin/npm /usr/bin/npm && \
-  ln -s /root/.local/bin/ocrmypdf /usr/bin/ocrmypdf && \
-  mkdir /opt/server
+RUN wget https://nodejs.org/dist/v${NODE_VER}/${NODE_VARIANT}.tar.xz && \
+  tar -xf ${NODE_VARIANT}.tar.xz && \
+  ln -s /opt/${NODE_VARIANT}/bin/node /usr/bin/node && \
+  ln -s /opt/${NODE_VARIANT}/bin/npm /usr/bin/npm && \
+  ln -s /root/.local/bin/ocrmypdf /usr/bin/ocrmypdf 
 
 COPY package*.json ./
 RUN npm ci --only=production

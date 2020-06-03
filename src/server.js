@@ -25,7 +25,7 @@ server.use(express.raw({
 server.use(express.json({
   inflate: true,
   limit: "50mb",
-  type: "/json"
+  type: "*/json"
 }))
 
 
@@ -73,7 +73,7 @@ server.post(API + "/add", async (req, res) => {
       if (err) {
         log.warn(err)
       }
-      fs.writeFile(fpath, payload, err => {
+      fs.writeFile(fpath, Buffer.from(payload, "base64"), err => {
         if (!err) {
           log.info("written file " + fpath)
           addFile(fpath, metadata)
@@ -83,11 +83,11 @@ server.post(API + "/add", async (req, res) => {
       })
     })
     res.status(202).end()
-  }else{
+  } else {
     res.status(400).end()
   }
 
-  
+
 })
 
 server.put(API + "/update/{id}", async (req, res) => {
