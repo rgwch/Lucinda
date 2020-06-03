@@ -1,4 +1,3 @@
-/*
 require('chai').should()
 
 const sample = {
@@ -55,4 +54,3 @@ xdescribe("importer", () => {
     v1.should.equal("Testperson_Armeswesen_23.07.1955_2020-05-02_Kurzbericht KSSH_" + vs + ".pdf")
   })
 })
-*/

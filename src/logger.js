@@ -10,7 +10,7 @@ switch(process.env.NODE_ENV){
   case "debug": level="debug"; break;
   case "dockered": level="info"; break;
   case "production": level="warn"; break;
-  default: level="info"
+  default: level="debug"
 }
 
 const logger = winston.createLogger({

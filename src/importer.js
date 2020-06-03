@@ -78,7 +78,7 @@ async function doImport(filename, metadata = {}) {
 
 function shouldConvert(filename) {
   const supported = ["tiff", "tif", "png", "jpg", "jpeg", "gif", "bmp", "eps", "pcx", "pcd", "psd"]
-  for (const fmt in supported) {
+  for (const fmt of supported) {
     if (filename.toLowerCase().endsWith(fmt)) {
       return true
     }
@@ -96,7 +96,7 @@ function hasMeta(metadata, propertyname, property) {
   }
 }
 function shouldOCR(meta) {
-  if (!hasMeta, "Content-Type", "pdf") {
+  if (!hasMeta(meta,"Content-Type", "pdf")) {
     return false
   }
   if (hasMeta(meta, "xmp_CreatorTool", "ocrmypdf")) {
