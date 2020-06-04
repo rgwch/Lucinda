@@ -113,7 +113,7 @@ const checkExists = async (filename) => {
       addFile(filename)
       log.info("added " + filename)
     } else {
-      const existing = res.response[0].checksum
+      const existing = res.response.docs[0].checksum
       if (existing) {
         fs.readFile(filename, (err, tocheck) => {
           if (err) {
