@@ -11,7 +11,7 @@ const log = require('./logger')
 const { doOCR, doConvert } = require('./ocr')
 const fs = require('fs').promises
 const path = require('path')
-const { versionsPath, makeFileID, basePath } = require('./files')
+const { makeHash, makeFileID, basePath } = require('./files')
 const fetch = require('node-fetch')
 const { toSolr } = require('./solr')
 
@@ -25,7 +25,7 @@ const getSolrURL = solr => `${solr.host}:${solr.port}/`
  * (We might be called by a test session as well, then we would be in the MainThread.)
  */
 if (!isMainThread) {
-  doImport(workerData.filename,workerData.metadata).then(result => {
+  doImport(workerData.filename, workerData.metadata).then(result => {
     parentPort.postMessage(result)
   })
 }
@@ -40,7 +40,7 @@ if (!isMainThread) {
  * 
  */
 async function doImport(filename, metadata = {}) {
- 
+
   log.info("received job " + filename)
   if (shouldConvert(filename)) {
     try {
@@ -65,7 +65,9 @@ async function doImport(filename, metadata = {}) {
     }
 
     const solrdoc = makeMetadata(meta, metadata, filename)
+
     solrdoc.contents = await getTextContents(buffer)
+    solrdoc.checksum = makeHash(buffer)
 
     const stored = await toSolr(solrdoc)
     return stored
@@ -113,7 +115,7 @@ function hasMeta(metadata, propertyname, property) {
  * @returns true if the file is a pdf with less than 100 characters on the (first) page.
  */
 function shouldOCR(meta) {
-  if (!hasMeta(meta,"Content-Type", "pdf")) {
+  if (!hasMeta(meta, "Content-Type", "pdf")) {
     return false
   }
   if (hasMeta(meta, "xmp_CreatorTool", "ocrmypdf")) {
@@ -172,7 +174,7 @@ function makeMetadata(computed, received, filename) {
   if (meta.loc.startsWith(storage)) {
     meta.loc = meta.loc.substring(storage.length + 1)
   }
-  if (!meta.title || meta.title.toLowerCase() == "untitled") {
+  if (!meta.title || meta.title.toLowerCase() == "untitled" || meta.title.toLowerCase() == "pdfpreview") {
     const ext = path.extname(meta.loc)
     const base = path.basename(meta.loc, ext)
     meta.title = base
@@ -224,4 +226,4 @@ async function getTextContents(buffer) {
 
 
 
-module.exports = { doImport, makeMetadata}
+module.exports = { doImport, makeMetadata }

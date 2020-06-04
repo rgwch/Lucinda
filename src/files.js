@@ -56,9 +56,7 @@ const makeFileID = (filepath) => {
   if (filepath.startsWith(base)) {
     filepath = filepath.substring(base.length)
   }
-  const hash = crypt.createHash('md5')
-  hash.update(filepath)
-  return hash.digest('hex')
+  return makeHash(filepath)
 }
 
 const files = []
@@ -104,6 +102,38 @@ const joblist = () => {
 }
 
 /**
+ * Check if a file exists already in the index. If it does, check if the hash of the existing file
+ * is different from the hash of the new file. If it doesn't exist or the hash difffers: update the index.
+ * @param {string} filename full filepath
+ */
+const checkExists = async (filename) => {
+  const res = await find("id:" + makeFileID(filename))
+  if (res && res.response) {
+    if (res.response.numFound == 0) {
+      addFile(filename)
+      log.info("added " + filename)
+    } else {
+      const existing = res.response[0].checksum
+      if (existing) {
+        fs.readFile(filename, (err, tocheck) => {
+          if (err) {
+            log.error("Can' checksum " + filename + ", " + err)
+            addFile(filename)
+
+          } else {
+            hash = makeHash(tocheck)
+            if (hash !== existing) {
+              addFile(filename)
+              log.info("updated " + filename)
+            }
+          }
+        })
+      }
+    }
+  }
+}
+
+/**
  * Walk the file store and check for every file, if it exists already in the solr index. If not, add it.
  */
 const checkStore = () => {
@@ -143,6 +173,7 @@ const checkStore = () => {
   })
 }
 
+
 /**
  * Continously watch the store for changes. If such changes happen, update the solr index
  */
@@ -155,12 +186,10 @@ const watchDirs = () => {
     awaitWriteFinish: true
   })
     .on('add', async fp => {
-      addFile(fp)
-      log.info("added " + fp)
+      checkExists(fp)
     })
     .on('change', async fp => {
-      addFile(fp)
-      log.info("updated " + fp)
+      checkExists(fp)
     })
     .on('unlink', async fp => {
       try {
@@ -174,7 +203,7 @@ const watchDirs = () => {
 
 }
 /**
- * Create a name of the original file which contains the current date - used to store different versions of a file.
+ * Save the original file in the Versionsstore with a name which contains the current date - used to store different versions of a file.
  * @param {string} fn full filepath
  * @returns the full path of the newly saved file
  */
@@ -199,6 +228,13 @@ function createVersion(fn) {
   return store
 }
 
+function makeHash(buffer) {
+  return crypt
+    .createHash('md5')
+    .update(buffer)
+    .digest('hex');
+}
+
 module.exports = {
   makeFileID,
   checkStore,
@@ -206,5 +242,6 @@ module.exports = {
   basePath,
   versionsPath,
   createVersion,
-  addFile
+  addFile,
+  makeHash
 }
