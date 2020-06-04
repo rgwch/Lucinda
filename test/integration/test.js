@@ -1,7 +1,7 @@
 const fetch = require('node-fetch')
 const fs = require('fs').promises
 const path = require('path')
-// const importer = require('../../src/importer')
+const importer = require('../../src/importer')
 const API = "http://localhost:9997/lucinda/3.0"
 
 const dir = path.join(__dirname, "../")
@@ -25,6 +25,7 @@ fetch(API+"/").then(resp=>{
   console.log(resp.status)
 })
 */
+/*
 fs.readFile(dir + "lorem.pdf.text").then(buffer => {
   const body = JSON.stringify({
     metadata: {
@@ -49,3 +50,4 @@ fs.readFile(dir + "lorem.pdf.text").then(buffer => {
 }).catch(err => {
   console.log(err)
 })
+*/

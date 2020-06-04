@@ -68,7 +68,7 @@ paths:
       responses:
         202:
           description: The new entry has been accepted and is scheduled for storage and indexing
-        400:  
+        400:
           description: There was an error in the request
         401:
           description: This client is not allowed to create content
@@ -109,4 +109,4 @@ components:
           type: string
         contents:
           type: string
-          format: byte
+          format: base64

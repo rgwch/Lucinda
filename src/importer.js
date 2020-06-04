@@ -72,6 +72,10 @@ async function doImport(filename, metadata = {}) {
     solrdoc.checksum = makeHash(buffer)
 
     const stored = await toSolr(solrdoc)
+    if (stored.status && stored.status == "error") {
+      log.error("SOLR error storing " + filename + ": " + JSON.stringify(stored.err))
+      return undefined
+    }
     return stored
   } catch (err) {
     log.error("could not import " + filename + ", reason: " + err)
@@ -112,7 +116,8 @@ function hasMeta(metadata, propertyname, property) {
 }
 
 /**
- * check the metadata to tell if the file is a PDF without text content.
+ * check the metadata to tell if the file is a PDF without text content. If a creatorTool ocrmypdf
+ * exists, will asume that the file was already ocr'd.
  * @param {any} meta the metadata as returned my Tika.
  * @returns true if the file is a pdf with less than 100 characters on the (first) page.
  */
@@ -123,7 +128,10 @@ function shouldOCR(meta) {
   if (hasMeta(meta, "xmp_CreatorTool", "ocrmypdf")) {
     return false
   }
-  const numchar = meta["pdf:charsPerPage"]
+  if (hasMeta(meta, "xmp:CreatorTool", "ocrmypdf")) {
+    return false
+  }
+  const numchar = meta["pdf:charsPerPage"] || meta["pdf_charsPerPage"]
   if (numchar) {
     if (Array.isArray(numchar)) {
       if (parseInt(numchar[0]) > 100) {
