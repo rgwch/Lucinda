@@ -119,6 +119,13 @@
       "stored": false
     },
     {
+      "name": "checksum",
+      "type": "string",
+      "indexed": "false",
+      "multiValued": false,
+      "stored": true
+    },
+    {
       "name": "date",
       "type": "pdates"
     },

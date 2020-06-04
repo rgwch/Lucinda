@@ -77,7 +77,7 @@ const joblist = () => {
     busy = true
     if (files.length > 0) {
       const job = files.pop()
-      log.debug("processing file: " + job)
+      log.debug("processing file: " + job.filename)
       const worker = new Worker('./src/importer.js', { workerData: job })
       worker.on('message', async outfile => {
         log.info("imported " + JSON.stringify(outfile))
@@ -222,6 +222,12 @@ function createVersion(fn) {
     fs.writeFile(store, buffer, err => {
       if (err) {
         log.error(err)
+      } else {
+        fs.unlink(fn, err => {
+          if (err) {
+            log.error(err)
+          }
+        })
       }
     })
   })

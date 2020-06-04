@@ -26,7 +26,9 @@ const getSolrURL = solr => `${solr.host}:${solr.port}/`
  */
 if (!isMainThread) {
   doImport(workerData.filename, workerData.metadata).then(result => {
-    parentPort.postMessage(result)
+    if (result) {
+      parentPort.postMessage(result)
+    }
   })
 }
 
@@ -136,6 +138,18 @@ function shouldOCR(meta) {
   return true
 }
 
+function isNonsenseTitle(title) {
+  const nonsense = ["untitled", "pdfpreview", "polypoint", "rptcumd"]
+  if (!title) {
+    return true
+  }
+  for (const quatsch of nonsense) {
+    if (title.toLowerCase() == quatsch) {
+      return true
+    }
+  }
+  return false
+}
 /**
  * create the Lucinda specific metadata from (1) the data received from Tika, (2) any user-supplied metadata and (3) the filepath
  * The directory in which the file resides, is the "concern" of the file. This helps with structuring the filebase, e.g. to
@@ -174,7 +188,7 @@ function makeMetadata(computed, received, filename) {
   if (meta.loc.startsWith(storage)) {
     meta.loc = meta.loc.substring(storage.length + 1)
   }
-  if (!meta.title || meta.title.toLowerCase() == "untitled" || meta.title.toLowerCase() == "pdfpreview") {
+  if (isNonsenseTitle(meta.title)) {
     const ext = path.extname(meta.loc)
     const base = path.basename(meta.loc, ext)
     meta.title = base
