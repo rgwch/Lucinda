@@ -12,7 +12,7 @@ const path = require('path')
 const fs = require('fs')
 const { Worker, parentPort, workerData } = require('worker_threads')
 const { find, remove, wait } = require('./solr')
-const scaninterval = 1000
+const scaninterval = 2000
 
 /**
  * Make sure the configured directory exists and is writeable.
