@@ -28,8 +28,17 @@ server.use(express.json({
   type: "*/json"
 }))
 
+server.set('views', path.join(__dirname, '../views'))
+server.set('view engine', 'pug')
 
+server.get("/", (req, res) => {
+  res.render('index',{results:["a","b"]})
+})
 
+server.get("/query", (req, res) => {
+  
+  res.render('index',{results: res})
+})
 server.get(API + "/", (req, res) => {
   res.json({
     "status": `Lucinda Server v.${version} ok`,
