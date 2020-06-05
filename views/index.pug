@@ -6,12 +6,18 @@ html(lang="en")
     title Lucinda
   body
     h1 Lucinda
-    form(action="/query" method="post")
+    form(action="/query" method="get")
       input(type="text" name="request" id="request")
       button(type="submit") Senden
     .results
       ul 
         each res in results
-          li=res
+          - const url="/lucinda/3.0/get/"+res.id
+          li
+            p= res.concern 
+              | : 
+              a(href=url)  #{res.title}
+            
+
 
           

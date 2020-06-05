@@ -36,10 +36,18 @@ server.get("/", (req, res) => {
   res.render('index', { results: ["a", "b"] })
 })
 
-server.post("/query", (req, res) => {
-  const body = req.body
-  const rq = body.request
-  res.render('index', { results: res })
+server.get("/query", async (req, res) => {
+  const rq=req.query.request
+  const meta = await find("contents:"+rq)
+  const resp=meta.response
+  const result=meta.response.docs.map(doc=>{
+    return{
+      "id": doc.id,
+      "title": doc.title,
+      "concern": doc.concern
+    }
+  })
+  res.render('index', { results: result })
 })
 server.get(API + "/", (req, res) => {
   res.json({
@@ -67,7 +75,7 @@ server.get(API + "/query/:expression", async (req, res) => {
     const meta = await find(req.params.expression)
     res.json(meta.response)
   } catch (err) {
-    log.error("Query error " + req.params.exoression + ": " + err)
+    log.error("Query error " + req.params.expression + ": " + err)
     res.status(400).end()
   }
 })
