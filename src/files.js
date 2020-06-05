@@ -121,8 +121,8 @@ const checkExists = async (filename) => {
             addFile(filename)
 
           } else {
-            hash = makeHash(tocheck)
-            if (hash !== existing) {
+            newhash = makeHash(tocheck)
+            if (newhash !== existing) {
               addFile(filename)
               log.info("updated " + filename)
             }
@@ -185,11 +185,12 @@ const watchDirs = () => {
     ignoreInitial: true,
     awaitWriteFinish: true
   })
-    .on('add', async fp => {
-      checkExists(fp)
+    .on('add', fp => {
+      setTimeout(checkExists, 1000, fp)
+
     })
-    .on('change', async fp => {
-      checkExists(fp)
+    .on('change', fp => {
+      setTimeout(checkExists, 1000, fp)
     })
     .on('unlink', async fp => {
       try {
