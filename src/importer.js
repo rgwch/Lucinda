@@ -147,7 +147,7 @@ function shouldOCR(meta) {
 }
 
 function isNonsenseTitle(title) {
-  const nonsense = ["untitled", "pdfpreview", "polypoint", "rptcumd"]
+  const nonsense = ["untitled", "pdfpreview", "polypoint", "rptcumd", "fast report document"]
   if (!title) {
     return true
   }

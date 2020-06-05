@@ -27,17 +27,19 @@ server.use(express.json({
   limit: "50mb",
   type: "*/json"
 }))
+server.use(express.urlencoded({ extended: false }));
 
 server.set('views', path.join(__dirname, '../views'))
 server.set('view engine', 'pug')
 
 server.get("/", (req, res) => {
-  res.render('index',{results:["a","b"]})
+  res.render('index', { results: ["a", "b"] })
 })
 
-server.get("/query", (req, res) => {
-  
-  res.render('index',{results: res})
+server.post("/query", (req, res) => {
+  const body = req.body
+  const rq = body.request
+  res.render('index', { results: res })
 })
 server.get(API + "/", (req, res) => {
   res.json({

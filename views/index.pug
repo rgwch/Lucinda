@@ -6,8 +6,8 @@ html(lang="en")
     title Lucinda
   body
     h1 Lucinda
-    form(action="/query")
-      input(type="text")
+    form(action="/query" method="post")
+      input(type="text" name="request" id="request")
       button(type="submit") Senden
     .results
       ul 
