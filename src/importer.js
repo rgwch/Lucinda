@@ -146,6 +146,10 @@ function shouldOCR(meta) {
   return true
 }
 
+/**
+ * Check if the title is one of the not very useful boilerplate titles some programs insert automatically.
+ * @param {string} title 
+ */
 function isNonsenseTitle(title) {
   const nonsense = ["untitled", "pdfpreview", "polypoint", "rptcumd", "fast report document"]
   if (!title) {
