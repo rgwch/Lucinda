@@ -43,8 +43,8 @@ const sendCommand = async (api, body) => {
   } catch (err) {
     console.log(err)
     return {
-      "status": "error", 
-      err,api,body
+      "status": "error",
+      err, api, body
     }
   }
 }
@@ -131,11 +131,13 @@ const toSolr = async contents => {
  * Apply a query to Solr
  * @param {string} term 
  */
-const find = async term => {
+const find = async (term) => {
   const api = makeSolrURL() + "/query"
-  const result = await sendCommand(api, { query: term })
+  const q = (typeof (term) == 'string') ? { query: term } : term
+  const result = await sendCommand(api, q)
   return result
 }
+
 
 /**
  * Remove a document from the Solr index

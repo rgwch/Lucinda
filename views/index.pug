@@ -8,8 +8,14 @@ html(lang="de")
   body
     h1 Lucinda
     form(action="/query" method="get")
-      input(type="text" name="request" id="request")
-      button(type="submit") Senden
+      label(for="num") Zahl der Resultate
+      input(type="num" name="num", id="num" value=num size="3")
+      label(for="offset") ab Position:
+      input(type="text" name="offset" id="offset" value=offset)
+      label(for="request") Suchbegriff(e)
+      input(type="search" name="request" value=term id="request" size="40")
+
+      button(type="submit")= sendtext 
     .results
       ul 
         each res in results

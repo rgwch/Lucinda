@@ -1,6 +1,15 @@
+*{
+  box-sizing: border-box;
+}
 h1{
   color: blue;
 }
 .results{
   background-color: aquamarine;
+}
+input{
+  border-radius: 5px;
+  padding-left: 5px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
