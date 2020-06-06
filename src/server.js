@@ -28,12 +28,13 @@ server.use(express.json({
   type: "*/json"
 }))
 server.use(express.urlencoded({ extended: false }));
+server.use(express.static(path.join(__dirname,"../static")))
 
 server.set('views', path.join(__dirname, '../views'))
 server.set('view engine', 'pug')
 
 server.get("/", (req, res) => {
-  res.render('index', { results: ["a", "b"] })
+  res.render('index', { results: [] })
 })
 
 server.get("/query", async (req, res) => {
@@ -95,6 +96,7 @@ server.post(API + "/add", async (req, res) => {
       fs.writeFile(fpath, Buffer.from(payload, "base64"), err => {
         if (!err) {
           log.info("written file " + fpath)
+          metadata.Lucinda_from="REST API"
           addFile(fpath, metadata)
         } else {
           log.error("could not write file " + err)
