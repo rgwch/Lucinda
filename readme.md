@@ -19,7 +19,7 @@ While Solr does a great job indexing and retrieving documents, it does not take 
 
 ## Install
 
-It's recommended to use docker-compose. The docker-compose.yaml takes care of prestarting solr and tika and connecting everything uniformly in many operating systems, such as macOS, Linux (including Armbian and Raspbian on single chip computers), or Windows. So, if you have [Docker](https://www.docker.com/get-started) and [docker-compose](https://docs.docker.com/compose/) ready, Lucinda's install is a just matter of downloading the [docker-compose.yaml](https://raw.githubusercontent.com/rgwch/Lucinda/lucinda3/docker-compose.yaml) file and entering:
+It's highly recommended to use docker-compose. The docker-compose.yaml takes care of prestarting solr and tika correctly and connecting everything uniformly in many operating systems, such as macOS, Linux, or Windows. So, if you have [Docker](https://www.docker.com/get-started) and [docker-compose](https://docs.docker.com/compose/) ready, Lucinda's install is a just matter of downloading the [docker-compose.yaml](https://raw.githubusercontent.com/rgwch/Lucinda/lucinda3/docker-compose.yaml) file and entering:
 
 `docker-compose up -d`
 

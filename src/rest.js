@@ -36,7 +36,7 @@ router.get("/get/:id", async (req, res) => {
 
 router.get("/query/:expression", async (req, res) => {
   try {
-    const meta = await find(req.params.expression, { rows: 20 })
+    const meta = await find(req.params.expression, { limit: 100 })
     res.json(meta.response)
   } catch (err) {
     log.error("Query error " + req.params.expression + ": " + err)
@@ -44,6 +44,15 @@ router.get("/query/:expression", async (req, res) => {
   }
 })
 
+router.post("/query", async(req,res)=>{
+  try{
+    const meta=await find(req.body)
+    res.json(meta.response)
+  }catch(ex){
+    log.error("Query error "+ex)
+    res.status(400).end()
+  }
+})
 
 /**
  * Add a new file to the storage and the index

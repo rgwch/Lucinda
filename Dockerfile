@@ -18,6 +18,7 @@ RUN apt-get update && apt-get -y upgrade && apt-get install -y git \
   liblept5 \
   libleptonica-dev \
   libxml2 \
+  libxml2-dev \
   pngquant \
   python3-cffi \
   python3-distutils \

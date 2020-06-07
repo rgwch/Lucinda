@@ -6,7 +6,6 @@
 const config = require('config')
 const log = require('./logger')
 const fetch = require('node-fetch')
-const scfg = config.get('solr')
 
 const wait = ms => {
   return new Promise(resolve => {
@@ -24,7 +23,7 @@ const makeSolrURL = () => {
 }
 
 /**
- * Send a command to the Solr server. Specifies json as acceptable answer format.
+ * POST a command to the Solr server. Specifies json as acceptable answer format.
  * @param {string} api address to call
  * @param {any} body request body
  * @returns the JSON Result from the server

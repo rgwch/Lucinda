@@ -39,7 +39,7 @@ paths:
 
   /query/{expression}:
     get:
-      description: Query the database with a lucene query expression
+      description: Query the database with a lucene query expression as path parameter
       parameters:
         - name: querystring
           in: path
@@ -56,6 +56,24 @@ paths:
 
         400:
           description: Bad query expression
+    post:
+      description: Query the database with a Solr JSON expression
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#components/schemas/jsonQuery"      
+      responses:
+        200:
+          description: ok. Result is in the body
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/solrResponse"
+        400:
+          description: Bad query object        
+          
+                  
 
   /add:
     post:
@@ -98,9 +116,12 @@ components:
   schemas:
     newDocument:
       type: object
+      required: 
+        - filename
       properties:
         title:
           type: string
+          pattern: /[\w][\w\d \-_\.]*\-_\.]*/
         concern:
           type: string
         filename:
@@ -110,3 +131,41 @@ components:
         contents:
           type: string
           format: base64
+    jsonQuery:
+      description: For more informations on json Queries, see Solr documentation
+      type: object
+      required: 
+        - query
+      properties:
+        query:
+          description: A Lucene conformant query expression, e.g. "title:someTitle&author:johndoe" (aka q)
+          type: string
+        limit: 
+          description: Number of results per call (aka rows)
+          type: number
+        offset:
+          description: offset of first result (aka start)
+          type: number    
+        filter:  
+          description: filter expressen (aka fl)
+          type: string
+        sort: 
+          description: A sort expression, such as "title asc"
+          type: string
+        facet: 
+          type: object    
+    solrResponse:
+      description: Result of a successful query to Lucinda
+      type: object
+      properties:
+        numFound:
+          type: number
+        start:
+          type: number
+        docs:
+          type: array  
+          items:
+            description: application specific document objects
+            type: object
+
+
