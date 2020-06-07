@@ -33,16 +33,21 @@ server.set('views', path.join(__dirname, '../views'))
 server.set('view engine', 'pug')
 
 server.get("/", (req, res) => {
-  res.render('index', { results: [], num:10, offset: 0, sendtext: "Suche" })
+  res.render('index', { results: [], num: 10, offset: 0, sendtext: "Suche", previous: "Zurück", backdisabled: "" })
 })
 
 server.get("/query", async (req, res) => {
   const rq = req.query.request
-  const num=req.query.num || 10
-  const offset=parseInt(req.query.offset || 0)
+  const num = req.query.num || 10
+  let offset = parseInt(req.query.offset || 0)
+  if (req.query.forward) {
+    offset += num
+  } else {
+    offset = Math.max(0, offset - num)
+  }
   const meta = await find({ query: "contents:" + rq, limit: num, offset, sort: "concern asc" })
   if (meta.status && meta.status == "error") {
-    res.render('error', {errmsg: meta.err})
+    res.render('error', { errmsg: meta.err })
   } else {
     const resp = meta.response
     const result = meta.response.docs.map(doc => {
@@ -52,14 +57,20 @@ server.get("/query", async (req, res) => {
         "concern": doc.concern
       }
     })
-    const next=parseInt(offset)+parseInt(num)
-    res.render('index', { results: result, term: rq, num, offset:next,
-      sendtext: "nächste "+num
+    const next = offset + num
+    const nextdisabled = (next > resp.numFound) ? "pure-button-disabled" : ""
+    const backdisabled = (offset < num) ? "pure-button-disabled" : ""
+    res.render('index', {
+      results: result,
+      term: rq,
+      next: offset,
+      num, backdisabled, nextdisabled
     })
   }
 })
 
-server.use(API,rest_api)
+
+server.use(API, rest_api)
 
 
 const port = process.env.LUCINDA_PORT || (config.has("listen-port") ? config.get("listen-port") : 9997)

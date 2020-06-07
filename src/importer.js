@@ -38,7 +38,7 @@ if (!isMainThread) {
  * PDF/A with text layer from it. 
  * @param {string} filename full filepath
  * @param {any} metadata any predefined metadata
- * @returns filepath of the processed file or undefined, if the file xould not be processed or contained no text.
+ * @returns filepath of the processed file or undefined, if the file could not be processed or contained no text.
  * 
  */
 async function doImport(filename, metadata = {}) {
@@ -57,7 +57,7 @@ async function doImport(filename, metadata = {}) {
   }
 
   let buffer = await fs.readFile(filename)
-  log.debug("loaded file")
+  log.debug("loaded file " + filename)
   try {
     const meta = await getMetadata(buffer)
     log.debug("Metadata: " + JSON.stringify(meta))
@@ -112,6 +112,12 @@ function hasMeta(metadata, propertyname, property) {
         return metadata[propertyname].includes(property)
       }
     }
+    propertyname = propertyname.replace(/:/, "_")
+    if (metadata[propertyname]) {
+      if (typeof (metadata[propertyname]) == 'string') {
+        return metadata[propertyname].includes(property)
+      }
+    }
   }
 }
 
@@ -123,9 +129,6 @@ function hasMeta(metadata, propertyname, property) {
  */
 function shouldOCR(meta) {
   if (!hasMeta(meta, "Content-Type", "pdf")) {
-    return false
-  }
-  if (hasMeta(meta, "xmp_CreatorTool", "ocrmypdf")) {
     return false
   }
   if (hasMeta(meta, "xmp:CreatorTool", "ocrmypdf")) {
@@ -156,7 +159,7 @@ function isNonsenseTitle(title) {
     return true
   }
   for (const quatsch of nonsense) {
-    if (title.toLowerCase() == quatsch) {
+    if (title.trim().toLowerCase() == quatsch) {
       return true
     }
   }
