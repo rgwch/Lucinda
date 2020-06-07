@@ -105,4 +105,4 @@ Lucinda uses the following programs:
 This program is copyright (c) 2020 by G. Weirich and may be used and distributed according to the terms and conditions as stated
 in the [Apache license, version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
-The Lucinda Icon [Lucinda](https://github.com/rgwch/Lucinda/blob/master/rsc/lucinda.gif) is created and copyrighted by http://www.fatcow.com/free-icons
+The Lucinda Icon ![Lucinda](https://github.com/rgwch/Lucinda/blob/master/rsc/lucinda.gif) is created and copyrighted by http://www.fatcow.com/free-icons
