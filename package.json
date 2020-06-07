@@ -1,0 +1,42 @@
+{
+  "name": "lucinda-server",
+  "version": "3.0.0",
+  "description": "A document management system based on solr, tika and ocrmypdf",
+  "keywords": [
+    "document",
+    "retrieval",
+    "lucene",
+    "solr"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rgwch/lucinda"
+  },
+  "homepage": "https://github.com/rgwch/lucinda",
+  "bugs": "https://github.com/rgwch/lucinda/issues",
+  "main": "index.js",
+  "scripts": {
+    "start": "LUCINDA_SIMPLEWEB=enabled NODE_ENV=default node src/",
+    "test": "npm run mocha",
+    "mocha": "mocha test/unit --recursive --timeout 100000 --exit"
+  },
+  "author": "rgwch",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "chokidar": "^3.4.0",
+    "config": "^3.3.1",
+    "express": "^4.17.1",
+    "luxon": "^1.24.1",
+    "node-fetch": "^2.6.0",
+    "pug": "^3.0.0",
+    "save-dev": "0.0.1-security",
+    "sinon": "^9.0.2",
+    "walkdir": "^0.4.1",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "mocha": "^7.2.0"
+  }
+}

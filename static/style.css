@@ -1,0 +1,25 @@
+* {
+  box-sizing: border-box;
+}
+body{
+  padding: 10px;
+}
+h1 {
+  color: blue;
+}
+.results {
+  margin-top:10px;
+  background-color: aquamarine;
+  border: 1px solid blue;
+}
+
+legend{
+  color: blue;
+  font-size: large;
+  font-weight: 900;
+}
+
+.subnote{
+  font-size: smaller;
+  color: grey;
+}

@@ -1,0 +1,12 @@
+{
+  "documentRoot": "/var/lucinda_docbase",
+  "versionsStore": "/var/lucinda-attic",
+  "listen-address": "0.0.0.0",
+  "ocr": "/usr/bin/ocrmypdf",
+  "tika": {
+    "host": "http://tika"
+  },
+  "solr": {
+    "host": "http://solr"
+  }
+}

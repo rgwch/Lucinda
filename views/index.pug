@@ -1,0 +1,31 @@
+extends common
+
+block contents    
+  form.pure-form.pure-form-stacked(action="/query" method="get")
+    fieldset
+      legend Lucinda suche
+      .pure-g
+        .pure-u-1-24 
+          label(for="num") Zeige
+          input(type="text" name="num", id="num" value=num)
+        .pure-u-1-24
+          label(for="offset") ab:
+          input(type="text" name="offset" id="offset" value=offset)
+        .pure-u-20-24  
+          label(for="request") Suchbegriff(e)
+          input.pure-u-20-24(type="search" name="request" value=term id="request" size="40")
+      button.pure-button.pure-button-primary(type="submit" name="search") Los!  
+    
+    if results.length>0
+      .results
+        ul 
+          each res in results
+            - const url="/lucinda/3.0/get/"+res.id
+            li
+              p= res.concern 
+                | : 
+                a(href=url target="_new")  #{res.title}
+      button.pure-button(class=backdisabled type="submit" name="backward")  vorige
+      button.pure-button(class=nextdisabled name="forward" type="submit")  nächste     
+      span.subnote (insgesamt #{total} Treffer)    
+
