@@ -75,14 +75,14 @@ paths:
           
                   
 
-  /add:
+  /addfile:
     post:
       description: Indexes and immports a new document
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#components/schemas/newDocument"
+              $ref: "#components/schemas/newFile"
       responses:
         202:
           description: The new entry has been accepted and is scheduled for storage and indexing
@@ -90,10 +90,23 @@ paths:
           description: There was an error in the request
         401:
           description: This client is not allowed to create content
-    get:
+
+  /addindex:
+    post:
+      description: Indexes a JSON document. If a field 'contents' is provided, this field will only be indexed but not stored.
+      requestBody:
+        content:
+          application/json:
+              schema:
+                $ref: "#components/schemas/newDocument"
       responses:
-        405:
-          description: Only post is allowed
+        201:  
+          description: The document was imported.
+        400:
+          description: There was an error with the request
+        401:
+          description: This client is not allowed to create content                      
+
 
   /removeindex/{id}:
     get:
@@ -119,18 +132,40 @@ components:
       required: 
         - filename
       properties:
+        id:
+          description: If you provide an id, that will be used. If not, an id is created automnatically.
+            If you send an existing id, the previous entry with that id will be overwritten with the new document.
+          type: string
+
         title:
           type: string
           pattern: /[\w][\w\d \-_\.]*\-_\.]*/
         concern:
           type: string
         filename:
+          description: Only for /addfile
           type: string
         filepath:
+          description: Only for /addfile
           type: string
         contents:
+          description: Only for /addindex
           type: string
           format: base64
+    newFile:
+      type: object
+      required:
+        - metadata
+        - payload 
+      properties:
+        metadata:
+          type: object
+          $ref:  "#/components/schemas/newDocument"
+        payload:
+          type: string
+          format: base64  
+
+
     jsonQuery:
       description: For more informations on json Queries, see Solr documentation
       type: object

@@ -4,7 +4,7 @@
  **************************************************************/
 const express = require('express')
 const router = express.Router()
-const { find, remove } = require('./solr')
+const { find, remove, toSolr } = require('./solr')
 const fs = require('fs')
 const path = require('path')
 const { basePath, addFile } = require('./files')
@@ -44,12 +44,17 @@ router.get("/query/:expression", async (req, res) => {
   }
 })
 
-router.post("/query", async(req,res)=>{
-  try{
-    const meta=await find(req.body)
-    res.json(meta.response)
-  }catch(ex){
-    log.error("Query error "+ex)
+router.post("/query", async (req, res) => {
+  try {
+    const meta = await find(req.body)
+    if (meta.status && meta.status == "error") {
+      log.error(meta.err)
+      res.status(400).end()
+    } else {
+      res.json(meta.response)
+    }
+  } catch (ex) {
+    log.error("Query error " + ex)
     res.status(400).end()
   }
 })
@@ -57,7 +62,7 @@ router.post("/query", async(req,res)=>{
 /**
  * Add a new file to the storage and the index
  */
-router.post("/add", async (req, res) => {
+router.post("/addfile", async (req, res) => {
   const { metadata, payload } = req.body
   if (metadata && metadata.filepath) {
     const fpath = path.join(basePath(), metadata.filepath)
@@ -82,6 +87,16 @@ router.post("/add", async (req, res) => {
   }
 
 
+})
+
+router.post("/addindex", async (req, res) => {
+  try{
+    const result=await toSolr(req.body)
+    res.status(201).json(result)
+  }catch(err){
+    log.error(err)
+    res.status(400).end()
+  }
 })
 
 router.put("/update/{id}", async (req, res) => {

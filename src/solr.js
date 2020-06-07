@@ -132,7 +132,7 @@ const toSolr = async contents => {
  */
 const find = async (term) => {
   const api = makeSolrURL() + "/query"
-  const q = (typeof (term) == 'string') ? { query: term } : term
+  const q = (typeof (term) == 'string') ? { query: term, sort: "concern asc" } : term
   const result = await sendCommand(api, q)
   return result
 }
