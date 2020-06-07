@@ -11,21 +11,22 @@ block contents
         .pure-u-1-24
           label(for="offset") ab:
           input(type="text" name="offset" id="offset" value=offset)
-        .pure-u-22-24  
+        .pure-u-20-24  
           label(for="request") Suchbegriff(e)
-          input.pure-u-22-24(type="search" name="request" value=term id="request" size="40")
-
-        button.pure-button(class=backdisabled type="submit" name="backward")  vorige
-        button.pure-button.pure-button-primary(class=nextdisabled name="forward" type="submit")  nächste 
-  .results
-    ul 
-      each res in results
-        - const url="/lucinda/3.0/get/"+res.id
-        li
-          p= res.concern 
-            | : 
-            a(href=url)  #{res.title}
-          
+          input.pure-u-20-24(type="search" name="request" value=term id="request" size="40")
+      button.pure-button.pure-button-primary(type="submit" name="search") Los!  
+    
+    .results
+      ul 
+        each res in results
+          - const url="/lucinda/3.0/get/"+res.id
+          li
+            p= res.concern 
+              | : 
+              a(href=url)  #{res.title}
+    button.pure-button(class=backdisabled type="submit" name="backward")  vorige
+    button.pure-button(class=nextdisabled name="forward" type="submit")  nächste     
+    span.subnote (insgesamt #{total} Treffer)    
 
 
           

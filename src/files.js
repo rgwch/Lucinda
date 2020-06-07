@@ -78,18 +78,29 @@ const joblist = () => {
     if (files.length > 0) {
       const job = files.pop()
       log.debug("processing file: " + job.filename)
-      const worker = new Worker('./src/importer.js', { workerData: job })
-      worker.on('message', outfile => {
-        log.info("processed " + JSON.stringify(outfile))
-      })
-      worker.on('exit', () => {
-        log.info("Worker exited")
-        busy = false
-      })
-      worker.on('error', err => {
-        log.error(err + ", " + job)
-        busy = false
-      })
+      if (process.env.NODE_ENV == "debug") {
+        const worker=require('./importer')
+        worker.doImport(job.filename,job.metadata).then(result=>{
+          log.info("processed "+JSON.stringify(result))
+          busy=false
+        }).catch(err=>{
+          log.error(err)
+          busy=false
+        })
+      } else {
+        const worker = new Worker('./src/importer.js', { workerData: job })
+        worker.on('message', outfile => {
+          log.info("processed " + JSON.stringify(outfile))
+        })
+        worker.on('exit', () => {
+          log.info("Worker exited")
+          busy = false
+        })
+        worker.on('error', err => {
+          log.error(err + ", " + job)
+          busy = false
+        })
+      }
     } else {
       log.debug("Joblist is empty")
       busy = false
@@ -110,7 +121,7 @@ const checkExists = async (filename) => {
   const res = await find("id:" + makeFileID(filename))
   if (res && res.response) {
     if (res.response.numFound == 0) {
-      addFile(filename,{"Lucinda_from": "watcher"})
+      addFile(filename, { "Lucinda_from": "watcher" })
       log.info("adding " + filename)
     } else {
       const existing = res.response.docs[0].checksum
@@ -118,12 +129,12 @@ const checkExists = async (filename) => {
         fs.readFile(filename, (err, tocheck) => {
           if (err) {
             log.error("Can't checksum " + filename + ", " + err)
-            addFile(filename,{"Lucinda_from": "watcher"})
+            addFile(filename, { "Lucinda_from": "watcher" })
 
           } else {
             newhash = makeHash(tocheck)
             if (newhash !== existing) {
-              addFile(filename,{"Lucinda_from": "watcher"})
+              addFile(filename, { "Lucinda_from": "watcher" })
               log.info("updating " + filename)
             }
           }

@@ -37,14 +37,17 @@ server.get("/", (req, res) => {
 })
 
 server.get("/query", async (req, res) => {
-  const rq = req.query.request
-  const num = req.query.num || 10
+  const rq = req.query.request || "*"
+  const num = parseInt(req.query.num) || 10
   let offset = parseInt(req.query.offset || 0)
-  if (req.query.forward) {
+  if (req.query.hasOwnProperty("forward")) {
     offset += num
-  } else {
+  } else if (req.query.hasOwnProperty("backward")) {
     offset = Math.max(0, offset - num)
+  }else{
+    offset=0
   }
+
   const meta = await find({ query: "contents:" + rq, limit: num, offset, sort: "concern asc" })
   if (meta.status && meta.status == "error") {
     res.render('error', { errmsg: meta.err })
@@ -57,13 +60,14 @@ server.get("/query", async (req, res) => {
         "concern": doc.concern
       }
     })
-    const next = offset + num
-    const nextdisabled = (next > resp.numFound) ? "pure-button-disabled" : ""
+   
+    const nextdisabled = (offset > resp.numFound) ? "pure-button-disabled" : ""
     const backdisabled = (offset < num) ? "pure-button-disabled" : ""
     res.render('index', {
       results: result,
+      total: resp.numFound,
       term: rq,
-      next: offset,
+      offset,
       num, backdisabled, nextdisabled
     })
   }
