@@ -16,7 +16,7 @@
   "bugs": "https://github.com/rgwch/lucinda/issues",
   "main": "index.js",
   "scripts": {
-    "start": "node src/",
+    "start": "LUCINDA_SIMPLEWEB=enabled NODE_ENV=default node src/",
     "test": "npm run mocha",
     "mocha": "mocha test/unit --recursive --timeout 100000 --exit"
   },

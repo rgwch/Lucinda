@@ -34,6 +34,8 @@ services:
       - tika
     image: rgwch/lucinda:3.0
     container_name: lucinda_main
+    environment: 
+      - SIMPLEWEB=${LUCINDA_SIMPLEWEB:-enabled}
     volumes: 
       - ${LUCINDA_DOCBASE:-lucindadocs}:/var/lucinda_docbase
       - ${LUCINDA_ATTIC:-lucindamoved}:/var/lucinda_attic

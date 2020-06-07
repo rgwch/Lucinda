@@ -42,6 +42,10 @@ Lucinda offers a simple REST api to search and fetch documents. There's an opena
 
 You might call this API directy with a web browser, but you'll rather use some sort of frontend, e.g. the Elexis Lucinda Plugin. And of course, since Solr is active behind the scenes, you can always as well use Solr's API to retrieve Documents.
 
+### Simple Web UI
+
+While the Lucinda server is primarly intended for use via its REST API, there's also a simple Web UI for quick searches at http://serveraddr:9997/. **Warning** This is absolutely only for inhouse-use behind a firewall. There's no security at all: Anyone with access to the network can read all documents.
+If you want to enable the Web-UI, set the environment-variable LUCINDA_SIMPLEWEB to 'enabled'. 
 
 ## Remarks
 
@@ -67,8 +71,10 @@ Wichever you chose, following variables can possibly be modified:
 * LUCINDA_DOCBASE - we saw this before. Default: A Docker volume called 'lucindadocs'.
 * LUCINDA_ATTIC - Whenever Lucinda detects a new version of an already indexed file, it copies the old version with a date suffix at the name to the location denoted by this var. Default: A docker container called 'lucindamoved'.
 * LUCINDA_PORT - the port Lucinde should listen on. Default 9997. Change as you like.
+* LUCINDA_SIMPLEWEB - if set to 'enabled', allows Browser access to Lucinda's simple Web UI.
 
-**important**: 
+**important**: If you set host directories to SOLR_DATA, LUCINDA_DOCBASE and LUCINDA_ATTIC, you must make shure that the docker containers have the appropriate access rights. You can either make these directories 777 (i.e. world writeable and browseable), or give ownerhsip to the respective user ids (8983 for SOLR_DATA)
+
 
 ## Backup
 
