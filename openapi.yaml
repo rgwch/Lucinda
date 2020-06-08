@@ -37,6 +37,24 @@ paths:
         404:
           description: The requested document was not found
 
+  /getmeta/{id}:
+    get:
+      description: retrieve the metadata of the document with the given id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Ok, body contains the metadata
+          content:
+            application/json:
+              schema:
+                type: object
+        404:
+          description: The document with theb given id was not found        
   /query/{expression}:
     get:
       description: Query the database with a lucene query expression as path parameter

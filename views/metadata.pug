@@ -4,7 +4,11 @@ block contents
 
   form.pure-form(action="/setmeta" method="post")
     fieldset
-      table.pure-table
+      table.pure-table.pure-table-bordered
+        thead
+          tr
+            th Element
+            th Wert
         each meta in metadata
           tr 
             td #{meta.key} 
