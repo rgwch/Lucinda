@@ -208,8 +208,22 @@
       "stored": true
     },
     {
+      "name": "title_sort",
+      "type": "string",
+      "indexed": false,
+      "stored": false,
+      "docValues": true,
+      "uninvertible": false
+    },
+    {
       "name": "url",
       "type": "string"
+    }
+  ],
+  "copyfields": [
+    {
+      "source": "title",
+      "dest": "title_sort"
     }
   ]
 }
