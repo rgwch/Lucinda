@@ -4,8 +4,12 @@ block contents
 
   form.pure-form(action="/setmeta" method="post")
     fieldset
-      ul
+      table.pure-table
         each meta in metadata
-          p #{meta.key} = #{meta.value}
+          tr 
+            td #{meta.key} 
+            td 
+              input(type="text" name=meta.key value=meta.value)
+
     button.pure-button.pure-button-primary(type="submit") Senden
-  a(href=API) Zurück 
+  a(href="/") Zurück 

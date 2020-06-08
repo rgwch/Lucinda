@@ -21,7 +21,7 @@ block contents
         ul 
           each res in results
             - const url=API+"get/"+res.id
-            - const meta=API+"getmeta/"+res.id
+            - const meta="/getmeta/"+res.id
             li
               p= res.concern 
                 | : 

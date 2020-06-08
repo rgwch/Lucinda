@@ -38,6 +38,18 @@ if (process.env.LUCINDA_SIMPLEWEB == 'enabled') {
     res.render('index', { results: [], num: 10, offset: 0, sendtext: "Suche", previous: "Zurück", backdisabled: "" })
   })
 
+  server.get("/getmeta/:id", async (req, res) => {
+    const meta = await find("id:" + req.params.id)
+    if (meta.response.numFound == 0) {
+      res.status(404).end()
+    }
+    const f = meta.response.docs[0]
+    const array = Object.keys(f)
+      .map(k => { return { "key": k, "value": f[k] } })
+      .filter(el=>["title","concern","loc"].includes(el.key))
+    res.render("metadata", { metadata: array })
+  })
+
   server.get("/query", async (req, res) => {
     const rq = req.query.request || "*"
     const num = parseInt(req.query.num) || 20
