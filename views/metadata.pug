@@ -1,0 +1,11 @@
+extends common
+
+block contents
+
+  form.pure-form(action="/setmeta" method="post")
+    fieldset
+      ul
+        each meta in metadata
+          p #{meta.key} = #{meta.value}
+    button.pure-button.pure-button-primary(type="submit") Senden
+  a(href=API) Zurück 

@@ -58,14 +58,17 @@
     },
     {
       "name": "Last-Modified",
-      "type": "pdates"
+      "type": "pdates",
+      "multiValued": false
     },
     {
       "name": "Last-Save-Date",
-      "type": "pdates"
+      "type": "pdates",
+      "multiValued": false
     },
     {
       "name": "Word-Count",
+      "multiValued": false,
       "type": "plongs"
     },
     {
@@ -82,6 +85,7 @@
     {
       "name": "_version_",
       "type": "plong",
+      "multiValued": false,
       "indexed": false,
       "stored": false
     },
@@ -127,10 +131,12 @@
     },
     {
       "name": "date",
+      "multiValued": false,
       "type": "pdates"
     },
     {
       "name": "dc_title",
+      "multiValued": false,
       "type": "text_general"
     },
     {
@@ -179,6 +185,7 @@
     },
     {
       "name": "lastupdate",
+      "multiValued": false,
       "type": "plongs"
     },
     {
@@ -204,6 +211,7 @@
     {
       "name": "title",
       "type": "text_general",
+      "multiValued": false,
       "indexed": true,
       "stored": true
     },

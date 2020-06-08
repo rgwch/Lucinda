@@ -98,6 +98,13 @@ const checkSchema = async () => {
         await sendCommand(api, { "add-field": field })
       }
     }
+    const copyfields = config.get("copyfields")
+    for (const field of copyfields) {
+      const check = schema.schema.copyFields.find(n => n.source === field.source && n.dest === field.dest)
+      if (!check) {
+        await sendCommand(api, { "add-copy-field": field })
+      }
+    }
     // console.log(schema)
   } else {
     if (res.status == 404) {
@@ -132,7 +139,7 @@ const toSolr = async contents => {
  */
 const find = async (term) => {
   const api = makeSolrURL() + "/query"
-  const q = (typeof (term) == 'string') ? { query: term, sort: "concern asc" } : term
+  const q = (typeof (term) == 'string') ? { query: term, sort: "concern asc,title_sort asc" } : term
   const result = await sendCommand(api, q)
   return result
 }

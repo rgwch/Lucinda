@@ -40,7 +40,7 @@ if (process.env.LUCINDA_SIMPLEWEB == 'enabled') {
 
   server.get("/query", async (req, res) => {
     const rq = req.query.request || "*"
-    const num = parseInt(req.query.num) || 10
+    const num = parseInt(req.query.num) || 20
     let offset = parseInt(req.query.offset || 0)
     if (req.query.hasOwnProperty("forward")) {
       offset += num

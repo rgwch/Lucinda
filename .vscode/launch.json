@@ -47,7 +47,8 @@
       ],
       "program": "${workspaceFolder}/src/index.js",
       "env": {
-        "NODE_ENV": "debug"
+        "NODE_ENV": "debug",
+        "LUCINDA_SIMPLEWEB": "enabled"
       },
       "outputCapture": "std",
       "cwd": "${workspaceFolder}"

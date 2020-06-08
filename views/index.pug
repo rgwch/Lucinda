@@ -20,11 +20,15 @@ block contents
       .results
         ul 
           each res in results
-            - const url="/lucinda/3.0/get/"+res.id
+            - const url=API+"get/"+res.id
+            - const meta=API+"getmeta/"+res.id
             li
               p= res.concern 
                 | : 
                 a(href=url target="_new")  #{res.title}
+                a(href=meta target="_new")
+                  img.icon(src="/edit_icon.svg" height="12px" width="12px" alt="Metadaten")
+
       button.pure-button(class=backdisabled type="submit" name="backward")  vorige
       button.pure-button(class=nextdisabled name="forward" type="submit")  nächste     
       span.subnote (insgesamt #{total} Treffer)    

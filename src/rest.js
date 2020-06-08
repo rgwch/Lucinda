@@ -33,6 +33,13 @@ router.get("/get/:id", async (req, res) => {
   }
 })
 
+router.get("/getmeta/:id", async (req, res) => {
+  const meta = await find("id:" + req.params.id)
+  if(meta.response.numFound == 0){
+    res.status(404).end()
+  }
+  res.json(meta.response.docs[0])
+})
 
 router.get("/query/:expression", async (req, res) => {
   try {
@@ -90,10 +97,10 @@ router.post("/addfile", async (req, res) => {
 })
 
 router.post("/addindex", async (req, res) => {
-  try{
-    const result=await toSolr(req.body)
+  try {
+    const result = await toSolr(req.body)
     res.status(201).json(result)
-  }catch(err){
+  } catch (err) {
     log.error(err)
     res.status(400).end()
   }
