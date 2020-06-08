@@ -6,7 +6,7 @@
 const express = require('express')
 const log = require('./logger')
 const config = require('config')
-const { find } = require('./solr')
+const { find, toSolr } = require('./solr')
 const path = require('path')
 const API = "/lucinda/3.0"
 const rest_api = require('./rest')
@@ -46,8 +46,29 @@ if (process.env.LUCINDA_SIMPLEWEB == 'enabled') {
     const f = meta.response.docs[0]
     const array = Object.keys(f)
       .map(k => { return { "key": k, "value": f[k] } })
-      .filter(el=>["title","concern","loc"].includes(el.key))
-    res.render("metadata", { metadata: array })
+      .filter(el => ["title", "concern", "loc"].includes(el.key))
+    res.render("metadata", { metadata: array, complete: JSON.stringify(f) })
+  })
+
+  server.post("/setmeta", async (req, res) => {
+    const modified = req.body
+    const newmeta = JSON.parse(modified.complete)
+    delete modified.complete
+    for (key of Object.keys(modified)) {
+      newmeta[key] = modified[key]
+    }
+    try {
+      delete newmeta._version_
+      const result = await toSolr(newmeta)
+      if (result.status == "error") {
+        res.render("error", { errmsg: result.err })
+      } else {
+        res.redirect("/")
+      }
+    } catch (err) {
+      res.render('error', { errmsg: err })
+    }
+
   })
 
   server.get("/query", async (req, res) => {

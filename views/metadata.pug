@@ -12,8 +12,9 @@ block contents
         each meta in metadata
           tr 
             td #{meta.key} 
-            td 
-              input(type="text" name=meta.key value=meta.value)
+            td.wide 
+              input.wide(type="text" name=meta.key value=meta.value)
 
+    input(type="hidden" name="complete", value=complete)
     button.pure-button.pure-button-primary(type="submit") Senden
   a(href="/") Zurück 
