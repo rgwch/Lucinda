@@ -3,9 +3,9 @@
 
 A service to index, store and retrieve files in many formats. Lucinda is meant for install on a server and access over a LAN, but of course it's also possible to install it locally.
 
-Version 3.0 is a complete rewrite, using now [Solr](https://lucene.apache.org/solr/) in place of the earlier "handmade" Lucene-handlers.
+Version 3.0 is a complete rewrite, now based on [Solr](https://lucene.apache.org/solr/) (which in turn is based on [Lucene]((https://lucene.apache.org)). 
 
-(The name is short for "lucene powered file indexa")
+(The name is short for "Lucene powered file indexa")
 
 ### Why not use Solr directly?
 
@@ -14,8 +14,10 @@ While Solr does a great job indexing and retrieving documents, it does not take 
 ## Features
 
 * Indexes a directory recursively in-place. Adds Text layers to image-only documents (e.g. from scanners), making them searchable and indexable. Resulting documents are stored as [PDF/A](https://en.wikipedia.org/wiki/PDF/A).
-* watches that directory and indexes new or modified files in-place.
+* watches that directory and all its subdirectories and indexes new or modified files in-place.
 * Retrieves documents with flexible queries.
+* Allows to insert and retrieve documents via REST interface.
+* Optionally presents an easy to use Web-Interface.
 
 ## Install
 
