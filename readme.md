@@ -3,7 +3,7 @@
 
 A service to index, store and retrieve files in many formats. Lucinda is meant for install on a server and access over a LAN, but of course it's also possible to install it locally.
 
-Version 3.0 is a complete rewrite, now based on [Solr](https://lucene.apache.org/solr/) (which in turn is based on [Lucene]((https://lucene.apache.org)). 
+Version 3.0 is a complete rewrite, now based on [Solr](https://lucene.apache.org/solr/) (which in turn is based on [Lucene](https://lucene.apache.org)). 
 
 (The name is short for "Lucene powered file indexa")
 
