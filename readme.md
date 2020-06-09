@@ -55,7 +55,7 @@ While retrieval ist extremely fast, indexing of files can be a slow process. Luc
 
 If you run Lucinda first on a large existing docbase (even one managed by an earlier version of Lucinda), the first start can take several hours or even days. You can use the omputer and even Lucinda during this time, but of course, only part of the documents are indexed until the first run finishes.
 
-Subsequent starts will be quite fast. Lucinda wil still check the whole docbase for new files, but this process won't take too long, if there are no new files.
+Subsequent starts will be quite fast. Lucinda will still check the whole docbase for new files, but this process won't take too long, if there are no new files.
 
 ## Fine Tuning
 
@@ -80,13 +80,14 @@ Wichever you chose, following variables can possibly be modified:
 
 ## Backup
 
-It is important to backup files regularly. The files in LUCINDA_DOCBASE are possibly irreparable, so it's absolutely essential to backup the folder or volume regularly.
+It is important to backup files regularly. The files in LUCINDA_DOCBASE are possibly not easy to reproduce if lost, so it's absolutely essential to backup the folder or volume regularly.
 
 The contents of SOLR_DATA is strictly speaking not irretrievable - you can always launch a full scan over all documents. But this can be quite time consuming. So better backup this folder, too.
 
 It's recommended to stop Lucinda and Solr before backing up those directories. A simple script will do, such as:
 
 ~~~~~
+cd /directory/of/the/docker-compose.yaml
 docker-compose stop -t 30
 tar -cjf /path/to/solr_backup.tar.xz $SOLR_DATA
 docker-compose start
