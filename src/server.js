@@ -7,10 +7,13 @@ const express = require('express')
 const log = require('./logger')
 const config = require('config')
 const { find, toSolr } = require('./solr')
+const { basePath } = require('./files')
+const { getTextContents } = require('./importer')
 const path = require('path')
 const API = "/lucinda/3.0"
 const rest_api = require('./rest')
 const { version } = require('../package.json')
+const fs = require('fs').promises
 
 log.info(`Lucinda Server v.${version} initializing at ${new Date().toString()}`)
 const server = express()
@@ -59,6 +62,10 @@ if (process.env.LUCINDA_SIMPLEWEB == 'enabled') {
     }
     try {
       delete newmeta._version_
+      const loc = path.join(basePath(), newmeta.loc)
+      const contents = await fs.readFile(loc)
+      const text = await getTextContents(contents)
+      newmeta.contents = text
       const result = await toSolr(newmeta)
       if (result.status == "error") {
         res.render("error", { errmsg: result.err })

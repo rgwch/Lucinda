@@ -125,7 +125,9 @@ function hasMeta(metadata, propertyname, property) {
  * check the metadata to tell if the file is a PDF without text content. If a creatorTool ocrmypdf
  * exists, will asume that the file was already ocr'd.
  * @param {any} meta the metadata as returned my Tika.
- * @returns true if the file is a pdf with less than 100 characters on the (first) page.
+ * @returns true if the file is a pdf with less than 100 characters on any page. 
+ * false if the file is not a pdf or has more than 100 characters on any page or is marked as scanned
+ * already by ocrMyPDF
  */
 function shouldOCR(meta) {
   if (!hasMeta(meta, "Content-Type", "pdf")) {
@@ -137,7 +139,8 @@ function shouldOCR(meta) {
   const numchar = meta["pdf:charsPerPage"] || meta["pdf_charsPerPage"]
   if (numchar) {
     if (Array.isArray(numchar)) {
-      if (parseInt(numchar[0]) > 100) {
+      const max = numchar.reduce((acc, curr) => { if (curr > acc) acc = curr })
+      if (max > 100) {
         return false;
       }
     } else {
@@ -255,4 +258,4 @@ async function getTextContents(buffer) {
 
 
 
-module.exports = { doImport, makeMetadata }
+module.exports = { doImport, makeMetadata, getTextContents }

@@ -86,7 +86,7 @@ const checkSchema = async () => {
       const check = fields.find(n => n.name === field.name)
       if (check) {
         if (!config.util.equalsDeep(check, field)) {
-          await sendCommand(api, { "replace-field": field })
+          await sendCommand(api, { "replace-field": check })
         }
       } else {
         // await sendCommand(api, { "delete-field": { name: field.name } })
