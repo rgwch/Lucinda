@@ -47,9 +47,10 @@ if (process.env.LUCINDA_SIMPLEWEB == 'enabled') {
       res.status(404).end()
     }
     const f = meta.response.docs[0]
+    f.categories = f.categories || "General"
     const array = Object.keys(f)
       .map(k => { return { "key": k, "value": f[k] } })
-      .filter(el => ["title", "concern", "category"].includes(el.key))
+      .filter(el => ["title", "concern", "categories", "date"].includes(el.key))
     res.render("metadata", { metadata: array, complete: JSON.stringify(f) })
   })
 
@@ -58,7 +59,16 @@ if (process.env.LUCINDA_SIMPLEWEB == 'enabled') {
     const newmeta = JSON.parse(modified.complete)
     delete modified.complete
     for (key of Object.keys(modified)) {
-      newmeta[key] = modified[key]
+      if (modified[key].match(/^\[.+\]$/)) {
+        try {
+          newmeta[key] = JSON.parse(modified[key])
+        } catch (err) {
+          log.error(err)
+          newmeta[key] = "Err: " + modified[key]
+        }
+      } else {
+        newmeta[key] = modified[key]
+      }
     }
     try {
       delete newmeta._version_

@@ -34,6 +34,25 @@ docker-compose up -d
 
 Optionally, you can change the docbase in docker-compose.yaml directly (and more permanently), or you can create a file called .env in the same directory as the docker-compose.yaml and state there something like: `LUCINDA_DOCBASE=/srv/praxis/berichte`
 
+### Without Docker
+
+If you want to run Lucinda without docker, the following prerequisites must be met:
+
+* Solr Server up and running
+* Tika Server up an running
+* OcrMyPdf installed and available
+* Tesseract installed and available
+* img2pdf installed and available
+* NodeJS 12.0 or higher must be installed
+
+Then, set the variables in config/default.json according to your system and run 
+
+~~~~
+npm install
+npm start
+~~~~
+
+
 ## Use
 
 Lucinda offers a simple REST api to search and fetch documents. There's an openapi.yaml with the exact specification, but the most important things are simply:

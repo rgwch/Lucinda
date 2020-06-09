@@ -22,17 +22,6 @@
       "type": "_nest_path_"
     },
     {
-      "name": "_root_",
-      "type": "string",
-      "docValues": false,
-      "indexed": true,
-      "stored": false
-    },
-    {
-      "name": "score",
-      "type": "plongs"
-    },
-    {
       "name": "Character_Count",
       "type": "plongs"
     },
@@ -53,16 +42,7 @@
       "type": "pdates"
     },
     {
-      "name": "Edit-Time",
-      "type": "text_general"
-    },
-    {
       "name": "Last-Modified",
-      "type": "pdates",
-      "multiValued": false
-    },
-    {
-      "name": "Last-Save-Date",
       "type": "pdates",
       "multiValued": false
     },
@@ -102,7 +82,7 @@
       "stored": true
     },
     {
-      "name": "category",
+      "name": "categories",
       "type": "text_general",
       "indexed": true,
       "stored": true
@@ -206,7 +186,8 @@
     },
     {
       "name": "template",
-      "type": "string"
+      "type": "string",
+      "multivalued": false
     },
     {
       "name": "title",
@@ -217,10 +198,11 @@
     },
     {
       "name": "url",
-      "type": "string"
+      "type": "string",
+      "indexed": false,
+      "stored": "true",
+      "multiValued": false
     }
   ],
-  "copyfields": [
-
-  ]
+  "copyfields": []
 }
