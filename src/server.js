@@ -38,7 +38,10 @@ if (process.env.LUCINDA_SIMPLEWEB == 'enabled') {
   server.set('view engine', 'pug')
 
   server.get("/", (req, res) => {
-    res.render('index', { results: [], num: 10, offset: 0, sendtext: "Suche", previous: "Zurück", backdisabled: "" })
+    res.render('index', {
+      results: [], num: 20, offset: 0,
+      sendtext: "Suche", backdisabled: ""
+    })
   })
 
   server.get("/getmeta/:id", async (req, res) => {
