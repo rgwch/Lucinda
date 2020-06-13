@@ -35,7 +35,7 @@ router.get("/get/:id", async (req, res) => {
 
 router.get("/getmeta/:id", async (req, res) => {
   const meta = await find("id:" + req.params.id)
-  if(meta.response.numFound == 0){
+  if (meta.response.numFound == 0) {
     res.status(404).end()
   }
   res.json(meta.response.docs[0])
@@ -58,6 +58,7 @@ router.post("/query", async (req, res) => {
       log.error(meta.err)
       res.status(400).end()
     } else {
+      meta.response.status = "ok"
       res.json(meta.response)
     }
   } catch (ex) {
