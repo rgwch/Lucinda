@@ -19,23 +19,32 @@ router.get("/", (req, res) => {
 })
 
 router.get("/get/:id", async (req, res) => {
-  const meta = await find("id:" + req.params.id)
-  log.debug(meta)
-  if (meta.response.numFound == 0) {
-    res.status(404).end()
-  } else if (meta.response.numFound > 1) {
-    log.error("Document id not unique ", req.params.id)
-    res.status(500).end()
+  if (process.env.NODE_ENV === "test") {
+    if (req.params.id == "testfile") {
+      res.set("content-type", "text/plain")
+      res.status(200).send("Testfile")
+    } else {
+      res.status(404).end()
+    }
   } else {
-    const doc = meta.response.docs[0]
-    const loc = path.join(basePath(), doc.loc)
-    res.sendFile(loc)
+    const meta = await find("id:" + req.params.id)
+    log.debug(meta)
+    if (meta.response.numFound == 0) {
+      res.status(404).end()
+    } else if (meta.response.numFound > 1) {
+      log.error("Document id not unique ", req.params.id)
+      res.status(500).end()
+    } else {
+      const doc = meta.response.docs[0]
+      const loc = path.join(basePath(), doc.loc)
+      res.sendFile(loc)
+    }
   }
 })
 
 router.get("/getmeta/:id", async (req, res) => {
   const meta = await find("id:" + req.params.id)
-  if(meta.response.numFound == 0){
+  if (meta.response.numFound == 0) {
     res.status(404).end()
   }
   res.json(meta.response.docs[0])

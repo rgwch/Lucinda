@@ -17,7 +17,7 @@
   "main": "index.js",
   "scripts": {
     "start": "LUCINDA_SIMPLEWEB=enabled NODE_ENV=default node src/",
-    "test": "npm run mocha",
+    "test": "NODE_ENV=test npm run mocha",
     "mocha": "mocha test/unit --recursive --timeout 100000 --exit"
   },
   "author": "rgwch",

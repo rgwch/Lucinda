@@ -22,7 +22,25 @@ describe("lucinda API", () => {
       })
   })
 
-  it("queries for files", () => {
+  it("gets a file", done => {
+    chai.request(server)
+      .get(API + "/get/testfile")
+      .end((err, res) => {
+        res.should.have.status(200)
+        res.should.be.text
+        res.text.should.equal("Testfile")
+        done()
+      })
+  })
+  it("errors on an inexistent file", done => {
+    chai.request(server)
+      .get(API + "/get/missing")
+      .end((err, res) => {
+        res.should.have.status(404)
+        done()
+      })
+  })
+  xit("queries for files", () => {
     chai.request(server)
       .get(API + "/query/*")
       .end((err, res) => {
@@ -32,7 +50,7 @@ describe("lucinda API", () => {
         res.body.should.have.property('docs')
       })
   })
-  it("stores a file", () => {
+  xit("stores a file", () => {
     const file = fs.readFileSync(path.join(__dirname, "../lorem.pdf.text"))
     chai.request(server)
       .post(API + "/add")
@@ -43,7 +61,7 @@ describe("lucinda API", () => {
         },
         payload: file.toString()
       })
-      
+
       .end((err, res) => {
         res.should.have.status(202)
       })

@@ -28,10 +28,11 @@ const sample = {
     "0",
     "0"
   ],
-  "xmpTPg:NPages": "2"
+  "xmpTPg:NPages": "2",
+  "title": "untitled"
 }
 
-xdescribe("importer", () => {
+describe("importer", () => {
   const { makeMetadata, createVersion } = require('../../src/importer')
   const { basePath } = require('../../src/files')
   const cfg = require('config')
@@ -40,13 +41,17 @@ xdescribe("importer", () => {
     const meta = makeMetadata(sample, {
       "origin": "Spitäler Schaffhausen"
     },
-      basePath() + "/t/Testperson_Armeswesen_23.07.1955/2020-05-02_Kurzbericht KSSH.pdf")
+      basePath() + "/t/Testperson_Armeswesen_23.07.1955/Spitalberichte/2020-05-02_Kurzbericht KSSH.pdf")
     meta.should.be.ok
     meta.concern.should.equal("Testperson_Armeswesen_23.07.1955")
     meta.title.should.equal("2020-05-02_Kurzbericht KSSH")
-    meta.loc.should.equal("t/Testperson_Armeswesen_23.07.1955/2020-05-02_Kurzbericht KSSH.pdf")
+    meta.loc.should.equal("t/Testperson_Armeswesen_23.07.1955/Spitalberichte/2020-05-02_Kurzbericht KSSH.pdf")
+    meta.lastname.should.equal("Testperson")
+    meta.firstname.should.equal("Armeswesen")
+    meta.birthdate.should.equal("19550723")
+
   })
-  it("creates versions of files for storage", () => {
+  xit("creates versions of files for storage", () => {
     const fn = basePath() + "/t/Testperson_Armeswesen_23.07.1955/2020-05-02_Kurzbericht KSSH.pdf"
     const v1 = createVersion(fn)
     const date = new Date()

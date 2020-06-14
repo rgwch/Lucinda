@@ -1,10 +1,10 @@
 
-/*
+
 const { expect } = require('chai')
 require('chai').should()
 const path = require('path')
 
-xdescribe("initialize setup", () => {
+describe("initialize setup", () => {
   const config = require('config')
   const { basePath, versionsPath } = require('../../src/files')
 
@@ -23,4 +23,3 @@ xdescribe("initialize setup", () => {
 
 })
 
-*/

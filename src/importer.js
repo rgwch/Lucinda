@@ -185,20 +185,19 @@ function isNonsenseTitle(title) {
  * @param {string} filename full filepath
  */
 function makeMetadata(computed, received, filename) {
-  log.debug("Creating Metadata for %s", filename)
+  // log.debug("Creating Metadata for %s", filename)
   const meta = Object.assign({}, computed, received)
   meta["Lucinda:ImportedAt"] = new Date().toISOString()
   meta.id = makeFileID(filename)
   if (!meta.concern) {
-    const base = path.dirname(filename)
-    meta.concern = path.basename(base)
-  }
-  const pers = meta.concern.match(/(\w+)_(\w+)_(\d\d\.\d\d\.\d\d\d\d)/)
-  if (pers) {
-    meta.lastname = pers[1]
-    meta.firstname = pers[2]
-    const bd = DateTime.fromFormat(pers[3], "dd.LL.yyyy")
-    meta.birthdate = bd.toISODate()
+    const pers = filename.match(/(\w+)_(\w+)_(\d\d\.\d\d\.\d\d\d\d)/)
+    if (pers) {
+      meta.concern = pers[0]
+      meta.lastname = pers[1]
+      meta.firstname = pers[2]
+      const bd = DateTime.fromFormat(pers[3], "dd.LL.yyyy")
+      meta.birthdate = bd.toFormat("yyyyLLdd")
+    }
   }
 
   meta.loc = filename
