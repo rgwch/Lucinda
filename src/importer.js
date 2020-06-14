@@ -221,7 +221,7 @@ function makeMetadata(computed, received, filename) {
   }
   meta.dc_title = meta.title
   meta.pdf_docinfo_title = meta.title
-  meta.lucinda_doctype = "inbox"
+  meta.lucinda_doctype = cfg.has("lucinda-doctype") ? cfg.get("lucinda-doctype") : "Inbox"
   return meta
 }
 

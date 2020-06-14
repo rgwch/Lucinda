@@ -7,7 +7,7 @@
   "preferredLanguage": "deu",
   "concernRegexp": "([^\\/]+)_([^\\/]+)_(\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d)",
   "concern_fields": ["lastname","firstname","birthdate"],
-  "lucinda-doctype": "inbox",
+  "lucinda-doctype": "Inbox",
   "ocr": "/usr/bin/ocrmypdf",
   "tika": {
     "host": "http://localhost",
