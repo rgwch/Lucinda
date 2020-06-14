@@ -219,6 +219,12 @@ function makeMetadata(computed, received, filename) {
     const base = path.basename(meta.loc, ext)
     meta.title = base
   }
+  if(meta["dc:title"]){
+    meta["dc:title"]=meta.title
+  }
+  if(meta["pdf_docinfo:title"]){
+    meta["pdf_docinfo:title"]=meta.title
+  }
   meta.dc_title = meta.title
   meta.pdf_docinfo_title = meta.title
   meta.lucinda_doctype = cfg.has("lucinda-doctype") ? cfg.get("lucinda-doctype") : "Inbox"
