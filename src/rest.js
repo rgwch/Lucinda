@@ -7,7 +7,7 @@ const router = express.Router()
 const { find, remove, toSolr } = require('./solr')
 const fs = require('fs')
 const path = require('path')
-const { basePath, addFile } = require('./files')
+const { basePath, addFile, checkStore } = require('./files')
 const { version } = require('../package.json')
 const log = require('./logger')
 
@@ -130,6 +130,11 @@ router.get("/removeindex/:id", async (req, res) => {
   } catch (err) {
     res.status(403)
   }
+})
+
+router.get("/rescan", (req,res)=>{
+  checkStore()
+  res.json({"status":"ok"})
 })
 
 

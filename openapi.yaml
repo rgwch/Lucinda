@@ -142,6 +142,12 @@ paths:
           description: Removal not allowed
         404:
           description: No document with that index was found
+  /rescan:
+    get:
+      description: initiate a rescan of the document base
+      responses:
+        200:
+          description: Ok        
 
 components:
   schemas:
