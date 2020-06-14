@@ -139,12 +139,26 @@ const toSolr = async contents => {
  */
 const find = async (term) => {
   const api = makeSolrURL() + "/query"
-  const q = (typeof (term) == 'string') ? { query: term, sort: "concern asc,title asc" } : term
+  let q = createQuery(term)
   const result = await sendCommand(api, q)
   return result
 }
 
+function createQuery(qs) {
+  let q = {}
+  if (typeof (qs) == 'string') {
+    q.sort = "concern asc,title asc";
+    q.query = bracket(qs)
+  } else {
+    q.query = bracket(qs.query)
+    q = Object.assign({}, qs, q)
+  }
+  return q
+}
 
+function bracket(s) {
+  return (s.indexOf(":") == -1) ? "contents:(" + s + ")" : s
+}
 /**
  * Remove a document from the Solr index
  * @param {*} id 
@@ -159,4 +173,4 @@ const remove = async id => {
   return result
 }
 
-module.exports = { checkSchema, toSolr, find, remove, wait }
+module.exports = { checkSchema, toSolr, find, remove, wait, createQuery }
