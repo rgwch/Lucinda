@@ -5,6 +5,9 @@
   "listen-port": 9997,
   "watch": true,
   "preferredLanguage": "deu",
+  "concernRegexp": "([^\\/]+)_([^\\/]+)_(\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d)",
+  "concern_fields": ["lastname","firstname","birthdate"],
+  "lucinda-doctype": "inbox",
   "ocr": "/usr/bin/ocrmypdf",
   "tika": {
     "host": "http://localhost",
@@ -54,13 +57,6 @@
     {
       "name": "X-Parsed-By",
       "type": "text_general"
-    },
-    {
-      "name": "_text_",
-      "type": "text_general",
-      "multiValued": true,
-      "stored": false,
-      "indexed": true
     },
     {
       "name": "_version_",
@@ -219,6 +215,13 @@
     },
     {
       "name": "birthdate",
+      "type": "string",
+      "indexed": true,
+      "stored": true,
+      "multiValued": false
+    },
+    {
+      "name": "lucinda_doctype",
       "type": "string",
       "indexed": true,
       "stored": true,

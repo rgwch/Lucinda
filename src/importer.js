@@ -190,13 +190,22 @@ function makeMetadata(computed, received, filename) {
   meta["Lucinda:ImportedAt"] = new Date().toISOString()
   meta.id = makeFileID(filename)
   if (!meta.concern) {
-    const pers = filename.match(/([^\/]+)_([^\/]+)_(\d\d\.\d\d\.\d\d\d\d)/)
+    concernRe = (cfg.has("concernRegexp") ? RegExp(cfg.get("concernRegexp")) : /([^\/]+)_([^\/]+)_(\d\d\.\d\d\.\d\d\d\d)/)
+    const cFields = cfg.has("concern_fields") ? cfg.get("concern_fields") : ["lastname", "firstname", "birthdate"]
+    const pers = filename.match(concernRe)
     if (pers) {
       meta.concern = pers[0]
-      meta.lastname = pers[1]
-      meta.firstname = pers[2]
-      const bd = DateTime.fromFormat(pers[3], "dd.LL.yyyy")
-      meta.birthdate = bd.toFormat("yyyyLLdd")
+      for (let i = 0; i < cFields.length; i++) {
+        if (pers[i + 1].match(/\d\d\.\d\d\.\d\d\d\d/)) {
+          const bd = DateTime.fromFormat(pers[i + 1], "dd.LL.yyyy")
+          meta[cFields[i]] = bd.toFormat("yyyyLLdd")
+        } else {
+          meta[cFields[i]] = pers[i + 1]
+        }
+      }
+    } else {
+      const base = path.dirname(filename)
+      meta.concern = path.basename(base)
     }
   }
 
@@ -212,7 +221,7 @@ function makeMetadata(computed, received, filename) {
   }
   meta.dc_title = meta.title
   meta.pdf_docinfo_title = meta.title
-
+  meta.lucinda_doctype = "inbox"
   return meta
 }
 
@@ -236,7 +245,7 @@ async function getMetadata(buffer) {
 }
 
 /**
- * Fetch the text contetns of a document by calling Tika
+ * Fetch the text contents of a document by calling Tika
  * @param {binary} buffer the binary contents of the file
  * @returns the contents as text (which might be "", if no contetns was found)
  * @throws error, if the call to Tika didn't succeed
