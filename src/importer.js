@@ -210,6 +210,22 @@ function makeMetadata(computed, received, filename) {
   }
 
   meta.loc = filename
+  if (!meta.date) {
+    const leadingDate = path.basename(filename).match(/^(\d\d\d\d)[\.\-_](\d\d)[\.\-_](\d\d)[\-_\s].+/)
+    if (leadingDate) {
+      const cDate = DateTime.fromObject({ year: leadingDate[1], month: leadingDate[2], day: leadingDate[3] })
+      meta.date = cDate.toFormat("yyyy-LL-dd")
+    } else {
+      meta.date = meta["creation-Date"] ||
+        meta["Creation-Date"] ||
+        meta["meta_creation-date"] ||
+        meta["meta:creation-date"] ||
+        meta["last-modified"] ||
+        meta["Last-Modified"] ||
+        meta["last-save-date"]
+    }
+    meta["Creation-Date"] = meta.date
+  }
   const storage = basePath()
   if (meta.loc.startsWith(storage)) {
     meta.loc = meta.loc.substring(storage.length + 1)
@@ -219,11 +235,11 @@ function makeMetadata(computed, received, filename) {
     const base = path.basename(meta.loc, ext)
     meta.title = base
   }
-  if(meta["dc:title"]){
-    meta["dc:title"]=meta.title
+  if (meta["dc:title"]) {
+    meta["dc:title"] = meta.title
   }
-  if(meta["pdf_docinfo:title"]){
-    meta["pdf_docinfo:title"]=meta.title
+  if (meta["pdf_docinfo:title"]) {
+    meta["pdf_docinfo:title"] = meta.title
   }
   meta.dc_title = meta.title
   meta.pdf_docinfo_title = meta.title

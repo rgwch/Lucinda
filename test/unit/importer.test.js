@@ -49,6 +49,10 @@ describe("importer", () => {
     meta.lastname.should.equal("Testperson")
     meta.firstname.should.equal("Armeswesen")
     meta.birthdate.should.equal("19550723")
+    meta.should.have.property("date")
+    meta.should.have.property("Creation-Date")
+    meta.date.should.equal("2020-05-02")
+    meta["Creation-Date"].should.equal("2020-05-02")
 
   })
   xit("creates versions of files for storage", () => {
