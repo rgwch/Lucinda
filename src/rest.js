@@ -67,6 +67,7 @@ router.post("/query", async (req, res) => {
       log.error(meta.err)
       res.status(400).end()
     } else {
+      meta.response.status = "ok"
       res.json(meta.response)
     }
   } catch (ex) {
