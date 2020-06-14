@@ -226,6 +226,13 @@
       "indexed": true,
       "stored": true,
       "multiValued": false
+    },
+    {
+      "name": "Lucinda_ImportedAt",
+      "type": "string",
+      "indexed": false,
+      "stored": true,
+      "multiValued": false
     }
   ],
   "copyfields": []
