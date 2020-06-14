@@ -202,6 +202,27 @@
       "indexed": false,
       "stored": "true",
       "multiValued": false
+    },
+    {
+      "name": "lastname",
+      "type": "string",
+      "indexed": true,
+      "stored": true,
+      "multiValued": false
+    },
+    {
+      "name": "firstname",
+      "type": "string",
+      "indexed": true,
+      "stored": true,
+      "multiValued": false
+    },
+    {
+      "name": "birthdate",
+      "type": "string",
+      "indexed": true,
+      "stored": true,
+      "multiValued": false
     }
   ],
   "copyfields": []

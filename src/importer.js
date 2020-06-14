@@ -190,7 +190,7 @@ function makeMetadata(computed, received, filename) {
   meta["Lucinda:ImportedAt"] = new Date().toISOString()
   meta.id = makeFileID(filename)
   if (!meta.concern) {
-    const pers = filename.match(/(\w+)_(\w+)_(\d\d\.\d\d\.\d\d\d\d)/)
+    const pers = filename.match(/([^\/]+)_([^\/]+)_(\d\d\.\d\d\.\d\d\d\d)/)
     if (pers) {
       meta.concern = pers[0]
       meta.lastname = pers[1]
