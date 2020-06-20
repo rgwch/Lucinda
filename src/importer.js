@@ -62,8 +62,12 @@ async function doImport(filename, metadata = {}) {
     const meta = await getMetadata(buffer)
     log.debug("Metadata: " + JSON.stringify(meta))
     if (shouldOCR(meta)) {
-      const dest = await doOCR(filename)
-      buffer = await fs.readFile(dest)
+      try {
+        const dest = await doOCR(filename)
+        buffer = await fs.readFile(dest)
+      } catch (ocrError) {
+        log.error("could not OCR " + filename + "; " + ocrError)
+      }
     }
 
     const solrdoc = makeMetadata(meta, metadata, filename)
@@ -282,7 +286,7 @@ async function getTextContents(buffer) {
     throw new Error("Could not retrieve file contents")
   }
   const cnt = await contents.text()
-  log.debug("found " + cnt)
+  log.debug("found " + cnt.trim().length + " characters")
   return cnt.trim()
 }
 
