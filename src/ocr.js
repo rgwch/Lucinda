@@ -45,7 +45,8 @@ function doConvert(input) {
  */
 function doOCR(source) {
   return new Promise((resolve, reject) => {
-    const proc = spawn(cfg.get("ocr"), ["-l", cfg.get("preferredLanguage"), "--skip-text", source, source])
+    const args = ["-l", cfg.get("preferredLanguage"), "--skip-text", source, source]
+    const proc = spawn(cfg.get("ocr"), args)
     proc.stdout.on('data', txt => { log.info("info: " + txt.toString()) })
     // ocrmypdf pipes all messages to stderr!
     proc.stderr.on('data', txt => {
@@ -54,7 +55,7 @@ function doOCR(source) {
         log.error(text.trim())
         reject(text)
       } else {
-        log.info(text.trim())
+        // log.info(text.trim())
       }
     })
     proc.on('error', err => {
@@ -69,7 +70,7 @@ function doOCR(source) {
           break;
         case 1:
           log.error("bad args")
-          reject("bad arguments for ocrMyPDF")
+          reject("bad arguments for ocrMyPDF " + args)
           break;
         case 2:
           log.warn("illegal input file")

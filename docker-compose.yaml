@@ -6,7 +6,7 @@ networks:
 
 services:
   solr:
-    image: solr:8.5.1
+    image: solr:8.5.2
     container_name: lucinda_solr
     volumes:
       - ${SOLR_DATA:-solrdata}:/var/solr

@@ -11,7 +11,7 @@ ENV NODE_VER=12.18.0
 ENV NODE_VARIANT=node-v${NODE_VER}-linux-x64
 ENV NODE_ENV=dockered
 
-RUN apt-get update && apt-get -y upgrade && apt-get install -y git \
+RUN apt-get update && apt-get install -y git \
   build-essential autoconf automake libtool \
   ghostscript \
   icc-profiles-free \
