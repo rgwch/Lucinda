@@ -20,6 +20,12 @@ apt-get update && apt-get install -y git \
   unzip \
   openjdk-11-jre-headless
 
+sysctl -w net.ipv6.conf.all.disable_ipv6=1 && sysctl -w net.ipv6.conf.default.disable_ipv6=1
+
+wget https://bootstrap.pypa.io/get-pip.py
+python3 get-pip.py 
+python3 -m pip install --user ocrmypdf
+
 wget https://nodejs.org/dist/v${NODE_VER}/${NODE_VARIANT}.tar.xz 
 tar -xf ${NODE_VARIANT}.tar.xz 
 ln -s /opt/${NODE_VARIANT} /opt/node
@@ -31,6 +37,7 @@ wget -4 https://www.apache.org/dyn/closer.lua/lucene/solr/8.5.2/solr-8.5.2.tgz
 npm install -g forever
 npm install -g forever-service
 
-forever-service install -s /home/lucinda/lucinda/src/index.js -e "NODE_CONFIG_DIR=/home/lucinda/lucinda/config LUCINDA_SIMPLEWEB=enabled NODE_ENV=vbox" lucinda
+forever-service install -s /home/lucinda/lucinda/src/index.js -e "NODE_CONFIG_DIR=/home/lucinda/lucinda/config LUCINDA_SIMPLEWEB=enabled NODE_ENV=vbox" -f " --workingDir=/home/lucinda/lucinda" lucinda
+
 systemctl start lucinda
 tail -f /var/log/lucinda.log
