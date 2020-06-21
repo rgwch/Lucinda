@@ -4,10 +4,19 @@
 
 Starten Sie Docker Desktop. Sie werden gebeten, Ihr Administratorpasswort einzugeben. Im Fall on Windows werden Sie noch gebeten, einen Linux Kernel im WSL2 (Windows Subsystem for Linux Version 2) zu installieren bzw. upzudaten. Folgen Sie einfach dem angezeigten Link und starten Sie den heruntergeladenen Installer. Danach müssen Sie Docker Desktop neu starten, was eine ganze Weile dauern wird. Sobald Docker Sie dazu auffordert, die Powershell zu öffnen, tun Sie das.
 
-Laden Sie dann folgende Datei herunter und speichern Sie sie z.B. in "Downloads": <https://raw.githubusercontent.com/rgwch/Lucinda/master/docker-compose.yaml>. Geben Sie dann in der Powershell ein:
+## Linux
+
+Unter Linux können Sie direkt Docker engine und Docker-compose inszallieren.
+
+## Alle Systeme
+
+Laden Sie dann folgende Datei herunter und speichern Sie sie z.B. in "Downloads": <https://raw.githubusercontent.com/rgwch/Lucinda/master/docker-compose.yaml>. 
+
+Geben Sie dann in der Powershell (Windows) bzw. im Terminal (Mac) ein:
 
 `````
 cd Downloads
 docker-compose up -d
 `````
 Das ist soweit alles. Sie werden eine ganze Weile warten müssen, bis Docker alles heruntergeladen und installiert hat.
+
