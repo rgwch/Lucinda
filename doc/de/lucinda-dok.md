@@ -18,7 +18,7 @@ Ein Dokumentenverwaltungssystem sollte folgende Ansprüche erfüllen können:
 
 ## Installation
 
-Es gibt mehrere Möglichkeiten, Lucinda zu installieren. Ich zeige hier, die zwei einfachsten:
+Es gibt mehrere Möglichkeiten, Lucinda zu installieren. Ich zeige hier die zwei einfachsten:
 
 ### Als virtuelle Maschine
 
@@ -33,7 +33,16 @@ Auch das ändert nicht viel am Wirtscomputer und benötigt weniger Ressourcen, a
 Unter Linux benötigen Sie die [Docker Engine](https://docs.docker.com/engine/install/) und [Docker-Compose](https://docs.docker.com/compose/install/). 
 
 Das weitere Vorgehen wird [hier](installdocker.md) beschrieben.
-
  
 Der erste Start wird relativ lang dauern, da drei Docker Container heruntergeladen und installiert werden müssen (Solr, Tika und Lucinda). Spätere Starts gehen dann schnell.
 
+## Struktur der Ablage
+
+Es hat sich gezeigt, dass es grundsätzlich sinnvoll ist, Dokumente so abzulegen, dass sie auch ohne Spezialsoftware oder gar -hardware lesbar bleiben. Lucinda speichert daher Dokumente ganz normal im Dateisystem und benötigt nur für seinen eigenen Index spezielle Speicherorte.
+
+Erstellen Sie also ein Verzeichnis, welches von allen Arbeitsstationen aus erreichbar ist (z.B. durch eine Netzwerkfreigabe). Innerhalb dieses Verzeichnisses empfiehlt sich eine logische Ordnerstruktur, der man auch ohne Programmkenntnisse "ansieht", was wo ist. Für die Ablage von Klienten- bzw. Patienten-Dokumenten hat sich eine Ordnerstruktur wie folgt bewährt:
+
+
+### Dokumente ablegen
+
+Es genügt, Dokumente, die Sie in den Index aufnehmen wollen, im Dokumentenverzeichnis abzulegen

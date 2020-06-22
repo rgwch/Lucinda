@@ -12,7 +12,7 @@ Unter Linux können Sie direkt Docker engine und Docker-compose inszallieren.
 
 Laden Sie dann folgende Datei herunter und speichern Sie sie z.B. in "Downloads": <https://raw.githubusercontent.com/rgwch/Lucinda/master/docker-compose.yaml>. 
 
-Geben Sie dann in der Powershell (Windows) bzw. im Terminal (Mac) ein:
+Geben Sie dann in der Powershell (Windows) bzw. im Terminal (Mac, Linux) ein:
 
 `````
 cd Downloads
@@ -20,3 +20,6 @@ docker-compose up -d
 `````
 Das ist soweit alles. Sie werden eine ganze Weile warten müssen, bis Docker alles heruntergeladen und installiert hat.
 
+Am Ende werden Sie je nach Sicherheitseinstellungen noch die Erlaubnis geben zu müssen, aufs Netzwerk zuzugreifen (Das ist notwendig, da Lucinda ja übers Netzwerk bedient wird).
+
+Warten Sie danach noch rund 5 Minuten, dann sollten Sie mit einem Web-Browser auf http://localhost:9997 zugreifen zu können, und die Such-Oberfläche von Lucinda sehen.
