@@ -22,4 +22,4 @@ Das ist soweit alles. Sie werden eine ganze Weile warten müssen, bis Docker all
 
 Am Ende werden Sie je nach Sicherheitseinstellungen noch die Erlaubnis geben zu müssen, aufs Netzwerk zuzugreifen (Das ist notwendig, da Lucinda ja übers Netzwerk bedient wird).
 
-Warten Sie danach noch rund 5 Minuten, dann sollten Sie mit einem Web-Browser auf http://localhost:9997 zugreifen zu können, und die Such-Oberfläche von Lucinda sehen.
+Warten Sie danach noch rund 5 Minuten, und versuchen Sie dann mit einem Browser oder curl auf <http://localhost:9997/luinda/3.0> zu gehen. Sie sollten eine kurze Antwort mit der Lucinda-Version erhalten. Dann sollten Sie auch auf http://localhost:9997 zugreifen können, und die Such-Oberfläche von Lucinda sehen.

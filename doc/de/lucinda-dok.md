@@ -18,23 +18,14 @@ Ein Dokumentenverwaltungssystem sollte folgende Ansprüche erfüllen können:
 
 ## Installation
 
-Es gibt mehrere Möglichkeiten, Lucinda zu installieren. Ich zeige hier die zwei einfachsten:
+Es gibt mehrere Möglichkeiten, Lucinda zu installieren.  
 
-### Als virtuelle Maschine
+* Sie können Lucinda in einer virtuellen Maschine laufen lassen. Eine virtuelle Maschine (VM) ist praktisch ein Computer in ihrem Computer. Wir verwenden hier das kostenlose Programm [VirtualBox](https://www.virtualbox.org) vn Oracle, um die benötigte virtuelle Maschine zu kontrollieren. Der Vorteil dieser Lösung ist, dass VirtualBox auf allen relevanten Betriebssystemen sehr einfach einzurichten ist. Und danach die Lucinda VM in VirtualBox zu installieren und zu starten, klappt mit wenigen Mausklicks. Der Nachteil ist, dass eine virtuelle Maschine, da sie ja praktisch ein zweiter Computer in Ihrem Computer ist, relativ viele Ressourcen (Speicher, Rechenzeit) frisst. In den meisten Fällen ist das bei heutigen Computern und dem typischen Büro-Nutzungsprofil kein grosses Problem. Die VM Variante ist empfehlenswert, um Lucinda mal auszuprobieren, oder wenn Sie es iûnbedingt auf einem Windows-Computer haben möchten. Wie Sie Lucinda als VM installieren können, lesen Sie [hier](installvbox.md).
 
-Hierzu brauchen Sie am Wirtscomputer überhaupt keine Änderungen machen. Sie müssen nur [VirtualBox](https://www.virtualbox.org) installieren. Danach laden Sie die LucindaBox herunter: <http://www.elexis.ch/ungrad/LucindaBox.ova>. Wählen Sie in VirtualBox Datei->Appliance importieren (Strg+I) und wählen Sie diese Datei. Folgen Sie dann den Hinweisen [hier](installvbox.md)
+* Sie können Lucinda als Docker-Komposition betreiben. [Docker](https://www.docker.com) ist eine Technologie, die es erlaubt, eine leichtgewichtigere Form von virtuellen Maschinen laufen zu lassen, als dies bei VirtualBox möglich ist. der Vorteil dieser Lösung ist ein geringerer Ressourcenverbrauch. Docker wird Ihren Computer nicht wesentlich ausbremsen und eignet sich auch sehr gut zum Betrieb auf einem Server ohne Bildschirm und Tastatur. Der Nachteil ist, dass Docker auf Windows nicht ganz so reibungslos läuft - wobei dies auf neueren VErsionen von Windows 10 deutlich besser geworden ist. Dennoch ist diese Variante eher für den Serverbetrieb, idealerweise auf einem Linux- oder Mac-Server empfehlenswert. Wie Sie Lucinda mit Docker-Compose starten können, lesen Sie [hier](installdocker.md).
 
+* Der Vollständigkeit halber sei auch die Möglichkeit erwähnt, Lucinda direkt, ohne Zwischenschicht auf dem Computer zu installieren. Dies geht auf allen Betriebssystemen, auf denen Java und NodeJS laufen kann (also praktisch allen), braucht aber ein wenig erweiterte Computerkennntisse. Ich gehe daher hier nicht näher darauf ein, sondern verweise aufs [Readme](https://github.com/rgwch/Lucinda/blob/master/readme.md).
 
-
-### Als Docker-Komposition
-
-Auch das ändert nicht viel am Wirtscomputer und benötigt weniger Ressourcen, als eine komplette virtuelle Maschine. Unter Mac und Windows benötigen Sie dafür dn [Docker Desktop](http://docker.com/products/docker-desktop) (*ACHTUNG*: Bei Windows ist die mindestens benötigte Version Windows 10, Version 2004, Build 19018).
-
-Unter Linux benötigen Sie die [Docker Engine](https://docs.docker.com/engine/install/) und [Docker-Compose](https://docs.docker.com/compose/install/). 
-
-Das weitere Vorgehen wird [hier](installdocker.md) beschrieben.
- 
-Der erste Start wird relativ lang dauern, da drei Docker Container heruntergeladen und installiert werden müssen (Solr, Tika und Lucinda). Spätere Starts gehen dann schnell.
 
 ## Struktur der Ablage
 
@@ -42,7 +33,26 @@ Es hat sich gezeigt, dass es grundsätzlich sinnvoll ist, Dokumente so abzulegen
 
 Erstellen Sie also ein Verzeichnis, welches von allen Arbeitsstationen aus erreichbar ist (z.B. durch eine Netzwerkfreigabe). Innerhalb dieses Verzeichnisses empfiehlt sich eine logische Ordnerstruktur, der man auch ohne Programmkenntnisse "ansieht", was wo ist. Für die Ablage von Klienten- bzw. Patienten-Dokumenten hat sich eine Ordnerstruktur wie folgt bewährt:
 
+````
+Freigabename -  aaa_Eingangsfach 
+             -  a - Adliger_Heinrich_20.04.1948
+             -  a - Andlikofer_Manuela_13.12.1976
+             -  b - Bartlos_Kuno_24.04.2001
+             -  ...
+               
+usw.
 
-### Dokumente ablegen
+````
 
-Es genügt, Dokumente, die Sie in den Index aufnehmen wollen, im Dokumentenverzeichnis abzulegen
+Auf diese Weise kann auch in einer Ablage mit mehreren tausend Patienten jede Kartei innert nützlicher Frist auch mit den Dateisystemwerkzeugen des Betriebssystems aufgesucht werden. Dies wird vor allem beim Ablegen von Dokumenten aus dem Scanner oder der E-Mail wichtig. Das Eingangsfach hat eine spezielle Bedeutung, die weiter unten erklärt wird. Die Präfix aaa_ wurde einfach darum vorangestellt, damit es als Erstes im Verzeichnis steht.
+
+## Dokumente ablegen
+
+Es genügt, Dokumente, die Sie in den Index aufnehmen wollen, im Dokumentenverzeichnis abzulegen. Wenn Beispielsweise ein Dokument für Adliger Heinrich gescannt wird, kann man es mit dem Scanprogramm direkt in `Freigabename/a/Adliger_Heinrich_20.04.1948` abspeichern. Lucinda wird innerhalb weniger Sekunden erkennen, dass ein neues Dokument eingetroffen ist, und dieses wenn nötig durch eine Texterkennung (OCR) schicken und indizieren.
+
+Mit zunehmendem Datenaustausch per E-Mail sinkt allerdings die Bedeutung der OCR. Auch PDFs, die per Mail eintreffen, sind oft bereits durchsuchbar und können somit direkt indiziert werden. Unter gewissen Bedingungen kann Lucinda auch selbst erkennen, zu welchem Patienten/Klienten ein Dokument gehört, auch wenn man es nicht explizit im passenden Ordner ablegt.
+
+Hierfür dient der Ordner aaa_Eingangsfach (den man selbstverständlich auch anders nennen kann, wenn man Lucinda entsprechend konfiguriert.) Jedes Dokument, das in diesem Verzeichnis abgelegt wird, wird anhand bestimmter konfigurierbarer Regeln analysiert, und wenn so der richtige Ablageort eruiert werden konnte, wird es dort hin verschoben.
+
+## Dokumente finden
+
