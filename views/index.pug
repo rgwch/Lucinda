@@ -7,16 +7,16 @@ block contents
       .pure-g
         .pure-u-1-24 
           label(for="num") Zeige
-          input(type="text" name="num", id="num" value=num)
+          input.pure-1-24(type="text" name="num", id="num" value=num size="3")
         .pure-u-1-24
           label(for="offset") ab:
-          input(type="text" name="offset" id="offset" value=offset)
-        .pure-u-5-24
+          input.pure-1-24(type="text" name="offset" id="offset" value=offset size="3")
+        .pure-u-6-24
           label(for="concern") Betreffend
-          input.pure-u-5-24(type="text" name="concern" value=concern id="concern" size="20")
-        .pure-u-17-24  
+          input.wide(type="text" name="concern" id="concern" value=concern size="40")
+        .pure-u-16-24  
           label(for="request") Suchbegriff(e)
-          input.pure-u-17-24(type="search" name="request" value=term id="request" size="40")
+          input.wide(type="search" name="request" value=term id="request" size="40")
       button.pure-button.pure-button-primary(type="submit" name="search") Los!  
     
     if results.length>0
