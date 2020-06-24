@@ -92,6 +92,10 @@ if (process.env.LUCINDA_SIMPLEWEB == 'enabled') {
   })
 
   server.get("/query", async (req, res) => {
+    const concern = req.query.concern || "*"
+    if (concern.indexOf("*") == -1) {
+      concern += "*"
+    }
     const rq = req.query.request || "*"
     const num = parseInt(req.query.num) || 20
     let offset = parseInt(req.query.offset || 0)
@@ -103,7 +107,7 @@ if (process.env.LUCINDA_SIMPLEWEB == 'enabled') {
       offset = 0
     }
 
-    const meta = await find({ query: "contents:" + rq, limit: num, offset, sort: "concern asc" })
+    const meta = await find({ query: "contents:" + rq + " concern:" + concern, limit: num, offset, sort: "concern asc" })
     if (meta.status && meta.status == "error") {
       res.render('error', { errmsg: meta.err })
     } else {

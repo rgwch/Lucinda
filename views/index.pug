@@ -11,9 +11,12 @@ block contents
         .pure-u-1-24
           label(for="offset") ab:
           input(type="text" name="offset" id="offset" value=offset)
-        .pure-u-20-24  
+        .pure-u-5-24
+          label(for="concern") Betreffend
+          input.pure-u-5-24(type="text" name="concern" value=concern id="concern" size="20")
+        .pure-u-17-24  
           label(for="request") Suchbegriff(e)
-          input.pure-u-20-24(type="search" name="request" value=term id="request" size="40")
+          input.pure-u-17-24(type="search" name="request" value=term id="request" size="40")
       button.pure-button.pure-button-primary(type="submit" name="search") Los!  
     
     if results.length>0
