@@ -12,6 +12,7 @@ const path = require('path')
 const fs = require('fs')
 const { Worker, parentPort, workerData } = require('worker_threads')
 const { find, remove, wait } = require('./solr')
+const analyze = require('./analyzer')
 const scaninterval = 2000
 
 /**
@@ -79,13 +80,13 @@ const joblist = () => {
       const job = files.pop()
       log.debug("processing file: " + job.filename)
       if (process.env.NODE_ENV == "debug") {
-        const worker=require('./importer')
-        worker.doImport(job.filename,job.metadata).then(result=>{
-          log.info("processed "+JSON.stringify(result))
-          busy=false
-        }).catch(err=>{
+        const worker = require('./importer')
+        worker.doImport(job.filename, job.metadata).then(result => {
+          log.info("processed " + JSON.stringify(result))
+          busy = false
+        }).catch(err => {
           log.error(err)
-          busy=false
+          busy = false
         })
       } else {
         const worker = new Worker('./src/importer.js', { workerData: job })
@@ -197,6 +198,12 @@ const watchDirs = () => {
     awaitWriteFinish: true
   })
     .on('add', fp => {
+      if (config.has("inbox")) {
+        const inbox = config(get("inbox").autocheck)
+        if (path.basename(path.dirname(fp)) == inbox) {
+          fp = analyze(fp)
+        }
+      }
       setTimeout(checkExists, 1000, fp)
 
     })

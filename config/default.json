@@ -1,12 +1,30 @@
 {
   "documentRoot": "lucinda-docs",
   "versionsStore": "lucinda-attic",
+  "inbox": {
+    "autocheck": "aaa_inbox",
+    "manualcheck": "aaa_manuell",
+    "filenames": [
+      {
+        "pattern": "(\\d\\d\\d\\d-\\d\\d-\\d\\d)_([^\\/]+)_([^\\/]+)_(\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d)(.*)",
+        "meaning": "date,lastname,firstname,birthdate,title"
+      },
+      {
+        "pattern": "([^\\/]+)_([^\\/]+)_(\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d)(.*)",
+        "meaning": "lastname,firstname,birthdate,title"
+      }
+    ]
+  },
   "listen-address": "localhost",
   "listen-port": 9997,
   "watch": true,
   "preferredLanguage": "deu",
   "concernRegexp": "([^\\/]+)_([^\\/]+)_(\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d)",
-  "concern_fields": ["lastname","firstname","birthdate"],
+  "concern_fields": [
+    "lastname",
+    "firstname",
+    "birthdate"
+  ],
   "lucinda-doctype": "Inbox",
   "ocr": "/usr/bin/ocrmypdf",
   "tika": {
