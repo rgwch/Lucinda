@@ -199,13 +199,17 @@ const watchDirs = () => {
   })
     .on('add', fp => {
       if (config.has("inbox")) {
-        const inbox = config(get("inbox").autocheck)
+        const inbox = config.get("inbox").autocheck
         if (path.basename(path.dirname(fp)) == inbox) {
           const placed = analyze(fp)
           if (placed) {
             // we found a "concern" directory. Move the file there
             const dest = path.join(basePath(), placed)
-            fs.mkdir(path.dirname(dest), { recursive: true })
+            fs.mkdir(path.dirname(dest), { recursive: true }, err => {
+              if (err) {
+                log.debug("mkdir " + err)
+              }
+            })
             fs.rename(fp, dest, err => {
               if (err) {
                 log.error("could not move " + fp + " to " + dest + ": " + err)
