@@ -203,7 +203,26 @@ const watchDirs = () => {
         if (path.basename(path.dirname(fp)) == inbox) {
           const placed = analyze(fp)
           if (placed) {
+            // we found a "concern" directory. Move the file there
+            const dest = path.join(basePath(), placed)
+            fs.mkdir(path.dirname(dest), { recursive: true })
+            fs.rename(fp, dest, err => {
+              if (err) {
+                log.error("could not move " + fp + " to " + dest + ": " + err)
+              }
+            })
 
+          } else {
+            // we could not find the matching directory
+
+            const dest = path.join(basePath(), config.get("inbox").manualcheck)
+            fs.mkdir(dest, { recursive: true })
+            const destfile = path.join(dest, path.basename(fp))
+            fs.rename(fp, destfile, err => {
+              if (err) {
+                log.error(`could not move ${fp} tp ${destfile}; ${err}`)
+              }
+            })
           }
 
         }
