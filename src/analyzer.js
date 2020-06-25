@@ -20,16 +20,40 @@ function analyze(filepath) {
     const m = rx.exec(basename)
     if (m) {
       const meaning = matcher.meaning.split(",")
-      for (const cf of concern_fields) {
-        const part = findMatch(cf, m, meaning)
+      let dirname = ""
+      for (let cf = 0; cf < concern_fields.length; cf++) {
+        const part = meaning.indexOf(concern_fields[cf])
+        if (part != -1) {
+          dirname += m[part + 1]
+        }
       }
+      let filename = ""
+      const di = meaning.indexOf("date")
+      if (di != -1) {
+        filename += m[di + 1]
+      }
+      const title = meaning.indexOf("title")
+      if (title != -1) {
+        filename += "_" + m[title + 1]
+      }
+      if (filename.length == 0) {
+        filename = m[0]
+      }
+      return dirname + path.sep + filename.replace(/\s/g, "_") + ext
     }
   }
 }
 
+/**
+ * Find a field of the concern description 
+ * @param {*} concernfield 
+ * @param {*} matchedfields 
+ * @param {*} meaning 
+ */
 function findMatch(concernfield, matchedfields, meaning) {
-  if (meaning.find(concernfield)) {
-
+  const found = meaning.find(el => concernfield == el)
+  if (found) {
+    return found
   }
 }
 module.exports = analyze

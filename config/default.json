@@ -6,11 +6,11 @@
     "manualcheck": "aaa_manuell",
     "filenames": [
       {
-        "pattern": "(\\d\\d\\d\\d-\\d\\d-\\d\\d)_([^\\/]+)_([^\\/]+)_(\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d)(.*)",
+        "pattern": "(\\d\\d\\d\\d-\\d\\d-\\d\\d)_([^\\/]+?_)([^\\/]+?_)(\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d)_(.*)",
         "meaning": "date,lastname,firstname,birthdate,title"
       },
       {
-        "pattern": "([^\\/]+)_([^\\/]+)_(\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d)(.*)",
+        "pattern": "([^\\/]+?_)([^\\/]+?_)(\\d\\d\\.\\d\\d\\.\\d\\d\\d\\d)_(.*)",
         "meaning": "lastname,firstname,birthdate,title"
       }
     ]
