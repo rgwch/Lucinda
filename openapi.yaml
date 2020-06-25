@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Lucinda server
-  version: "3.0"
+  version: "3.0.7"
 
 servers:
   - url: http://localhost:9997/lucinda/3.0
@@ -54,7 +54,7 @@ paths:
               schema:
                 type: object
         404:
-          description: The document with theb given id was not found        
+          description: The document with theb given id was not found
   /query/{expression}:
     get:
       description: Query the database with a lucene query expression as path parameter
@@ -80,7 +80,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#components/schemas/jsonQuery"      
+              $ref: "#components/schemas/jsonQuery"
       responses:
         200:
           description: ok. Result is in the body
@@ -89,9 +89,7 @@ paths:
               schema:
                 $ref: "#components/schemas/solrResponse"
         400:
-          description: Bad query object        
-          
-                  
+          description: Bad query object
 
   /addfile:
     post:
@@ -115,16 +113,15 @@ paths:
       requestBody:
         content:
           application/json:
-              schema:
-                $ref: "#components/schemas/newDocument"
+            schema:
+              $ref: "#components/schemas/newDocument"
       responses:
-        201:  
+        201:
           description: The document was imported.
         400:
           description: There was an error with the request
         401:
-          description: This client is not allowed to create content                      
-
+          description: This client is not allowed to create content
 
   /removeindex/{id}:
     get:
@@ -147,17 +144,18 @@ paths:
       description: initiate a rescan of the document base
       responses:
         200:
-          description: Ok        
+          description: Ok
 
 components:
   schemas:
     newDocument:
       type: object
-      required: 
+      required:
         - filename
       properties:
         id:
-          description: If you provide an id, that will be used. If not, an id is created automnatically.
+          description:
+            If you provide an id, that will be used. If not, an id is created automnatically.
             If you send an existing id, the previous entry with that id will be overwritten with the new document.
           type: string
 
@@ -180,39 +178,38 @@ components:
       type: object
       required:
         - metadata
-        - payload 
+        - payload
       properties:
         metadata:
           type: object
-          $ref:  "#/components/schemas/newDocument"
+          $ref: "#/components/schemas/newDocument"
         payload:
           type: string
-          format: base64  
-
+          format: base64
 
     jsonQuery:
       description: For more informations on json Queries, see Solr documentation
       type: object
-      required: 
+      required:
         - query
       properties:
         query:
           description: A Lucene conformant query expression, e.g. "title:someTitle&author:johndoe" (aka q)
           type: string
-        limit: 
+        limit:
           description: Number of results per call (aka rows)
           type: number
         offset:
           description: offset of first result (aka start)
-          type: number    
-        filter:  
+          type: number
+        filter:
           description: filter expressen (aka fl)
           type: string
-        sort: 
+        sort:
           description: A sort expression, such as "title asc"
           type: string
-        facet: 
-          type: object    
+        facet:
+          type: object
     solrResponse:
       description: Result of a successful query to Lucinda
       type: object
@@ -222,9 +219,7 @@ components:
         start:
           type: number
         docs:
-          type: array  
+          type: array
           items:
             description: application specific document objects
             type: object
-
-
