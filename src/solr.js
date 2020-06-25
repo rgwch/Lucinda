@@ -40,7 +40,7 @@ const sendCommand = async (api, body) => {
     }
     return await result.json()
   } catch (err) {
-    console.log(err)
+    console.log(err + ", " + api)
     return {
       "status": "error",
       err, api, body

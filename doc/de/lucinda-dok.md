@@ -59,7 +59,18 @@ Es genügt, Dokumente, die Sie in den Index aufnehmen wollen, im Dokumentenverze
 
 Mit zunehmendem Datenaustausch per E-Mail sinkt allerdings die Bedeutung der OCR. Auch PDFs, die per Mail eintreffen, sind oft bereits durchsuchbar und können somit direkt indiziert werden. Unter gewissen Bedingungen kann Lucinda auch selbst erkennen, zu welchem Patienten/Klienten ein Dokument gehört, auch wenn man es nicht explizit im passenden Ordner ablegt.
 
-Hierfür dient der Ordner aaa_Eingangsfach (den man selbstverständlich auch anders nennen kann, wenn man Lucinda entsprechend konfiguriert.) Jedes Dokument, das in diesem Verzeichnis abgelegt wird, wird anhand bestimmter konfigurierbarer Regeln analysiert, und wenn so der richtige Ablageort eruiert werden konnte, wird es dort hin verschoben.
+Hierfür dient der Ordner aaa_inbox (den man selbstverständlich auch anders nennen kann, wenn man Lucinda entsprechend konfiguriert). Jedes Dokument, das in diesem Verzeichnis abgelegt wird, wird anhand bestimmter konfigurierbarer Regeln analysiert, und wenn so der richtige Ablageort eruiert werden konnte, wird es dort hin verschoben. Wenn es zu keiner der definiderten Regeln passt, wird es in den Ordner aaa_manuell verschoben. Alles was dort landet, muss man selbst in das passende Unterverzeichnis schieben.
+
+Standardmässig werden folgende Dateinamen erkannt:
+
+* yyyy-mm-dd_Nachname_Vorname_dd.mm.yyyy_titel  (=Dokumentendatum_Paientenppersonalien_Geburtstatum_Dokumenttitel)
+
+* Nachname_Vorname_dd.mm.yyyy_titel (=Patientenpersonalien_Geburtsdatum_Dokumententitel)
+
+Wenn der Dateiname eines Dokuments beispielsweise lautet: `2020-06-24_Testperson_Armeswesen_24.12.1965_OP-Bericht Colezystektomie.pdf`, und dieses Dokument im Eingangsfach abgelegt wird, dann wird Lucinda es automatisch in den Ordner `Testperson_Armeswesen_24.12.1965` verschieben. Wenn dieser Ordner in der Dokumentablage noch nicht existiert, wird er zuvor erstellt. Der Dateiname des Dokuments wird dann `2020-06-24_Op-Bericht_Cholezystektomie.pdf`, und der Inhalt des Dokuments wird indiziert und in den Lucinda-Index aufgenommen. Wenn kein Dokumentendatum eingetragen wird, also z.B. `Testperson_Armeswesen_24.12.1965_OP-Bericht Colezystektomie.pdf`, dann wird der Dateiname nur  `Op-Bericht_Cholezystektomie.pdf` sein. 
+
+Es können auch eigene Namensschemata eingesetzt werden, aber das würde hier zu weit führen.
+
 
 ## Dokumente finden
 

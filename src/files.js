@@ -204,6 +204,7 @@ const watchDirs = () => {
           const placed = analyze(fp)
           if (placed) {
             // we found a "concern" directory. Move the file there
+
             const dest = path.join(basePath(), placed)
             fs.mkdir(path.dirname(dest), { recursive: true }, err => {
               if (err) {
@@ -217,7 +218,7 @@ const watchDirs = () => {
             })
 
           } else {
-            // we could not find the matching directory
+            // we could not find the matching directory. Move the file to "manualcheck"
 
             const dest = path.join(basePath(), config.get("inbox").manualcheck)
             fs.mkdir(dest, { recursive: true })

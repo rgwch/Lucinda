@@ -201,7 +201,7 @@
     {
       "name": "template",
       "type": "string",
-      "multivalued": false
+      "multiValued": false
     },
     {
       "name": "title",
