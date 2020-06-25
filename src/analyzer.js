@@ -34,7 +34,7 @@ function analyze(filepath) {
       }
       const title = meaning.indexOf("title")
       if (title != -1) {
-        filename += "_" + m[title + 1]
+        filename += (filename ? "_" : "") + m[title + 1]
       }
       if (filename.length == 0) {
         filename = m[0]
