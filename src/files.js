@@ -201,10 +201,15 @@ const watchDirs = () => {
       if (config.has("inbox")) {
         const inbox = config(get("inbox").autocheck)
         if (path.basename(path.dirname(fp)) == inbox) {
-          fp = analyze(fp)
+          const placed = analyze(fp)
+          if (placed) {
+
+          }
+
         }
+      } else {
+        setTimeout(checkExists, 1000, fp)
       }
-      setTimeout(checkExists, 1000, fp)
 
     })
     .on('change', fp => {

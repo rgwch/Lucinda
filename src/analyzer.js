@@ -42,6 +42,7 @@ function analyze(filepath) {
       return dirname + path.sep + filename.replace(/\s/g, "_") + ext
     }
   }
+  return undefined
 }
 
 /**
