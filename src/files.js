@@ -221,7 +221,9 @@ const watchDirs = () => {
             // we could not find the matching directory. Move the file to "manualcheck"
 
             const dest = path.join(basePath(), config.get("inbox").manualcheck)
-            fs.mkdir(dest, { recursive: true })
+            fs.mkdir(dest, { recursive: true }, err => {
+              log.debug("mkdir " + err)
+            })
             const destfile = path.join(dest, path.basename(fp))
             fs.rename(fp, destfile, err => {
               if (err) {
