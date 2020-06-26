@@ -24,13 +24,18 @@ function analyze(filepath) {
       for (let cf = 0; cf < concern_fields.length; cf++) {
         const part = meaning.indexOf(concern_fields[cf])
         if (part != -1) {
-          dirname += m[part + 1]
+          let p = m[part + 1]
+          if(p.match(/\d\d[\-_\/]\d\d[\-_\/]\d{2,4}/)){
+            p=p.replace(/[\-_\/]/g,".")
+          }
+          dirname += p + "_"
         }
       }
+      dirname = dirname.substr(0, dirname.length - 1)
       let filename = ""
       const di = meaning.indexOf("date")
       if (di != -1) {
-        filename += m[di + 1]
+        filename += m[di + 1].replace(/[\\._]/g, "-")
       }
       const title = meaning.indexOf("title")
       if (title != -1) {
