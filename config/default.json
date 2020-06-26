@@ -12,6 +12,12 @@
       {
         "pattern": "([^\\/]+?)[_\\-\\.\\s]([^\\/]+?)[_\\-\\.\\s](\\d\\d[\\.\\-_]\\d\\d[\\.\\-_]\\d\\d\\d\\d)[_\\- ]?(.*)",
         "meaning": "lastname,firstname,birthdate,title"
+      },{
+        "pattern": "(\\d\\d\\d\\d[\\-_]\\d\\d[\\-_]\\d\\d)[_\\-]([^\\/]+?)[_\\-\\.\\s]([^\\/]+?)[_\\-\\.\\s](\\d\\d\\d\\d[\\.\\-_]\\d\\d[\\.\\-_]\\d\\d)[_\\- ]?(.*)",
+        "meaning": "date,lastname,firstname,birthdate,title"
+      },{
+        "pattern": "([^\\/]+?)[_\\-\\.\\s]([^\\/]+?)[_\\-\\.\\s](\\d\\d\\d\\d[\\.\\-_]\\d\\d[\\.\\-_]\\d\\d)[_\\- ]?(.*)",
+        "meaning": "lastname,firstname,birthdate,title"
       }
     ]
   },

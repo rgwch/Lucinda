@@ -28,6 +28,10 @@ function analyze(filepath) {
           if(p.match(/\d\d[\-_\/]\d\d[\-_\/]\d{2,4}/)){
             p=p.replace(/[\-_\/]/g,".")
           }
+          const bdate=p.match(/(\d\d\d\d)[\-\._\/](\d\d)[\-\._\/](\d\d)/)
+          if(bdate){
+            p=bdate[3]+"."+bdate[2]+"."+bdate[1]
+          }
           dirname += p + "_"
         }
       }
