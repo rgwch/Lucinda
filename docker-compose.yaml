@@ -32,7 +32,7 @@ services:
     depends_on:
       - solr
       - tika
-    image: rgwch/lucinda-server:3.0.7
+    image: rgwch/lucinda-server:3.0.8
     container_name: lucinda_main
     environment:
       - LUCINDA_SIMPLEWEB=${LUCINDA_SIMPLEWEB:-enabled}

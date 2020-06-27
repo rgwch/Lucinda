@@ -1,7 +1,7 @@
 const { Console } = require('console')
 
 const fs = require('fs').promises
-const version = "3.0.7"
+const version = "3.0.8"
 
 doReplace("openapi.yaml", /version: "(\d\.\d\.\d)"/, `version: "${version}"`)
 doReplace("docker-compose.yaml", /lucinda-server:(\d\.\d\.\d)/, `lucinda-server:${version}`)
