@@ -107,7 +107,7 @@ if (process.env.LUCINDA_SIMPLEWEB == 'enabled') {
       offset = 0
     }
 
-    const meta = await find({ query: "+(contents:" + rq + ") +(concern:" + concern+")", limit: num, offset, sort: "concern asc" })
+    const meta = await find({ query: "+contents:(" + rq + ") +concern:(" + concern + ")", limit: num, offset, sort: "concern asc" })
     if (meta.status && meta.status == "error") {
       res.render('error', { errmsg: meta.err })
     } else {
