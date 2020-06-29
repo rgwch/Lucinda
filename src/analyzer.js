@@ -3,6 +3,7 @@ const fs = require('fs')
 const path = require('path')
 const inbox = cfg.get("inbox")
 const concern_fields = cfg.get("concern_fields")
+const prefix=cfg.get("concern_path_prefix")
 
 /**
  * Analyze, if a filename matches one of the patterns defined in cfg.inbox.
@@ -47,6 +48,9 @@ function analyze(filepath) {
       }
       if (filename.length == 0) {
         filename = m[0]
+      }
+      if(prefix){
+        dirname=dirname.substr(0,prefix).toLowerCase()+path.sep+dirname
       }
       return dirname + path.sep + filename.replace(/\s/g, "_") + ext
     }
