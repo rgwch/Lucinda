@@ -3,7 +3,7 @@ extends common
 block contents    
   form.pure-form.pure-form-stacked(action="/query" method="get")
     fieldset
-      legend Lucinda suche
+      legend Lucinda Suche
       .pure-g
         .pure-u-1-24 
           label(for="num") Zeige
@@ -35,4 +35,6 @@ block contents
       button.pure-button(class=backdisabled type="submit" name="backward")  vorige
       button.pure-button(class=nextdisabled name="forward" type="submit")  nächste     
       span.subnote (insgesamt #{total} Treffer)    
+    br   
+    button.pure-button.bottom(type="submit" name="rescan") Rescan
 

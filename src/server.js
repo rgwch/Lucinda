@@ -7,7 +7,7 @@ const express = require('express')
 const log = require('./logger')
 const config = require('config')
 const { find, toSolr } = require('./solr')
-const { basePath } = require('./files')
+const { basePath, checkStore } = require('./files')
 const { getTextContents } = require('./importer')
 const path = require('path')
 const API = "/lucinda/3.0"
@@ -99,7 +99,10 @@ if (process.env.LUCINDA_SIMPLEWEB == 'enabled') {
     const rq = req.query.request || "*"
     const num = parseInt(req.query.num) || 20
     let offset = parseInt(req.query.offset || 0)
-    if (req.query.hasOwnProperty("forward")) {
+    if (req.query.hasOwnProperty("rescan")) {
+      checkStore()
+      res.render('scanning')
+    } else if (req.query.hasOwnProperty("forward")) {
       offset += num
     } else if (req.query.hasOwnProperty("backward")) {
       offset = Math.max(0, offset - num)

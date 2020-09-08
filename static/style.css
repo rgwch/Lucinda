@@ -1,34 +1,38 @@
 * {
   box-sizing: border-box;
 }
-body{
+body {
   padding: 10px;
 }
 h1 {
   color: blue;
 }
 .results {
-  margin-top:10px;
+  margin-top: 10px;
   background-color: aquamarine;
   border: 1px solid blue;
 }
 
-legend{
+legend {
   color: blue;
   font-size: large;
   font-weight: 900;
 }
 
-.subnote{
+.subnote {
   font-size: smaller;
   color: grey;
 }
 
-.icon{
-  margin-left:10px;
-  margin-right:10px;
+.icon {
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
-.wide{
-  width: 100%
+.wide {
+  width: 100%;
+}
+.bottom {
+  position: absolute;
+  bottom: 10px;
 }
