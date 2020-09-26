@@ -106,6 +106,9 @@ router.post("/addfile", async (req, res) => {
 
 })
 
+/**
+ * Only index a file.
+ */
 router.post("/addindex", async (req, res) => {
   try {
     const result = await toSolr(req.body)
