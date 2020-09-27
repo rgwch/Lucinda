@@ -119,8 +119,9 @@ router.post("/addindex", async (req, res) => {
   }
 })
 
-router.put("/update/{id}", async (req, res) => {
+router.put("/update/:id", async (req, res) => {
 
+  res.status(500).end()
 })
 
 router.get("/removeindex/:id", async (req, res) => {
@@ -135,9 +136,9 @@ router.get("/removeindex/:id", async (req, res) => {
   }
 })
 
-router.get("/rescan", (req,res)=>{
+router.get("/rescan", (req, res) => {
   checkStore()
-  res.json({"status":"ok"})
+  res.json({ "status": "ok" })
 })
 
 
