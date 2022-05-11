@@ -40,7 +40,7 @@ describe("lucinda API", () => {
         done()
       })
   })
-  xit("queries for files", () => {
+  it("queries for files", () => {
     chai.request(server)
       .get(API + "/query/*")
       .end((err, res) => {
