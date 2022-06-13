@@ -72,7 +72,7 @@ If you want to enable the Web-UI, set the environment-variable LUCINDA_SIMPLEWEB
 
 While retrieval ist extremely fast, indexing of files can be a slow process. Lucinda does it's best to achieve a good result. This means especially: When importing scanned PDF files (which normally do not contain indexable text but only an image of the original paper), Lucinda runs OcrMyPDF to extract text and overlay that text to the PDF, making a searchable PDF from it. This process can take up to several minutes for a complex document. So, if you store a new file in the docbase, don't expect it to be immediately available.
 
-If you run Lucinda first on a large existing docbase (even one managed by an earlier version of Lucinda), the first start can take several hours or even days. You can use the omputer and even Lucinda during this time, but of course, only part of the documents are indexed until the first run finishes.
+If you run Lucinda first on a large existing docbase (even one managed by an earlier version of Lucinda), the first start can take several hours or even days. You can use the computer and even Lucinda during this time, but of course, only part of the documents are indexed until the first run finishes.
 
 Subsequent starts will be quite fast. Lucinda will still check the whole docbase for new files, but this process won't take too long, if there are no new files.
 
@@ -124,7 +124,7 @@ Lucinda uses the following programs:
 
 ## License
 
-This program is copyright (c) 2020 by G. Weirich and may be used and distributed according to the terms and conditions as stated
+This program is copyright (c) 2020-2022 by G. Weirich and may be used and distributed according to the terms and conditions as stated
 in the [Apache license, version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
 The Lucinda Icon ![Lucinda](https://github.com/rgwch/Lucinda/blob/master/rsc/lucinda.gif) is created and copyrighted by http://www.fatcow.com/free-icons
