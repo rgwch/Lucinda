@@ -36,8 +36,12 @@ router.get("/get/:id", async (req, res) => {
       res.status(500).end()
     } else {
       const doc = meta.response.docs[0]
-      const loc = path.join(basePath(), doc.loc)
-      res.sendFile(loc)
+      if (doc.loc) {
+        const loc = path.join(basePath(), doc.loc)
+        res.sendFile(loc)
+      } else {
+        res.status(404).end()
+      }
     }
   }
 })

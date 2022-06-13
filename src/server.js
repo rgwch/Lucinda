@@ -53,7 +53,7 @@ if (process.env.LUCINDA_SIMPLEWEB == 'enabled') {
     f.categories = f.categories || "General"
     const array = Object.keys(f)
       .map(k => { return { "key": k, "value": f[k] } })
-      .filter(el => ["title", "concern", "categories", "date"].includes(el.key))
+      .filter(el => ["title", "concern", "categories", "date", "content-type"].includes(el.key))
     res.render("metadata", { metadata: array, complete: JSON.stringify(f) })
   })
 
