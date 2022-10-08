@@ -150,7 +150,12 @@ function createQuery(qs) {
     q.sort = "concern asc,title asc";
     q.query = bracket(qs)
   } else {
-    q.query = bracket(qs.query)
+    if (typeof (qs.query) == 'string') {
+      q.query = bracket(qs.query)
+    } else {
+      q.query = qs.query
+    }
+
     q = Object.assign({}, qs, q)
   }
   return q
