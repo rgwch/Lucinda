@@ -123,13 +123,28 @@ paths:
         401:
           description: This client is not allowed to create content
   /listfiles:
-    get:
+    post:
       description: list contents of a subdirectory of the filebase
       requestBody:
         content:
           application/json:
-            
-
+            schema:
+              type: object
+              required:
+                - subdir
+              properties:
+                subdir:
+                  type: string
+                options:
+                  type: object
+                  properties:
+                    withSubdirs:
+                      type: boolean
+                    withPattern:
+                      type: string
+      responses:
+        200:
+          description: ok
   /removeindex/{id}:
     get:
       description: remove the document with the given ID from the index (not from the file system!)
