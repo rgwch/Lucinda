@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 LABEL maintainer="weirich@webelexis.ch"
-LABEL version="3.0.12"
+LABEL version="3.1.0"
 
 WORKDIR /opt
 

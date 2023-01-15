@@ -1,5 +1,5 @@
 /**************************************************************
- * Copyright (c) 2020 G. Weirich                              *
+ * Copyright (c) 2020-2023 G. Weirich                         *
  * Licensed under the Apache license, version 2.0 see LICENSE *
  **************************************************************/
 
@@ -12,11 +12,11 @@ const fetch = require('node-fetch')
 log.info("Lucinda Server: logger created")
 log.debug("Debug level active ")
 log.info("Environment is " + process.env.NODE_ENV)
-log.info("LUCINDA_DOCBASE "+process.env_LUCINDA_DOCBASE)
-log.info("LUCINDA_PORT "+process.env.LUCINDA_PORT)
-log.info("LUCINDA_ATTIC "+process.env.LUCINDA_ATTIC)
-log.info("LUCINDA_SIMPLEWEB "+process.env.LUCINDA_SIMPLEWEB)
-log.info("SOLR_DATA "+process.env.SOLR_DATA)
+log.info("LUCINDA_DOCBASE " + process.env_LUCINDA_DOCBASE)
+log.info("LUCINDA_PORT " + process.env.LUCINDA_PORT)
+log.info("LUCINDA_ATTIC " + process.env.LUCINDA_ATTIC)
+log.info("LUCINDA_SIMPLEWEB " + process.env.LUCINDA_SIMPLEWEB)
+log.info("SOLR_DATA " + process.env.SOLR_DATA)
 log.info("preferred language is " + cfg.get("preferredLanguage"))
 
 /**

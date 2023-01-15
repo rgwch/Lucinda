@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Lucinda server
-  version: "3.0.12"
+  version: "3.1.0"
 
 servers:
   - url: http://localhost:9997/lucinda/3.0
@@ -122,6 +122,13 @@ paths:
           description: There was an error with the request
         401:
           description: This client is not allowed to create content
+  /listfiles:
+    get:
+      description: list contents of a subdirectory of the filebase
+      requestBody:
+        content:
+          application/json:
+            
 
   /removeindex/{id}:
     get:

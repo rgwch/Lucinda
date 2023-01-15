@@ -7,7 +7,7 @@ const router = express.Router()
 const { find, remove, toSolr } = require('./solr')
 const fs = require('fs')
 const path = require('path')
-const { basePath, addFile, checkStore } = require('./files')
+const { basePath, addFile, checkStore, listfiles } = require('./files')
 const { version } = require('../package.json')
 const log = require('./logger')
 
@@ -108,6 +108,23 @@ router.post("/addfile", async (req, res) => {
   }
 
 
+})
+
+/**
+ * retrieve a directory view relative to the base path
+ * 
+ */
+router.get("/listfiles", async (req, res) => {
+  const { subdir, options } = req.body
+  if (subdir) {
+    try {
+      result = await listfiles(subdir, options)
+      res.json({ status: "ok", result })
+    } catch (err) {
+      log.error(err)
+      res.status(500).end()
+    }
+  }
 })
 
 /**

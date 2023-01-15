@@ -1,5 +1,5 @@
 /**************************************************************
- * Copyright (c) 2020 G. Weirich                              *
+ * Copyright (c) 2020-2023 G. Weirich                         *
  * Licensed under the Apache license, version 2.0 see LICENSE *
  **************************************************************/
 
@@ -17,7 +17,7 @@ const scaninterval = 2000
 
 /**
  * Make sure the configured directory exists and is writeable.
- * @param {string} base - the directory to create. Will be cretaed recursively.
+ * @param {string} base - the directory to create. Will be created recursively.
  * @throws error if directory can not be created or is not reeadable and writeable
  */
 const ensureDir = base => {
@@ -291,6 +291,46 @@ function makeHash(buffer) {
     .digest('hex');
 }
 
+const listfiles = async (dirname, options) => {
+  return new Promise((resolve, reject) => {
+    const fpath = path.join(basePath(), dirname)
+    fs.readdir(fpath, { withFileTypes: true }, (err, data) => {
+      if (err) {
+        log.error("could not read directory " + fpath + "; err")
+        reject("could not read directory " + dirname)
+      } else {
+        const files = data.filter(f => {
+          if (f.isFile() || f.isDirectory()) {
+            if (!options?.withSubdirs) {
+              if (f.isDirectory()) {
+                return false
+              }
+            }
+            if (options?.withPattern) {
+              const patterns = options.withPattern.split(/\|/)
+              const name = f.name
+              let ok = false;
+              for (const p of patterns) {
+                if (name.match(p)) {
+                  ok = true;
+                  break
+                }
+              }
+              if (!ok) {
+                return false
+              }
+            }
+            return true
+          } else {
+            return false
+          }
+        }).map(f => f.name)
+        resolve(files)
+      }
+    })
+  })
+
+}
 module.exports = {
   makeFileID,
   checkStore,
@@ -299,5 +339,6 @@ module.exports = {
   versionsPath,
   createVersion,
   addFile,
-  makeHash
+  makeHash,
+  listfiles
 }
