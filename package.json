@@ -1,6 +1,6 @@
 {
   "name": "lucinda-server",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "A document management system based on solr, tika and ocrmypdf",
   "keywords": [
     "document",
@@ -17,6 +17,7 @@
   "main": "index.js",
   "scripts": {
     "start": "LUCINDA_SIMPLEWEB=enabled NODE_ENV=default node src/",
+    "dev": "LUCINDA_SIMPLEWEB=enabled NODE_ENV=develop node src/",
     "test": "NODE_ENV=test npm run mocha",
     "mocha": "mocha test/unit --recursive --timeout 100000 --exit"
   },

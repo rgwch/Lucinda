@@ -5,6 +5,7 @@
 const express = require('express')
 const router = express.Router()
 const { find, remove, toSolr } = require('./solr')
+const { getTextContents } = require("./importer")
 const fs = require('fs')
 const path = require('path')
 const { basePath, addFile, checkStore, listfiles } = require('./files')
@@ -162,5 +163,13 @@ router.get("/rescan", (req, res) => {
   res.json({ "status": "ok" })
 })
 
-
+router.post("/parse", async (req, res) => {
+  try {
+    const result = await getTextContents(req.body)
+    res.text(result);
+  } catch (err) {
+    log.error(err)
+    res.status(400).end()
+  }
+})
 module.exports = router
