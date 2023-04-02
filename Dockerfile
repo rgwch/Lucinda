@@ -1,13 +1,13 @@
 FROM ubuntu:20.04
 LABEL maintainer="weirich@webelexis.ch"
-LABEL version="3.1.0"
+LABEL version="3.2.0"
 
 WORKDIR /opt
 
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 ENV DEBIAN_FRONTEND=noninteractive
-ENV NODE_VER=12.18.0
+ENV NODE_VER=16.13.2
 ENV NODE_VARIANT=node-v${NODE_VER}-linux-x64
 ENV NODE_ENV=dockered
 
