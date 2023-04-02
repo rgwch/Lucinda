@@ -278,14 +278,14 @@ async function getMetadata(buffer) {
  */
 async function getTextContents(buffer) {
   log.debug("Getting Text content ", buffer.length)
-  const contents = await fetch(getContentsURL(), {
+  const response = await fetch(getContentsURL(), {
     method: "PUT",
     body: buffer
   })
-  if (contents.status != 200) {
+  if (response.status != 200) {
     throw new Error("Could not retrieve file contents")
   }
-  const cnt = await contents.text()
+  const cnt = await response.text()
   log.debug("found " + cnt.trim().length + " characters")
   return cnt.trim()
 }

@@ -163,10 +163,13 @@ router.get("/rescan", (req, res) => {
   res.json({ "status": "ok" })
 })
 
+/**
+ * Fetch the text contents of a file (e.g. PDF)
+ */
 router.post("/parse", async (req, res) => {
   try {
     const result = await getTextContents(req.body)
-    res.text(result);
+    res.send(result);
   } catch (err) {
     log.error(err)
     res.status(400).end()

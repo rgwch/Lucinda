@@ -11,7 +11,7 @@
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "outputCapture": "std",
       "env": {
-        "NODE_ENV": "debug"
+        "NODE_ENV": "develop"
       },
       "args": [
         "--timeout",
@@ -47,7 +47,7 @@
       ],
       "program": "${workspaceFolder}/src/index.js",
       "env": {
-        "NODE_ENV": "debug",
+        "NODE_ENV": "develop",
         "LUCINDA_SIMPLEWEB": "enabled"
       },
       "outputCapture": "std",

@@ -11,7 +11,7 @@ describe('ocr', () => {
     fs.unlink(path.join(__dirname, "../ocrresult.pdf"), err => { })
     fs.unlink(path.join(__dirname, "../lorempng.pdf"), err => { })
   })
-  xit("makes a searchable pdf from a scanned pdf", async () => {
+  it("makes a searchable pdf from a scanned pdf", async () => {
     fs.copyFileSync(path.join(__dirname, "../lorem.pdf.image"), path.join(__dirname, "../ocrresult.pdf"))
     const result = await doOCR(path.join(__dirname, "../ocrresult.pdf"))
     result.should.be.ok
