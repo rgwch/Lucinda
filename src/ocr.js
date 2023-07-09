@@ -24,6 +24,7 @@ function doConvert(input) {
     const outStream = fs.createWriteStream(dest)
     const proc = spawn("img2pdf", [input])
     proc.on('error', err => {
+      fs.rmSync(dest, { force: true })
       reject(err)
     })
     proc.on('exit', code => {
