@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Lucinda server
-  version: "3.2.0"
+  version: "3.2.1"
 
 servers:
   - url: http://localhost:9997/lucinda/3.0
@@ -168,20 +168,26 @@ paths:
         200:
           description: Ok
   /parse:
-    post: 
-      description: Parse docukent for text content
+    post:
+      summary: Parse a binary file and extract its text contents.
       requestBody:
+        required: true
         content:
           application/octet-stream:
             schema:
-              type: object
+              type: string
+              format: binary
       responses:
-        200:
-          description: Ok
+        '200':
+          description: OK
           content:
             text/plain:
               schema:
-                type: 
+                type: string
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
 
 components:
   schemas:
