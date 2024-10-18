@@ -1,0 +1,14 @@
+POST http://localhost:9997/lucinda/3.0/addfile HTTP/1.1
+Content-Type: application/json
+
+{
+  "metadata": {
+    "id": "string",
+    "title": "Testfile for Lucinda",
+    "concern": "A_Test",
+    "filename": "filenameTest",
+    "filepath": "/tmp/",
+    "contents": "something"
+  },
+  "payload": "something"
+}
